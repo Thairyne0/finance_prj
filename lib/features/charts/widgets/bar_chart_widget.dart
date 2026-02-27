@@ -1,0 +1,197 @@
+import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../config/providers.dart';
+import '../../../core/theme/app_theme.dart';
+import '../../../core/utils/formatters.dart';
+
+class IncomeExpenseBarChart extends ConsumerWidget {
+  const IncomeExpenseBarChart({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final reports = ref.watch(lastSixMonthsReportsProvider);
+    final hasData = reports.any((r) => r.totalIncome > 0 || r.totalExpense > 0);
+
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: AppTheme.cardDark,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppTheme.borderDark),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Entrate vs Uscite',
+                style: Theme.of(context)
+                    .textTheme
+                    .titleMedium
+                    ?.copyWith(fontWeight: FontWeight.w600),
+              ),
+              Row(
+                children: [
+                  _Dot(color: AppTheme.incomeColor, label: 'Entrate'),
+                  const SizedBox(width: 14),
+                  _Dot(color: AppTheme.expenseColor, label: 'Uscite'),
+                ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+          SizedBox(
+            height: 200,
+            child: hasData
+                ? BarChart(
+                    BarChartData(
+                      gridData: FlGridData(
+                        show: true,
+                        drawVerticalLine: false,
+                        horizontalInterval: _interval(reports),
+                        getDrawingHorizontalLine: (_) => FlLine(
+                          color: AppTheme.borderDark,
+                          strokeWidth: 1,
+                        ),
+                      ),
+                      titlesData: FlTitlesData(
+                        leftTitles: AxisTitles(
+                          sideTitles: SideTitles(
+                            showTitles: true,
+                            reservedSize: 50,
+                            getTitlesWidget: (value, meta) {
+                              return Text(
+                                Formatters.formatCompact(value),
+                                style: const TextStyle(
+                                  color: Colors.white30,
+                                  fontSize: 10,
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                        rightTitles: const AxisTitles(
+                            sideTitles: SideTitles(showTitles: false)),
+                        topTitles: const AxisTitles(
+                            sideTitles: SideTitles(showTitles: false)),
+                        bottomTitles: AxisTitles(
+                          sideTitles: SideTitles(
+                            showTitles: true,
+                            getTitlesWidget: (value, meta) {
+                              final i = value.toInt();
+                              if (i < 0 || i >= reports.length) {
+                                return const SizedBox.shrink();
+                              }
+                              return Padding(
+                                padding: const EdgeInsets.only(top: 10),
+                                child: Text(
+                                  Formatters.formatShortMonth(
+                                    DateTime(reports[i].year, reports[i].month),
+                                  ),
+                                  style: const TextStyle(
+                                    color: Colors.white38,
+                                    fontSize: 11,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                      borderData: FlBorderData(show: false),
+                      barGroups: List.generate(
+                        reports.length,
+                        (i) => BarChartGroupData(
+                          x: i,
+                          barRods: [
+                            BarChartRodData(
+                              toY: reports[i].totalIncome,
+                              color: AppTheme.incomeColor,
+                              width: 12,
+                              borderRadius: const BorderRadius.vertical(
+                                  top: Radius.circular(6)),
+                            ),
+                            BarChartRodData(
+                              toY: reports[i].totalExpense,
+                              color: AppTheme.expenseColor,
+                              width: 12,
+                              borderRadius: const BorderRadius.vertical(
+                                  top: Radius.circular(6)),
+                            ),
+                          ],
+                          barsSpace: 4,
+                        ),
+                      ),
+                      barTouchData: BarTouchData(
+                        touchTooltipData: BarTouchTooltipData(
+                          getTooltipColor: (_) => AppTheme.cardDarkAlt,
+                          getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                            final label =
+                                rodIndex == 0 ? 'Entrate' : 'Uscite';
+                            final color = rodIndex == 0
+                                ? AppTheme.incomeColor
+                                : AppTheme.expenseColor;
+                            return BarTooltipItem(
+                              '$label\n${Formatters.formatCurrency(rod.toY)}',
+                              TextStyle(
+                                color: color,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 12,
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  )
+                : Center(
+                    child: Text(
+                      'Nessun dato disponibile',
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodySmall
+                          ?.copyWith(color: Colors.white24),
+                    ),
+                  ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  double _interval(List reports) {
+    double m = 0;
+    for (final r in reports) {
+      if (r.totalIncome > m) m = r.totalIncome;
+      if (r.totalExpense > m) m = r.totalExpense;
+    }
+    return m == 0 ? 1000 : (m / 4).ceilToDouble();
+  }
+}
+
+class _Dot extends StatelessWidget {
+  final Color color;
+  final String label;
+  const _Dot({required this.color, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Container(
+          width: 8,
+          height: 8,
+          decoration:
+              BoxDecoration(color: color, borderRadius: BorderRadius.circular(4)),
+        ),
+        const SizedBox(width: 4),
+        Text(label,
+            style: const TextStyle(color: Colors.white54, fontSize: 11)),
+      ],
+    );
+  }
+}
+
