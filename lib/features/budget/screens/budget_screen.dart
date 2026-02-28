@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:uuid/uuid.dart';
 import '../../../config/providers.dart';
 import '../../../core/theme/app_theme.dart';
@@ -23,125 +24,149 @@ class BudgetScreen extends ConsumerWidget {
         .where((c) => !budgetStatus.containsKey(c.id))
         .toList();
 
-    return SafeArea(
-      child: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.fromLTRB(20, 16, 20, 100),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Budget',
-                        style: Theme.of(context).textTheme.headlineMedium),
-                    const SizedBox(height: 4),
-                    Text(
-                      Formatters.formatMonthYear(selectedDate),
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyMedium
-                          ?.copyWith(color: Colors.white54),
-                    ),
-                  ],
-                ),
-                _AddBudgetButton(
-                  availableCategories: categoriesWithoutBudget,
-                  selectedDate: selectedDate,
-                ),
-              ],
+    // Spese senza budget assegnato
+    final unbudgetedSpending = spending.entries
+        .where((e) => !budgetStatus.containsKey(e.key))
+        .toList();
+
+    return Scaffold(
+      backgroundColor: AppTheme.scaffoldDark,
+      appBar: AppBar(
+        title: const Text('Budget'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_rounded),
+          onPressed: () => context.pop(),
+        ),
+        actions: [
+          _AddBudgetButton(
+            availableCategories: categoriesWithoutBudget,
+            selectedDate: selectedDate,
+          ),
+          const SizedBox(width: 8),
+        ],
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 40),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: _buildBudgetContent(
+              context, ref, budgetStatus, selectedDate, spending, unbudgetedSpending,
             ),
-
-            const SizedBox(height: 24),
-
-            // Riepilogo totale budget
-            if (budgetStatus.isNotEmpty) ...[
-              _TotalBudgetSummary(budgetStatus: budgetStatus),
-              const SizedBox(height: 20),
-            ],
-
-            // Budget cards
-            if (budgetStatus.isEmpty)
-              _EmptyBudget()
-            else
-              ...budgetStatus.entries.map((entry) {
-                final cat = HiveService.getCategoryById(entry.key);
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: BudgetProgressCard(
-                    categoryName: cat.name,
-                    iconCodePoint: cat.iconCodePoint,
-                    colorValue: cat.colorValue,
-                    budgetLimit: entry.value.budget.limit,
-                    spent: entry.value.spent,
-                    onDelete: () {
-                      ref
-                          .read(allBudgetsProvider.notifier)
-                          .delete(entry.value.budget.id);
-                    },
-                  ),
-                );
-              }),
-
-            // Spese senza budget
-            if (spending.entries
-                .where((e) => !budgetStatus.containsKey(e.key))
-                .isNotEmpty) ...[
-              const SizedBox(height: 24),
-              Text(
-                'SPESE SENZA BUDGET',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.white38,
-                      letterSpacing: 1.5,
-                      fontWeight: FontWeight.w600,
-                    ),
-              ),
-              const SizedBox(height: 12),
-              ...spending.entries
-                  .where((e) => !budgetStatus.containsKey(e.key))
-                  .map((entry) {
-                final cat = HiveService.getCategoryById(entry.key);
-                return Container(
-                  margin: const EdgeInsets.only(bottom: 8),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  decoration: BoxDecoration(
-                    color: AppTheme.cardDark,
-                    borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: AppTheme.borderDark),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        IconData(cat.iconCodePoint,
-                            fontFamily: 'MaterialIcons'),
-                        color: Color(cat.colorValue),
-                        size: 20,
-                      ),
-                      const SizedBox(width: 12),
-                      Text(cat.name,
-                          style: Theme.of(context).textTheme.bodyMedium),
-                      const Spacer(),
-                      Text(
-                        Formatters.formatCurrency(entry.value),
-                        style: const TextStyle(
-                          color: AppTheme.expenseColor,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              }),
-            ],
-          ],
+          ),
         ),
       ),
     );
+  }
+
+  List<Widget> _buildBudgetContent(
+    BuildContext context,
+    WidgetRef ref,
+    Map<String, ({BudgetModel budget, double spent})> budgetStatus,
+    DateTime selectedDate,
+    Map<String, double> spending,
+    List<MapEntry<String, double>> unbudgetedSpending,
+  ) {
+    final widgets = <Widget>[];
+
+    widgets.add(
+      Text(
+        Formatters.formatMonthYear(selectedDate),
+        style: Theme.of(context)
+            .textTheme
+            .bodyMedium
+            ?.copyWith(color: Colors.white54),
+      ),
+    );
+
+    widgets.add(const SizedBox(height: 24));
+
+    // Riepilogo totale budget
+    if (budgetStatus.isNotEmpty) {
+      widgets.add(_TotalBudgetSummary(budgetStatus: budgetStatus));
+      widgets.add(const SizedBox(height: 20));
+    }
+
+    // Budget cards
+    if (budgetStatus.isEmpty) {
+      widgets.add(_EmptyBudget());
+    } else {
+      for (final entry in budgetStatus.entries) {
+        final cat = HiveService.getCategoryById(entry.key);
+        widgets.add(
+          Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: BudgetProgressCard(
+              categoryName: cat.name,
+              iconCodePoint: cat.iconCodePoint,
+              colorValue: cat.colorValue,
+              budgetLimit: entry.value.budget.limit,
+              spent: entry.value.spent,
+              onDelete: () {
+                ref
+                    .read(allBudgetsProvider.notifier)
+                    .delete(entry.value.budget.id);
+              },
+            ),
+          ),
+        );
+      }
+    }
+
+    // Spese senza budget
+    if (unbudgetedSpending.isNotEmpty) {
+      widgets.add(const SizedBox(height: 24));
+      widgets.add(
+        Text(
+          'SPESE SENZA BUDGET',
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: Colors.white38,
+                letterSpacing: 1.5,
+                fontWeight: FontWeight.w600,
+              ),
+        ),
+      );
+      widgets.add(const SizedBox(height: 12));
+
+      for (final entry in unbudgetedSpending) {
+        final cat = HiveService.getCategoryById(entry.key);
+        widgets.add(
+          Container(
+            margin: const EdgeInsets.only(bottom: 8),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              color: AppTheme.cardDark,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: AppTheme.borderDark),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  IconData(cat.iconCodePoint, fontFamily: 'MaterialIcons'),
+                  color: Color(cat.colorValue),
+                  size: 20,
+                ),
+                const SizedBox(width: 12),
+                Text(cat.name,
+                    style: Theme.of(context).textTheme.bodyMedium),
+                const Spacer(),
+                Text(
+                  Formatters.formatCurrency(entry.value),
+                  style: const TextStyle(
+                    color: AppTheme.expenseColor,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      }
+    }
+
+    return widgets;
   }
 }
 
@@ -301,7 +326,7 @@ class _AddBudgetButton extends ConsumerWidget {
                   const SizedBox(height: 20),
                   // Categoria
                   DropdownButtonFormField<String>(
-                    initialValue: selectedCatId,
+                    value: selectedCatId,
                     dropdownColor: AppTheme.cardDarkAlt,
                     decoration: const InputDecoration(labelText: 'Categoria'),
                     items: availableCategories.map<DropdownMenuItem<String>>((c) {
@@ -348,7 +373,9 @@ class _AddBudgetButton extends ConsumerWidget {
                             amountController.text.replaceAll(',', '.'));
                         if (amount == null ||
                             amount <= 0 ||
-                            selectedCatId == null) return;
+                            selectedCatId == null) {
+                          return;
+                        }
 
                         ref.read(allBudgetsProvider.notifier).add(BudgetModel(
                               id: const Uuid().v4(),

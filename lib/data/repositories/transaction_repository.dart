@@ -37,6 +37,10 @@ class TransactionRepository {
     await _box.delete(id);
   }
 
+  Future<void> deleteAll() async {
+    await _box.clear();
+  }
+
   List<TransactionModel> getRecent({int limit = 5}) {
     final all = getAll();
     return all.take(limit).toList();

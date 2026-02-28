@@ -227,7 +227,9 @@ class SavingsScreen extends ConsumerWidget {
                             targetController.text.replaceAll(',', '.'));
                         if (target == null ||
                             target <= 0 ||
-                            nameController.text.trim().isEmpty) return;
+                            nameController.text.trim().isEmpty) {
+                          return;
+                        }
 
                         ref.read(allSavingsProvider.notifier).add(
                               SavingsGoalModel(

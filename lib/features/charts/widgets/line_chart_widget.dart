@@ -144,7 +144,7 @@ class TrendLineChartWidget extends ConsumerWidget {
       isStrokeCapRound: true,
       dotData: FlDotData(
         show: true,
-        getDotPainter: (spot, _, __, ___) => FlDotCirclePainter(
+        getDotPainter: (spot, _, _a, _b) => FlDotCirclePainter(
           radius: 4,
           color: color,
           strokeWidth: 2,

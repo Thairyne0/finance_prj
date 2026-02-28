@@ -65,9 +65,7 @@ class TransactionListNotifier extends StateNotifier<List<TransactionModel>> {
   }
 
   Future<void> deleteAll() async {
-    for (final t in state) {
-      await _repo.delete(t.id);
-    }
+    await _repo.deleteAll();
     refresh();
   }
 }
@@ -129,7 +127,9 @@ final monthlyReportProvider = Provider<MonthlyReport>((ref) {
 
 final recentTransactionsProvider = Provider<List<TransactionModel>>((ref) {
   final all = ref.watch(allTransactionsProvider);
-  return all.take(5).toList();
+  final sorted = List<TransactionModel>.from(all)
+    ..sort((a, b) => b.date.compareTo(a.date));
+  return sorted.take(5).toList();
 });
 
 // ──────────────────────────────────────────

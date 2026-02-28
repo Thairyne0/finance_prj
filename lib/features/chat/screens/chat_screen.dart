@@ -8,6 +8,7 @@ import '../../../config/providers.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/services/chat_bot_service.dart';
 import '../../../core/utils/formatters.dart';
+import '../../../core/widgets/animated_builder.dart';
 import '../../../data/models/savings_goal_model.dart';
 
 class ChatScreen extends ConsumerStatefulWidget {
@@ -533,7 +534,7 @@ class _TypingIndicatorState extends State<_TypingIndicator>
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: List.generate(3, (index) {
-            return AnimatedBuilder(
+            return AppAnimatedBuilder(
               animation: _dotAnimations[index],
               builder: (context, child) {
                 return Container(
@@ -558,22 +559,6 @@ class _TypingIndicatorState extends State<_TypingIndicator>
   }
 }
 
-class AnimatedBuilder extends AnimatedWidget {
-  final Widget Function(BuildContext, Widget?) builder;
-  final Widget? child;
-
-  const AnimatedBuilder({
-    super.key,
-    required Animation<double> animation,
-    required this.builder,
-    this.child,
-  }) : super(listenable: animation);
-
-  @override
-  Widget build(BuildContext context) {
-    return builder(context, child);
-  }
-}
 
 class _QuickActions extends StatelessWidget {
   final ValueChanged<String> onTap;

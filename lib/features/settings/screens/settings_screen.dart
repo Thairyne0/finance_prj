@@ -106,10 +106,19 @@ class SettingsScreen extends ConsumerWidget {
                       _showSnack(context, 'Nessun movimento da esportare');
                       return;
                     }
+                    final messenger = ScaffoldMessenger.of(context);
                     try {
                       await ExportService.exportToCsv(allTransactions);
                     } catch (e) {
-                      _showSnack(context, 'Errore durante l\'esportazione');
+                      messenger.showSnackBar(
+                        SnackBar(
+                          content: const Text('Errore durante l\'esportazione'),
+                          backgroundColor: AppTheme.cardDark,
+                          behavior: SnackBarBehavior.floating,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12)),
+                        ),
+                      );
                     }
                   },
                 ),
@@ -119,11 +128,28 @@ class SettingsScreen extends ConsumerWidget {
                   title: 'Backup Completo',
                   subtitle: 'Esporta tutti i dati in JSON',
                   onTap: () async {
+                    final messenger = ScaffoldMessenger.of(context);
                     try {
                       await ExportService.exportBackupJson();
-                      _showSnack(context, 'Backup creato con successo');
+                      messenger.showSnackBar(
+                        SnackBar(
+                          content: const Text('Backup creato con successo'),
+                          backgroundColor: AppTheme.cardDark,
+                          behavior: SnackBarBehavior.floating,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12)),
+                        ),
+                      );
                     } catch (e) {
-                      _showSnack(context, 'Errore durante il backup');
+                      messenger.showSnackBar(
+                        SnackBar(
+                          content: const Text('Errore durante il backup'),
+                          backgroundColor: AppTheme.cardDark,
+                          behavior: SnackBarBehavior.floating,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12)),
+                        ),
+                      );
                     }
                   },
                 ),
@@ -218,8 +244,9 @@ class SettingsScreen extends ConsumerWidget {
               final isSelected = HiveService.currentCurrency == c.$1;
               return ListTile(
                 onTap: () async {
+                  final nav = Navigator.of(ctx);
                   await HiveService.setCurrency(c.$1);
-                  Navigator.pop(ctx);
+                  nav.pop();
                   // Force UI rebuild
                   ref.read(allTransactionsProvider.notifier).refresh();
                 },
@@ -264,6 +291,7 @@ class SettingsScreen extends ConsumerWidget {
   }
 
   void _showDeleteConfirmation(BuildContext context, WidgetRef ref) {
+    final messenger = ScaffoldMessenger.of(context);
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -284,7 +312,15 @@ class SettingsScreen extends ConsumerWidget {
             onPressed: () {
               ref.read(allTransactionsProvider.notifier).deleteAll();
               Navigator.pop(ctx);
-              _showSnack(context, 'Tutti i dati sono stati eliminati');
+              messenger.showSnackBar(
+                SnackBar(
+                  content: const Text('Tutti i dati sono stati eliminati'),
+                  backgroundColor: AppTheme.cardDark,
+                  behavior: SnackBarBehavior.floating,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                ),
+              );
             },
             child: const Text('Elimina',
                 style: TextStyle(color: AppTheme.expenseColor)),

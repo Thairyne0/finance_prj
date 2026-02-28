@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import '../core/theme/app_theme.dart';
+import '../core/widgets/animated_builder.dart';
 
 class BottomNavShell extends StatelessWidget {
   final Widget child;
@@ -269,11 +270,15 @@ class _ChatBubbleButtonState extends State<_ChatBubbleButton>
     super.initState();
     _pulseController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 2),
+      duration: const Duration(seconds: 3),
     )..repeat(reverse: true);
     _pulseAnim = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
     );
+    // Ferma l'animazione dopo qualche secondo per risparmiare batteria
+    Future.delayed(const Duration(seconds: 9), () {
+      if (mounted) _pulseController.stop();
+    });
   }
 
   @override
@@ -286,7 +291,7 @@ class _ChatBubbleButtonState extends State<_ChatBubbleButton>
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: widget.onTap,
-      child: AnimatedBuilder(
+      child: AppAnimatedBuilder(
         animation: _pulseAnim,
         builder: (context, child) {
           return Container(
@@ -327,23 +332,6 @@ class _ChatBubbleButtonState extends State<_ChatBubbleButton>
   }
 }
 
-/// Wrapper per AnimatedWidget builder pattern
-class AnimatedBuilder extends AnimatedWidget {
-  final Widget Function(BuildContext, Widget?) builder;
-  final Widget? child;
-
-  const AnimatedBuilder({
-    super.key,
-    required Animation<double> animation,
-    required this.builder,
-    this.child,
-  }) : super(listenable: animation);
-
-  @override
-  Widget build(BuildContext context) {
-    return builder(context, child);
-  }
-}
 
 class _NavItem extends StatelessWidget {
   final IconData icon;

@@ -253,7 +253,7 @@ class _BudgetAlerts extends ConsumerWidget {
           children: [
             Text('⚠️ Budget', style: Theme.of(context).textTheme.titleLarge),
             TextButton(
-              onPressed: () => context.go('/budget'),
+              onPressed: () => context.push('/budget'),
               child: Text('Vedi tutti',
                   style: Theme.of(context)
                       .textTheme
