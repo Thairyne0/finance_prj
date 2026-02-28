@@ -85,13 +85,36 @@ class TransactionTile extends StatelessWidget {
                 ],
               ],
             ),
-            const SizedBox(height: 2),
-            Text(
-              Formatters.formatDate(transaction.date),
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.white38,
-                    fontSize: 11,
-                  ),
+            const SizedBox(height: 4),
+            Row(
+              children: [
+                Icon(
+                  IconData(transaction.paymentIconCodePoint,
+                      fontFamily: 'MaterialIcons'),
+                  size: 12,
+                  color: transaction.paymentMethod == PaymentMethod.cash
+                      ? AppTheme.warningColor.withValues(alpha: 0.7)
+                      : AppTheme.primaryColor.withValues(alpha: 0.7),
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  transaction.paymentLabel,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: transaction.paymentMethod == PaymentMethod.cash
+                            ? AppTheme.warningColor.withValues(alpha: 0.7)
+                            : AppTheme.primaryColor.withValues(alpha: 0.7),
+                        fontSize: 11,
+                        fontWeight: FontWeight.w500,
+                      ),
+                ),
+                Text(
+                  '  •  ${Formatters.formatDate(transaction.date)}',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Colors.white38,
+                        fontSize: 11,
+                      ),
+                ),
+              ],
             ),
           ],
         ),

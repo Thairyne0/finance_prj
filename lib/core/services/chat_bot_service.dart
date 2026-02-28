@@ -36,8 +36,70 @@ class SavingsPlanSuggestion {
 }
 
 class ChatBotService {
-  /// Analizza il messaggio dell'utente e genera una risposta
-  static ChatMessage processMessage(String userMessage, {
+  /// Processa il messaggio dell'utente e genera una risposta locale
+  static Future<ChatMessage> sendMessage(
+    String userMessage, {
+    double? currentBalance,
+    double? monthlyIncome,
+    double? monthlyExpenses,
+    List<SavingsGoalModel>? existingGoals,
+  }) async {
+    // Controlla se è una richiesta di risparmio
+    final savingsPlan = _parseSavingsRequest(userMessage.toLowerCase().trim());
+
+    if (savingsPlan != null) {
+      final tip = _getSavingsTip(savingsPlan, monthlyIncome, monthlyExpenses);
+
+      return ChatMessage(
+        text: '🎯 Ecco il tuo piano di accumulo:\n\n'
+            '📌 **${savingsPlan.name}**\n'
+            '💰 Obiettivo: ${Formatters.formatCurrency(savingsPlan.targetAmount)}\n'
+            '📅 Scadenza: ${Formatters.formatDate(savingsPlan.deadline)}\n\n'
+            '📋 Devi risparmiare:\n'
+            '• ${Formatters.formatCurrency(savingsPlan.dailyAmount)} al giorno\n'
+            '• ${Formatters.formatCurrency(savingsPlan.weeklyAmount)} a settimana\n'
+            '• ${Formatters.formatCurrency(savingsPlan.monthlyAmount)} al mese\n\n'
+            '$tip\n\n'
+            'Vuoi che crei questo obiettivo nell\'app? 👇',
+        isUser: false,
+        suggestion: savingsPlan,
+      );
+    }
+
+    // Parser locale
+    return _processLocally(
+      userMessage,
+      currentBalance: currentBalance,
+      monthlyIncome: monthlyIncome,
+      monthlyExpenses: monthlyExpenses,
+      existingGoals: existingGoals,
+    );
+  }
+
+  static String _getSavingsTip(SavingsPlanSuggestion plan, double? income, double? expenses) {
+    if (income != null && expenses != null && income > 0) {
+      final savings = income - expenses;
+      if (savings <= 0) {
+        return '⚠️ Le tue spese superano le entrate. Cerca di ridurle prima.';
+      }
+      final feasibility = plan.monthlyAmount / savings * 100;
+      if (feasibility > 80) {
+        return '⚠️ Richiede il ${feasibility.toStringAsFixed(0)}% del tuo risparmio. Considera più tempo.';
+      } else if (feasibility > 50) {
+        return '💪 Sfidante ma fattibile! Serve il ${feasibility.toStringAsFixed(0)}% del risparmio mensile.';
+      } else {
+        return '✅ Molto fattibile! Solo il ${feasibility.toStringAsFixed(0)}% del tuo risparmio mensile.';
+      }
+    }
+    return '💡 Imposta un promemoria per risparmiare regolarmente!';
+  }
+
+  // ─────────────────────────────────────────────
+  // FALLBACK LOCALE (parser basato su keyword)
+  // ─────────────────────────────────────────────
+
+  /// Parser locale di fallback quando Gemini non è disponibile
+  static ChatMessage _processLocally(String userMessage, {
     double? currentBalance,
     double? monthlyIncome,
     double? monthlyExpenses,
@@ -45,82 +107,58 @@ class ChatBotService {
   }) {
     final msg = userMessage.toLowerCase().trim();
 
-    // Saluto
     if (_isGreeting(msg)) {
       return ChatMessage(
-        text: 'Ciao! 👋 Sono il tuo assistente finanziario.\n\n'
+        text: 'Ciao! 👋 Sono **FinBot**, il tuo assistente finanziario.\n\n'
             'Posso aiutarti a:\n'
             '• 💰 Creare piani di risparmio\n'
             '• 📊 Analizzare le tue spese\n'
             '• 🎯 Raggiungere obiettivi finanziari\n\n'
-            'Prova a dirmi qualcosa come:\n'
-            '"Voglio risparmiare 1000€ entro 6 mesi"',
+            'Prova: "Voglio risparmiare 1000€ entro 6 mesi"',
         isUser: false,
       );
     }
 
-    // Richiesta di risparmio
-    final savingsPlan = _parseSavingsRequest(msg);
-    if (savingsPlan != null) {
-      return ChatMessage(
-        text: '🎯 Ottimo obiettivo! Ecco il tuo piano di accumulo:\n\n'
-            '📌 **${savingsPlan.name}**\n'
-            '💰 Obiettivo: ${Formatters.formatCurrency(savingsPlan.targetAmount)}\n'
-            '📅 Scadenza: ${Formatters.formatDate(savingsPlan.deadline)}\n\n'
-            '📋 Per raggiungere l\'obiettivo devi risparmiare:\n'
-            '• ${Formatters.formatCurrency(savingsPlan.dailyAmount)} al giorno\n'
-            '• ${Formatters.formatCurrency(savingsPlan.weeklyAmount)} a settimana\n'
-            '• ${Formatters.formatCurrency(savingsPlan.monthlyAmount)} al mese\n\n'
-            '${_getSavingsTip(savingsPlan, monthlyIncome, monthlyExpenses)}\n\n'
-            'Vuoi che crei questo obiettivo di risparmio nell\'app? 👇',
-        isUser: false,
-        suggestion: savingsPlan,
-      );
-    }
-
-    // Analisi spese
     if (_isExpenseAnalysis(msg)) {
       return _generateExpenseAnalysis(monthlyIncome, monthlyExpenses, currentBalance);
     }
 
-    // Consigli generali
     if (_isAdviceRequest(msg)) {
       return _generateFinancialAdvice(monthlyIncome, monthlyExpenses);
     }
 
-    // Stato obiettivi
     if (_isGoalStatus(msg)) {
       return _generateGoalStatus(existingGoals);
     }
 
-    // Help
     if (_isHelp(msg)) {
       return ChatMessage(
-        text: '📖 Ecco cosa posso fare per te:\n\n'
+        text: '📖 Ecco cosa posso fare:\n\n'
             '💰 **Piani di risparmio**\n'
-            'Dimmi quanto vuoi risparmiare e entro quando.\n'
             'Es: "Voglio risparmiare 5000€ in 12 mesi"\n\n'
             '📊 **Analisi spese**\n'
-            'Chiedi "come vanno le mie spese?" o "analizza le mie finanze"\n\n'
+            'Es: "Come vanno le mie spese?"\n\n'
             '💡 **Consigli**\n'
-            'Chiedi "dammi dei consigli" per suggerimenti personalizzati\n\n'
+            'Es: "Dammi dei consigli finanziari"\n\n'
             '🎯 **Stato obiettivi**\n'
-            'Chiedi "come vanno i miei obiettivi?" per un riepilogo',
+            'Es: "Come vanno i miei obiettivi?"',
         isUser: false,
       );
     }
 
-    // Default
     return ChatMessage(
       text: 'Non ho capito bene 🤔\n\n'
-          'Prova a formulare la richiesta in modo diverso. Esempi:\n'
+          'Prova:\n'
           '• "Voglio risparmiare 2000€ entro dicembre"\n'
           '• "Come vanno le mie spese?"\n'
-          '• "Dammi dei consigli finanziari"\n'
-          '• "Aiuto" per vedere tutte le funzioni',
+          '• "Dammi dei consigli finanziari"',
       isUser: false,
     );
   }
+
+  // ─────────────────────────────────────────────
+  // HELPERS per il parser locale
+  // ─────────────────────────────────────────────
 
   static bool _isGreeting(String msg) {
     final greetings = ['ciao', 'salve', 'buongiorno', 'buonasera', 'hey', 'ehi', 'hello', 'hi'];
@@ -151,12 +189,10 @@ class ChatBotService {
   }
 
   static SavingsPlanSuggestion? _parseSavingsRequest(String msg) {
-    // Pattern: risparmiare X euro entro Y mesi / in Y mesi / entro data
     double? amount;
     DateTime? deadline;
     String name = 'Piano di risparmio';
 
-    // Estrai importo
     final amountPatterns = [
       RegExp(r'(\d+[.,]?\d*)\s*(?:€|euro|eur)'),
       RegExp(r'(?:€|euro|eur)\s*(\d+[.,]?\d*)'),
@@ -176,7 +212,6 @@ class ChatBotService {
 
     if (amount == null) return null;
 
-    // Estrai periodo
     final monthPattern = RegExp(r'(\d+)\s*mes[ie]');
     final weekPattern = RegExp(r'(\d+)\s*settiman[ae]');
     final yearPattern = RegExp(r'(\d+)\s*ann[oi]');
@@ -197,7 +232,6 @@ class ChatBotService {
       final days = int.parse(dayPattern.firstMatch(msg)!.group(1)!);
       deadline = now.add(Duration(days: days));
     } else {
-      // Cerca mese specifico
       final months = {
         'gennaio': 1, 'febbraio': 2, 'marzo': 3, 'aprile': 4,
         'maggio': 5, 'giugno': 6, 'luglio': 7, 'agosto': 8,
@@ -207,18 +241,16 @@ class ChatBotService {
         if (msg.contains(entry.key)) {
           int year = now.year;
           if (entry.value <= now.month) year++;
-          // Cerca anno esplicito
           final yearExplicit = RegExp(r'20(\d{2})').firstMatch(msg);
           if (yearExplicit != null) {
             year = int.parse('20${yearExplicit.group(1)!}');
           }
-          deadline = DateTime(year, entry.value + 1, 0); // ultimo giorno del mese
+          deadline = DateTime(year, entry.value + 1, 0);
           break;
         }
       }
     }
 
-    // Se manca la scadenza, proponi 6 mesi
     deadline ??= DateTime(now.year, now.month + 6, now.day);
 
     final totalDays = deadline.difference(now).inDays;
@@ -228,7 +260,6 @@ class ChatBotService {
     final weeklyAmount = amount / (totalDays / 7);
     final monthlyAmount = amount / (totalDays / 30);
 
-    // Prova a dare un nome specifico
     if (msg.contains('viaggio') || msg.contains('vacanz')) {
       name = 'Viaggio';
     } else if (msg.contains('auto') || msg.contains('macchina')) {
@@ -255,34 +286,11 @@ class ChatBotService {
     );
   }
 
-  static String _getSavingsTip(SavingsPlanSuggestion plan, double? income, double? expenses) {
-    if (income != null && expenses != null && income > 0) {
-      final savings = income - expenses;
-      if (savings <= 0) {
-        return '⚠️ Attenzione: le tue spese superano le entrate. '
-            'Cerca di ridurre le spese prima di iniziare a risparmiare.';
-      }
-      final feasibility = plan.monthlyAmount / savings * 100;
-      if (feasibility > 80) {
-        return '⚠️ Questo piano richiede il ${feasibility.toStringAsFixed(0)}% del tuo risparmio mensile. '
-            'Potrebbe essere impegnativo, considera una scadenza più lunga.';
-      } else if (feasibility > 50) {
-        return '💪 Questo piano è sfidante ma fattibile! Richiede circa il ${feasibility.toStringAsFixed(0)}% '
-            'del tuo risparmio mensile disponibile.';
-      } else {
-        return '✅ Ottima notizia! Questo piano è molto fattibile, richiede solo il ${feasibility.toStringAsFixed(0)}% '
-            'del tuo risparmio mensile.';
-      }
-    }
-    return '💡 Consiglio: imposta dei promemoria per ricordarti di risparmiare regolarmente!';
-  }
-
   static ChatMessage _generateExpenseAnalysis(double? income, double? expenses, double? balance) {
     if (income == null || expenses == null) {
       return ChatMessage(
         text: '📊 Non ho abbastanza dati per analizzare le tue finanze.\n\n'
-            'Inizia ad inserire le tue entrate e spese dalla schermata principale '
-            'per avere un\'analisi completa!',
+            'Inizia ad inserire le tue entrate e spese dalla schermata principale!',
         isUser: false,
       );
     }
@@ -297,16 +305,16 @@ class ChatBotService {
       status = 'Eccellente! Stai risparmiando più del 30%.';
     } else if (savingsRate >= 20) {
       emoji = '✅';
-      status = 'Ottimo lavoro! La regola del 50/30/20 è rispettata.';
+      status = 'Ottimo! La regola 50/30/20 è rispettata.';
     } else if (savingsRate >= 10) {
       emoji = '👍';
       status = 'Buono, ma potresti migliorare. Punta al 20%.';
     } else if (savingsRate > 0) {
       emoji = '⚠️';
-      status = 'Risparmi poco. Prova a tagliare qualche spesa non necessaria.';
+      status = 'Risparmi poco. Prova a tagliare qualche spesa.';
     } else {
       emoji = '🚨';
-      status = 'Le spese superano le entrate! Rivedi urgentemente il tuo budget.';
+      status = 'Le spese superano le entrate! Rivedi il budget.';
     }
 
     return ChatMessage(
@@ -314,7 +322,7 @@ class ChatBotService {
           '📥 Entrate: ${Formatters.formatCurrency(income)}\n'
           '📤 Spese: ${Formatters.formatCurrency(expenses)}\n'
           '💰 Risparmio: ${Formatters.formatCurrency(savings)}\n'
-          '📈 Tasso di risparmio: ${savingsRate.toStringAsFixed(1)}%\n\n'
+          '📈 Tasso: ${savingsRate.toStringAsFixed(1)}%\n\n'
           '$status',
       isUser: false,
     );
@@ -326,7 +334,7 @@ class ChatBotService {
     if (income != null && expenses != null) {
       final ratio = expenses / (income > 0 ? income : 1);
       if (ratio > 0.9) {
-        tips.add('🔴 Riduci le spese del ${((ratio - 0.7) * 100).toStringAsFixed(0)}% per avere un margine sicuro');
+        tips.add('🔴 Riduci le spese del ${((ratio - 0.7) * 100).toStringAsFixed(0)}% per un margine sicuro');
       }
       if (ratio > 0.5) {
         tips.add('🏠 Le spese essenziali non dovrebbero superare il 50% delle entrate');
@@ -335,21 +343,19 @@ class ChatBotService {
 
     tips.addAll([
       '💡 Crea un fondo emergenza di 3-6 mesi di spese',
-      '🔄 Automatizza i risparmi: metti da parte appena ricevi lo stipendio',
-      '📝 Traccia tutte le spese, anche le più piccole',
-      '🎯 Usa la regola 50/30/20: 50% necessità, 30% desideri, 20% risparmi',
-      '☕ Piccole spese quotidiane si accumulano: un caffè al giorno = €1000/anno',
-      '📱 Rivedi gli abbonamenti: elimina quelli che non usi',
-      '🛒 Fai una lista della spesa e rispettala',
-      '💳 Evita acquisti d\'impulso: aspetta 48h prima di comprare',
+      '🔄 Automatizza i risparmi appena ricevi lo stipendio',
+      '📝 Traccia tutte le spese, anche le piccole',
+      '🎯 Regola 50/30/20: necessità, desideri, risparmi',
+      '☕ Un caffè al giorno = €1.000/anno',
+      '📱 Rivedi gli abbonamenti: elimina quelli inutili',
+      '💳 Aspetta 48h prima di acquisti d\'impulso',
     ]);
 
-    // Prendi 5 consigli casuali/rilevanti
     final selectedTips = tips.take(5).join('\n');
 
     return ChatMessage(
-      text: '💡 **Consigli finanziari per te**\n\n$selectedTips\n\n'
-          'Hai bisogno di aiuto con qualcosa in particolare? 😊',
+      text: '💡 **Consigli finanziari**\n\n$selectedTips\n\n'
+          'Hai bisogno di aiuto specifico? 😊',
       isUser: false,
     );
   }
@@ -357,22 +363,18 @@ class ChatBotService {
   static ChatMessage _generateGoalStatus(List<SavingsGoalModel>? goals) {
     if (goals == null || goals.isEmpty) {
       return ChatMessage(
-        text: '🎯 Non hai ancora creato obiettivi di risparmio.\n\n'
-            'Dimmi quanto vuoi risparmiare e ti creerò un piano personalizzato!\n'
+        text: '🎯 Non hai ancora obiettivi di risparmio.\n\n'
+            'Dimmi quanto vuoi risparmiare e ti creerò un piano!\n'
             'Es: "Voglio risparmiare 3000€ per un viaggio in 8 mesi"',
         isUser: false,
       );
     }
 
-    final buffer = StringBuffer('🎯 **I tuoi obiettivi di risparmio**\n\n');
+    final buffer = StringBuffer('🎯 **I tuoi obiettivi**\n\n');
 
     for (final goal in goals) {
       final progressPercent = (goal.progress * 100).toStringAsFixed(0);
-      final emoji = goal.isCompleted
-          ? '✅'
-          : goal.progress > 0.5
-              ? '🟡'
-              : '🔵';
+      final emoji = goal.isCompleted ? '✅' : goal.progress > 0.5 ? '🟡' : '🔵';
 
       buffer.writeln('$emoji **${goal.name}**');
       buffer.writeln('   ${Formatters.formatCurrency(goal.currentAmount)} / '
@@ -388,11 +390,6 @@ class ChatBotService {
       buffer.writeln('🏆 Hai completato $completed obiettiv${completed == 1 ? 'o' : 'i'}!');
     }
 
-    return ChatMessage(
-      text: buffer.toString(),
-      isUser: false,
-    );
+    return ChatMessage(text: buffer.toString(), isUser: false);
   }
 }
-
-

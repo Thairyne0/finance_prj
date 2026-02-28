@@ -11,7 +11,7 @@ class ExportService {
   /// Esporta le transazioni in CSV e condividi
   static Future<void> exportToCsv(List<TransactionModel> transactions) async {
     final rows = <List<dynamic>>[
-      ['Data', 'Tipo', 'Categoria', 'Descrizione', 'Prodotto', 'Importo'],
+      ['Data', 'Tipo', 'Categoria', 'Descrizione', 'Prodotto', 'Metodo', 'Conto', 'Importo'],
     ];
 
     for (final t in transactions) {
@@ -22,6 +22,8 @@ class ExportService {
         cat.name,
         t.description,
         t.productName ?? '',
+        t.paymentLabel,
+        t.accountName ?? '',
         t.type == TransactionType.expense ? '-${t.amount}' : t.amount,
       ]);
     }
@@ -55,6 +57,8 @@ class ExportService {
             'categoryId': t.categoryId,
             'description': t.description,
             'productName': t.productName,
+            'paymentMethod': t.paymentMethod.index,
+            'accountName': t.accountName,
             'date': t.date.toIso8601String(),
             'createdAt': t.createdAt.toIso8601String(),
           }).toList(),

@@ -22,10 +22,12 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
   final _amountController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _productController = TextEditingController();
+  final _accountNameController = TextEditingController();
 
   TransactionType _type = TransactionType.expense;
   String? _selectedCategoryId;
   DateTime _selectedDate = DateTime.now();
+  PaymentMethod _paymentMethod = PaymentMethod.cash;
 
   List<CategoryModel> get _categories => _type == TransactionType.expense
       ? HiveService.expenseCategories
@@ -42,6 +44,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
     _amountController.dispose();
     _descriptionController.dispose();
     _productController.dispose();
+    _accountNameController.dispose();
     super.dispose();
   }
 
@@ -84,6 +87,10 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
           : null,
       date: _selectedDate,
       createdAt: DateTime.now(),
+      paymentMethod: _paymentMethod,
+      accountName: _accountNameController.text.trim().isNotEmpty
+          ? _accountNameController.text.trim()
+          : null,
     );
 
     ref.read(allTransactionsProvider.notifier).add(transaction);
@@ -310,6 +317,146 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
                 ],
 
                 // Date Picker
+                Text(
+                  'Metodo di Pagamento',
+                  style: Theme.of(context).textTheme.labelLarge,
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () => setState(() => _paymentMethod = PaymentMethod.cash),
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          decoration: BoxDecoration(
+                            color: _paymentMethod == PaymentMethod.cash
+                                ? AppTheme.warningColor.withValues(alpha: 0.15)
+                                : AppTheme.cardDark,
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(
+                              color: _paymentMethod == PaymentMethod.cash
+                                  ? AppTheme.warningColor
+                                  : AppTheme.borderDark,
+                              width: _paymentMethod == PaymentMethod.cash ? 2 : 1,
+                            ),
+                          ),
+                          child: Column(
+                            children: [
+                              Icon(
+                                Icons.payments_rounded,
+                                color: _paymentMethod == PaymentMethod.cash
+                                    ? AppTheme.warningColor
+                                    : Colors.white38,
+                                size: 24,
+                              ),
+                              const SizedBox(height: 6),
+                              Text(
+                                'Contanti',
+                                style: TextStyle(
+                                  color: _paymentMethod == PaymentMethod.cash
+                                      ? AppTheme.warningColor
+                                      : Colors.white38,
+                                  fontWeight: _paymentMethod == PaymentMethod.cash
+                                      ? FontWeight.w600
+                                      : FontWeight.w400,
+                                  fontSize: 13,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () => setState(() => _paymentMethod = PaymentMethod.bankAccount),
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          decoration: BoxDecoration(
+                            color: _paymentMethod == PaymentMethod.bankAccount
+                                ? AppTheme.primaryColor.withValues(alpha: 0.15)
+                                : AppTheme.cardDark,
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(
+                              color: _paymentMethod == PaymentMethod.bankAccount
+                                  ? AppTheme.primaryColor
+                                  : AppTheme.borderDark,
+                              width: _paymentMethod == PaymentMethod.bankAccount ? 2 : 1,
+                            ),
+                          ),
+                          child: Column(
+                            children: [
+                              Icon(
+                                Icons.account_balance_rounded,
+                                color: _paymentMethod == PaymentMethod.bankAccount
+                                    ? AppTheme.primaryColor
+                                    : Colors.white38,
+                                size: 24,
+                              ),
+                              const SizedBox(height: 6),
+                              Text(
+                                'Conto',
+                                style: TextStyle(
+                                  color: _paymentMethod == PaymentMethod.bankAccount
+                                      ? AppTheme.primaryColor
+                                      : Colors.white38,
+                                  fontWeight: _paymentMethod == PaymentMethod.bankAccount
+                                      ? FontWeight.w600
+                                      : FontWeight.w400,
+                                  fontSize: 13,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+
+                // Nome conto opzionale
+                if (_paymentMethod == PaymentMethod.bankAccount) ...[
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Text(
+                        'Nome Conto',
+                        style: Theme.of(context).textTheme.labelLarge,
+                      ),
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: AppTheme.primaryColor.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Text(
+                          'Opzionale',
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                color: AppTheme.primaryColor,
+                                fontSize: 10,
+                              ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  TextFormField(
+                    controller: _accountNameController,
+                    textCapitalization: TextCapitalization.words,
+                    decoration: const InputDecoration(
+                      hintText: 'Es. Intesa Sanpaolo, PayPal, N26...',
+                    ),
+                  ),
+                ],
+
+                const SizedBox(height: 24),
+
+                // Data
                 Text(
                   'Data',
                   style: Theme.of(context).textTheme.labelLarge,

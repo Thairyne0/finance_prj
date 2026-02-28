@@ -2,6 +2,9 @@ import 'package:hive/hive.dart';
 
 enum TransactionType { income, expense }
 
+/// Metodo di pagamento: contanti o conto
+enum PaymentMethod { cash, bankAccount }
+
 class TransactionTypeAdapter extends TypeAdapter<TransactionType> {
   @override
   final int typeId = 1;
@@ -17,6 +20,21 @@ class TransactionTypeAdapter extends TypeAdapter<TransactionType> {
   }
 }
 
+class PaymentMethodAdapter extends TypeAdapter<PaymentMethod> {
+  @override
+  final int typeId = 5;
+
+  @override
+  PaymentMethod read(BinaryReader reader) {
+    return PaymentMethod.values[reader.readByte()];
+  }
+
+  @override
+  void write(BinaryWriter writer, PaymentMethod obj) {
+    writer.writeByte(obj.index);
+  }
+}
+
 class TransactionModel {
   final String id;
   final double amount;
@@ -26,6 +44,8 @@ class TransactionModel {
   final String? productName;
   final DateTime date;
   final DateTime createdAt;
+  final PaymentMethod paymentMethod;
+  final String? accountName;
 
   TransactionModel({
     required this.id,
@@ -36,6 +56,8 @@ class TransactionModel {
     this.productName,
     required this.date,
     required this.createdAt,
+    this.paymentMethod = PaymentMethod.cash,
+    this.accountName,
   });
 
   TransactionModel copyWith({
@@ -47,6 +69,8 @@ class TransactionModel {
     String? productName,
     DateTime? date,
     DateTime? createdAt,
+    PaymentMethod? paymentMethod,
+    String? accountName,
   }) {
     return TransactionModel(
       id: id ?? this.id,
@@ -57,7 +81,23 @@ class TransactionModel {
       productName: productName ?? this.productName,
       date: date ?? this.date,
       createdAt: createdAt ?? this.createdAt,
+      paymentMethod: paymentMethod ?? this.paymentMethod,
+      accountName: accountName ?? this.accountName,
     );
+  }
+
+  /// Label leggibile per il metodo di pagamento
+  String get paymentLabel {
+    if (paymentMethod == PaymentMethod.cash) return 'Contanti';
+    if (accountName != null && accountName!.isNotEmpty) return accountName!;
+    return 'Conto';
+  }
+
+  /// Icona per il metodo di pagamento
+  int get paymentIconCodePoint {
+    return paymentMethod == PaymentMethod.cash
+        ? 0xe25a // Icons.payments_rounded
+        : 0xef63; // Icons.account_balance_rounded
   }
 }
 
@@ -83,12 +123,14 @@ class TransactionModelAdapter extends TypeAdapter<TransactionModel> {
       productName: fields[5] as String?,
       date: fields[6] as DateTime,
       createdAt: fields[7] as DateTime,
+      paymentMethod: fields[8] as PaymentMethod? ?? PaymentMethod.cash,
+      accountName: fields[9] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, TransactionModel obj) {
-    writer.writeByte(8);
+    writer.writeByte(10);
     writer.writeByte(0);
     writer.write(obj.id);
     writer.writeByte(1);
@@ -105,6 +147,10 @@ class TransactionModelAdapter extends TypeAdapter<TransactionModel> {
     writer.write(obj.date);
     writer.writeByte(7);
     writer.write(obj.createdAt);
+    writer.writeByte(8);
+    writer.write(obj.paymentMethod);
+    writer.writeByte(9);
+    writer.write(obj.accountName);
   }
 }
 

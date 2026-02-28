@@ -90,6 +90,7 @@ class SettingsScreen extends ConsumerWidget {
               ],
             ),
 
+
             const SizedBox(height: 24),
 
             // Dati
@@ -289,6 +290,7 @@ class SettingsScreen extends ConsumerWidget {
       ),
     );
   }
+
 
   void _showDeleteConfirmation(BuildContext context, WidgetRef ref) {
     final messenger = ScaffoldMessenger.of(context);

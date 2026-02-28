@@ -28,11 +28,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
   @override
   void initState() {
     super.initState();
-    // Messaggio di benvenuto
     _messages.add(ChatMessage(
       text: 'Ciao! 👋 Sono **FinBot**, il tuo assistente finanziario.\n\n'
-          'Posso aiutarti a creare piani di risparmio personalizzati. '
-          'Dimmi cosa vuoi risparmiare e ti guiderò!\n\n'
+          'Posso aiutarti a creare piani di risparmio, '
+          'analizzare le spese e darti consigli!\n\n'
           '💡 Prova: "Voglio risparmiare 2000€ in 6 mesi"',
       isUser: false,
     ));
@@ -47,7 +46,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
 
   void _sendMessage() async {
     final text = _messageController.text.trim();
-    if (text.isEmpty) return;
+    if (text.isEmpty || _isTyping) return;
 
     HapticFeedback.lightImpact();
 
@@ -58,14 +57,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
     _messageController.clear();
     _scrollToBottom();
 
-    // Simula il tempo di risposta
-    await Future.delayed(const Duration(milliseconds: 800));
-
     // Ottieni dati finanziari per il contesto
     final report = ref.read(monthlyReportProvider);
     final goals = ref.read(allSavingsProvider);
 
-    final response = ChatBotService.processMessage(
+    final response = await ChatBotService.sendMessage(
       text,
       currentBalance: report.totalIncome - report.totalExpense,
       monthlyIncome: report.totalIncome,
@@ -73,11 +69,13 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
       existingGoals: goals,
     );
 
-    setState(() {
-      _isTyping = false;
-      _messages.add(response);
-    });
-    _scrollToBottom();
+    if (mounted) {
+      setState(() {
+        _isTyping = false;
+        _messages.add(response);
+      });
+      _scrollToBottom();
+    }
   }
 
   void _scrollToBottom() {
@@ -281,9 +279,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
                           ),
                         ),
                         const SizedBox(width: 5),
-                        const Text(
+                        Text(
                           'Online',
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: AppTheme.incomeColor,
                             fontSize: 12,
                             fontWeight: FontWeight.w500,

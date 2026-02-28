@@ -19,6 +19,9 @@ class HiveService {
     if (!Hive.isAdapterRegistered(1)) {
       Hive.registerAdapter(TransactionTypeAdapter());
     }
+    if (!Hive.isAdapterRegistered(5)) {
+      Hive.registerAdapter(PaymentMethodAdapter());
+    }
     if (!Hive.isAdapterRegistered(0)) {
       Hive.registerAdapter(TransactionModelAdapter());
     }
