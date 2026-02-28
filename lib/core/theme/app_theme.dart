@@ -18,9 +18,41 @@ class AppTheme {
   static const Color cardDarkAlt = Color(0xFF16213E);
   static const Color borderDark = Color(0xFF2A2A3E);
 
+  /// Helper sicuro: prova GoogleFonts.inter, se fallisce usa font di sistema
+  static TextStyle _safeInter({
+    double fontSize = 14,
+    FontWeight fontWeight = FontWeight.w400,
+    Color? color,
+  }) {
+    try {
+      return GoogleFonts.inter(
+        fontSize: fontSize,
+        fontWeight: fontWeight,
+        color: color,
+      );
+    } catch (_) {
+      return TextStyle(
+        fontSize: fontSize,
+        fontWeight: fontWeight,
+        color: color,
+        fontFamily: '.SF Pro Text',
+      );
+    }
+  }
+
+  /// TextTheme di base sicuro
+  static TextTheme _safeTextTheme() {
+    try {
+      return GoogleFonts.interTextTheme(ThemeData.dark().textTheme);
+    } catch (_) {
+      return ThemeData.dark().textTheme;
+    }
+  }
+
   static ThemeData get darkTheme {
-    // Previene crash se non c'è connessione - usa font di sistema come fallback
-    GoogleFonts.config.allowRuntimeFetching = false;
+    // Abilita il fetching runtime così può scaricare i font se disponibili
+    // Se offline, il try-catch nei metodi _safe* gestisce il fallback
+    GoogleFonts.config.allowRuntimeFetching = true;
 
     return ThemeData(
       useMaterial3: true,
@@ -36,50 +68,48 @@ class AppTheme {
         onSurface: Colors.white,
         outline: borderDark,
       ),
-      textTheme: GoogleFonts.interTextTheme(
-        ThemeData.dark().textTheme,
-      ).copyWith(
-        headlineLarge: GoogleFonts.inter(
+      textTheme: _safeTextTheme().copyWith(
+        headlineLarge: _safeInter(
           fontSize: 28,
           fontWeight: FontWeight.w700,
           color: Colors.white,
         ),
-        headlineMedium: GoogleFonts.inter(
+        headlineMedium: _safeInter(
           fontSize: 24,
           fontWeight: FontWeight.w600,
           color: Colors.white,
         ),
-        headlineSmall: GoogleFonts.inter(
+        headlineSmall: _safeInter(
           fontSize: 20,
           fontWeight: FontWeight.w600,
           color: Colors.white,
         ),
-        titleLarge: GoogleFonts.inter(
+        titleLarge: _safeInter(
           fontSize: 18,
           fontWeight: FontWeight.w600,
           color: Colors.white,
         ),
-        titleMedium: GoogleFonts.inter(
+        titleMedium: _safeInter(
           fontSize: 16,
           fontWeight: FontWeight.w500,
           color: Colors.white,
         ),
-        bodyLarge: GoogleFonts.inter(
+        bodyLarge: _safeInter(
           fontSize: 16,
           fontWeight: FontWeight.w400,
           color: Colors.white70,
         ),
-        bodyMedium: GoogleFonts.inter(
+        bodyMedium: _safeInter(
           fontSize: 14,
           fontWeight: FontWeight.w400,
           color: Colors.white70,
         ),
-        bodySmall: GoogleFonts.inter(
+        bodySmall: _safeInter(
           fontSize: 12,
           fontWeight: FontWeight.w400,
           color: Colors.white54,
         ),
-        labelLarge: GoogleFonts.inter(
+        labelLarge: _safeInter(
           fontSize: 14,
           fontWeight: FontWeight.w600,
           color: Colors.white,
@@ -99,7 +129,7 @@ class AppTheme {
         elevation: 0,
         scrolledUnderElevation: 0,
         centerTitle: false,
-        titleTextStyle: GoogleFonts.inter(
+        titleTextStyle: _safeInter(
           fontSize: 24,
           fontWeight: FontWeight.w700,
           color: Colors.white,
@@ -131,8 +161,8 @@ class AppTheme {
         ),
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-        hintStyle: GoogleFonts.inter(color: Colors.white38),
-        labelStyle: GoogleFonts.inter(color: Colors.white54),
+        hintStyle: _safeInter(color: Colors.white38),
+        labelStyle: _safeInter(color: Colors.white54),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
@@ -143,7 +173,7 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
-          textStyle: GoogleFonts.inter(
+          textStyle: _safeInter(
             fontSize: 16,
             fontWeight: FontWeight.w600,
           ),
@@ -166,7 +196,7 @@ class AppTheme {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
-        labelStyle: GoogleFonts.inter(
+        labelStyle: _safeInter(
           fontSize: 13,
           fontWeight: FontWeight.w500,
           color: Colors.white70,

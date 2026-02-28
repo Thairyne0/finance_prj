@@ -8,6 +8,7 @@ import '../features/budget/screens/budget_screen.dart';
 import '../features/recurring/screens/recurring_screen.dart';
 import '../features/savings/screens/savings_screen.dart';
 import '../features/settings/screens/settings_screen.dart';
+import '../features/chat/screens/chat_screen.dart';
 import '../navigation/bottom_nav_shell.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -36,13 +37,6 @@ final GoRouter appRouter = GoRouter(
           ),
         ),
         GoRoute(
-          path: '/budget',
-          name: 'budget',
-          pageBuilder: (context, state) => const NoTransitionPage(
-            child: BudgetScreen(),
-          ),
-        ),
-        GoRoute(
           path: '/charts',
           name: 'charts',
           pageBuilder: (context, state) => const NoTransitionPage(
@@ -66,6 +60,12 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => const AddTransactionScreen(),
     ),
     GoRoute(
+      path: '/budget',
+      name: 'budget',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) => const BudgetScreen(),
+    ),
+    GoRoute(
       path: '/recurring',
       name: 'recurring',
       parentNavigatorKey: _rootNavigatorKey,
@@ -76,6 +76,26 @@ final GoRouter appRouter = GoRouter(
       name: 'savings',
       parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) => const SavingsScreen(),
+    ),
+    GoRoute(
+      path: '/chat',
+      name: 'chat',
+      parentNavigatorKey: _rootNavigatorKey,
+      pageBuilder: (context, state) => CustomTransitionPage(
+        child: const ChatScreen(),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return SlideTransition(
+            position: Tween<Offset>(
+              begin: const Offset(0, 1),
+              end: Offset.zero,
+            ).animate(CurvedAnimation(
+              parent: animation,
+              curve: Curves.easeOutCubic,
+            )),
+            child: child,
+          );
+        },
+      ),
     ),
   ],
 );

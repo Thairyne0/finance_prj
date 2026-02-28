@@ -31,6 +31,13 @@ class SettingsScreen extends ConsumerWidget {
               title: 'Funzionalità',
               items: [
                 _SettingsItem(
+                  icon: Icons.pie_chart_rounded,
+                  iconColor: AppTheme.warningColor,
+                  title: 'Budget',
+                  subtitle: 'Gestisci i budget per categoria',
+                  onTap: () => context.push('/budget'),
+                ),
+                _SettingsItem(
                   icon: Icons.repeat_rounded,
                   iconColor: AppTheme.secondaryColor,
                   title: 'Transazioni Ricorrenti',
@@ -43,6 +50,13 @@ class SettingsScreen extends ConsumerWidget {
                   title: 'Obiettivi di Risparmio',
                   subtitle: 'Crea e monitora i tuoi obiettivi',
                   onTap: () => context.push('/savings'),
+                ),
+                _SettingsItem(
+                  icon: Icons.auto_awesome_rounded,
+                  iconColor: const Color(0xFF00D2D3),
+                  title: 'FinBot – Assistente AI',
+                  subtitle: 'Piani di risparmio e consigli',
+                  onTap: () => context.push('/chat'),
                 ),
               ],
             ),
