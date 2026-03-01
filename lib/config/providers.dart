@@ -133,6 +133,44 @@ final recentTransactionsProvider = Provider<List<TransactionModel>>((ref) {
 });
 
 // ──────────────────────────────────────────
+// PATRIMONIO TOTALE (tutte le transazioni)
+// ──────────────────────────────────────────
+final totalPatrimonioProvider = Provider<double>((ref) {
+  final all = ref.watch(allTransactionsProvider);
+  double total = 0;
+  for (final t in all) {
+    if (t.type == TransactionType.income) {
+      total += t.amount;
+    } else {
+      total -= t.amount;
+    }
+  }
+  return total;
+});
+
+final totalIncomeAllTimeProvider = Provider<double>((ref) {
+  final all = ref.watch(allTransactionsProvider);
+  double total = 0;
+  for (final t in all) {
+    if (t.type == TransactionType.income) {
+      total += t.amount;
+    }
+  }
+  return total;
+});
+
+final totalExpenseAllTimeProvider = Provider<double>((ref) {
+  final all = ref.watch(allTransactionsProvider);
+  double total = 0;
+  for (final t in all) {
+    if (t.type == TransactionType.expense) {
+      total += t.amount;
+    }
+  }
+  return total;
+});
+
+// ──────────────────────────────────────────
 // CHARTS
 // ──────────────────────────────────────────
 final lastSixMonthsReportsProvider = Provider<List<MonthlyReport>>((ref) {

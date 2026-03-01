@@ -17,6 +17,9 @@ class DashboardScreen extends ConsumerWidget {
     final report = ref.watch(monthlyReportProvider);
     final recentTransactions = ref.watch(recentTransactionsProvider);
     final selectedDate = ref.watch(selectedDateProvider);
+    final patrimonio = ref.watch(totalPatrimonioProvider);
+    final totalIncomeAll = ref.watch(totalIncomeAllTimeProvider);
+    final totalExpenseAll = ref.watch(totalExpenseAllTimeProvider);
 
     return SafeArea(
       child: CustomScrollView(
@@ -66,6 +69,15 @@ class DashboardScreen extends ConsumerWidget {
                   ),
 
                   const SizedBox(height: 24),
+
+                  // Patrimonio Totale Card
+                  _PatrimonioCard(
+                    patrimonio: patrimonio,
+                    totalIncome: totalIncomeAll,
+                    totalExpense: totalExpenseAll,
+                  ),
+
+                  const SizedBox(height: 20),
 
                   // Month Selector
                   _MonthSelector(
@@ -420,3 +432,168 @@ class _SavingsGoalsMini extends ConsumerWidget {
     );
   }
 }
+
+class _PatrimonioCard extends StatelessWidget {
+  final double patrimonio;
+  final double totalIncome;
+  final double totalExpense;
+
+  const _PatrimonioCard({
+    required this.patrimonio,
+    required this.totalIncome,
+    required this.totalExpense,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final isPositive = patrimonio >= 0;
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: isPositive
+              ? [
+                  AppTheme.incomeColor.withValues(alpha: 0.25),
+                  AppTheme.cardDark,
+                  AppTheme.cardDarkAlt,
+                ]
+              : [
+                  AppTheme.expenseColor.withValues(alpha: 0.25),
+                  AppTheme.cardDark,
+                  AppTheme.cardDarkAlt,
+                ],
+        ),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: isPositive
+              ? AppTheme.incomeColor.withValues(alpha: 0.3)
+              : AppTheme.expenseColor.withValues(alpha: 0.3),
+          width: 1,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: (isPositive ? AppTheme.incomeColor : AppTheme.expenseColor)
+                      .withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  Icons.account_balance_wallet_rounded,
+                  color: isPositive ? AppTheme.incomeColor : AppTheme.expenseColor,
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Text(
+                'Patrimonio Totale',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color: Colors.white70,
+                      fontWeight: FontWeight.w500,
+                    ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Text(
+            Formatters.formatCurrency(patrimonio),
+            style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w800,
+                  fontSize: 30,
+                ),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: _PatrimonioDetail(
+                  label: 'Tot. Entrate',
+                  amount: totalIncome,
+                  icon: Icons.trending_up_rounded,
+                  color: AppTheme.incomeColor,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _PatrimonioDetail(
+                  label: 'Tot. Uscite',
+                  amount: totalExpense,
+                  icon: Icons.trending_down_rounded,
+                  color: AppTheme.expenseColor,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PatrimonioDetail extends StatelessWidget {
+  final String label;
+  final double amount;
+  final IconData icon;
+  final Color color;
+
+  const _PatrimonioDetail({
+    required this.label,
+    required this.amount,
+    required this.icon,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.06),
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: color, size: 16),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Colors.white38,
+                        fontSize: 10,
+                      ),
+                ),
+                const SizedBox(height: 2),
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    Formatters.formatCurrency(amount),
+                    style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                          color: Colors.white,
+                          fontSize: 13,
+                        ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
