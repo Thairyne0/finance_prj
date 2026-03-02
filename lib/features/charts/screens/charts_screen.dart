@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../config/providers.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/formatters.dart';
+import '../../../core/widgets/responsive_layout.dart';
 import '../widgets/line_chart_widget.dart';
 import '../widgets/pie_chart_widget.dart';
 import '../widgets/bar_chart_widget.dart';
@@ -14,43 +15,59 @@ class ChartsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedDate = ref.watch(selectedDateProvider);
     final report = ref.watch(monthlyReportProvider);
+    final screenType = ResponsiveLayout.getScreenType(context);
+    final hPadding = ResponsiveLayout.horizontalPadding(context);
 
     return SafeArea(
-      child: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.fromLTRB(20, 16, 20, 100),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Grafici',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-            const SizedBox(height: 4),
-            Text(
-              Formatters.formatMonthYear(selectedDate),
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyMedium
-                  ?.copyWith(color: Colors.white54),
-            ),
-            const SizedBox(height: 24),
+      child: ResponsiveContent(
+        child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          padding: EdgeInsets.fromLTRB(hPadding, 16, hPadding, 100),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Grafici',
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                      fontSize: screenType == ScreenType.desktop ? 30 : null,
+                    ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                Formatters.formatMonthYear(selectedDate),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(color: Colors.white54),
+              ),
+              const SizedBox(height: 24),
 
-            // Savings Rate indicator
-            _SavingsIndicator(report: report),
-            const SizedBox(height: 24),
+              // Savings Rate indicator
+              _SavingsIndicator(report: report),
+              const SizedBox(height: 24),
 
-            // Line Chart - Trend ultimi 6 mesi
-            const TrendLineChartWidget(),
-            const SizedBox(height: 24),
-
-            // Bar Chart - Income vs Expense
-            const IncomeExpenseBarChart(),
-            const SizedBox(height: 24),
-
-            // Pie Chart - Ripartizione categorie
-            const CategoryPieChartWidget(),
-          ],
+              // ── Desktop/Tablet: Charts in griglia ──
+              if (screenType != ScreenType.mobile) ...[
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: const [
+                    Expanded(child: TrendLineChartWidget()),
+                    SizedBox(width: 20),
+                    Expanded(child: IncomeExpenseBarChart()),
+                  ],
+                ),
+                const SizedBox(height: 24),
+                const CategoryPieChartWidget(),
+              ] else ...[
+                // ── Mobile: layout verticale ──
+                const TrendLineChartWidget(),
+                const SizedBox(height: 24),
+                const IncomeExpenseBarChart(),
+                const SizedBox(height: 24),
+                const CategoryPieChartWidget(),
+              ],
+            ],
+          ),
         ),
       ),
     );

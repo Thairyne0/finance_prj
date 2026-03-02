@@ -1,0 +1,1002 @@
+import 'dart:ui';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
+import '../core/theme/app_theme.dart';
+import '../core/widgets/animated_builder.dart';
+import '../core/widgets/responsive_layout.dart';
+
+/// Shell responsiva: BottomNav su mobile, NavigationRail su tablet, Sidebar su desktop
+class ResponsiveShell extends StatelessWidget {
+  final Widget child;
+
+  const ResponsiveShell({super.key, required this.child});
+
+  static int _calculateSelectedIndex(BuildContext context) {
+    final location = GoRouterState.of(context).matchedLocation;
+    if (location.startsWith('/dashboard')) return 0;
+    if (location.startsWith('/transactions')) return 1;
+    if (location.startsWith('/charts')) return 2;
+    if (location.startsWith('/settings')) return 3;
+    return 0;
+  }
+
+  void _onItemTapped(BuildContext context, int index) {
+    HapticFeedback.lightImpact();
+    switch (index) {
+      case 0:
+        context.go('/dashboard');
+        break;
+      case 1:
+        context.go('/transactions');
+        break;
+      case 2:
+        context.go('/charts');
+        break;
+      case 3:
+        context.go('/settings');
+        break;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final screenType = ResponsiveLayout.getScreenType(context);
+    final selectedIndex = _calculateSelectedIndex(context);
+
+    switch (screenType) {
+      case ScreenType.mobile:
+        return _MobileShell(
+          selectedIndex: selectedIndex,
+          onItemTapped: (i) => _onItemTapped(context, i),
+          onAddTapped: () {
+            HapticFeedback.mediumImpact();
+            context.push('/add-transaction');
+          },
+          onChatTapped: () {
+            HapticFeedback.mediumImpact();
+            context.push('/chat');
+          },
+          child: child,
+        );
+      case ScreenType.tablet:
+        return _TabletShell(
+          selectedIndex: selectedIndex,
+          onItemTapped: (i) => _onItemTapped(context, i),
+          onAddTapped: () => context.push('/add-transaction'),
+          onChatTapped: () => context.push('/chat'),
+          child: child,
+        );
+      case ScreenType.desktop:
+        return _DesktopShell(
+          selectedIndex: selectedIndex,
+          onItemTapped: (i) => _onItemTapped(context, i),
+          onAddTapped: () => context.push('/add-transaction'),
+          onChatTapped: () => context.push('/chat'),
+          child: child,
+        );
+    }
+  }
+}
+
+// ═══════════════════════════════════════════════
+// DESTINAZIONI DI NAVIGAZIONE CONDIVISE
+// ═══════════════════════════════════════════════
+
+class _NavDestination {
+  final String label;
+  final IconData icon;
+  final IconData selectedIcon;
+
+  const _NavDestination({
+    required this.label,
+    required this.icon,
+    required this.selectedIcon,
+  });
+}
+
+const _destinations = [
+  _NavDestination(
+    label: 'Home',
+    icon: Icons.home_outlined,
+    selectedIcon: Icons.home_rounded,
+  ),
+  _NavDestination(
+    label: 'Movimenti',
+    icon: Icons.swap_horiz_rounded,
+    selectedIcon: Icons.swap_horiz_rounded,
+  ),
+  _NavDestination(
+    label: 'Grafici',
+    icon: Icons.insights_outlined,
+    selectedIcon: Icons.insights_rounded,
+  ),
+  _NavDestination(
+    label: 'Altro',
+    icon: Icons.grid_view_rounded,
+    selectedIcon: Icons.grid_view_rounded,
+  ),
+];
+
+// ═══════════════════════════════════════════════
+// MOBILE SHELL — Bottom Nav (identica alla precedente)
+// ═══════════════════════════════════════════════
+
+class _MobileShell extends StatelessWidget {
+  final int selectedIndex;
+  final ValueChanged<int> onItemTapped;
+  final VoidCallback onAddTapped;
+  final VoidCallback onChatTapped;
+  final Widget child;
+
+  const _MobileShell({
+    required this.selectedIndex,
+    required this.onItemTapped,
+    required this.onAddTapped,
+    required this.onChatTapped,
+    required this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final bottomPadding = MediaQuery.of(context).padding.bottom;
+
+    return Scaffold(
+      body: child,
+      extendBody: true,
+      bottomNavigationBar: _PremiumBottomNav(
+        selectedIndex: selectedIndex,
+        onItemTapped: onItemTapped,
+        onAddTapped: onAddTapped,
+        onChatTapped: onChatTapped,
+        bottomPadding: bottomPadding,
+      ),
+    );
+  }
+}
+
+// ═══════════════════════════════════════════════
+// TABLET SHELL — NavigationRail compatta
+// ═══════════════════════════════════════════════
+
+class _TabletShell extends StatelessWidget {
+  final int selectedIndex;
+  final ValueChanged<int> onItemTapped;
+  final VoidCallback onAddTapped;
+  final VoidCallback onChatTapped;
+  final Widget child;
+
+  const _TabletShell({
+    required this.selectedIndex,
+    required this.onItemTapped,
+    required this.onAddTapped,
+    required this.onChatTapped,
+    required this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Row(
+        children: [
+          // Navigation Rail
+          Container(
+            width: 80,
+            color: AppTheme.surfaceDark,
+            child: Column(
+              children: [
+                const SizedBox(height: 20),
+                // Logo
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: AppTheme.primaryColor.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: const Icon(
+                    Icons.account_balance_wallet_rounded,
+                    color: AppTheme.primaryColor,
+                    size: 24,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                // Add button
+                _RailActionButton(
+                  icon: Icons.add_rounded,
+                  gradient: const [Color(0xFF8B7CF7), AppTheme.primaryColor],
+                  onTap: onAddTapped,
+                  tooltip: 'Nuovo movimento',
+                ),
+                const SizedBox(height: 8),
+                // Chat button
+                _RailActionButton(
+                  icon: Icons.auto_awesome_rounded,
+                  gradient: const [Color(0xFF00D2D3), Color(0xFF00B894)],
+                  onTap: onChatTapped,
+                  tooltip: 'FinBot',
+                  size: 38,
+                ),
+                const SizedBox(height: 20),
+                const Divider(
+                  indent: 16,
+                  endIndent: 16,
+                  color: AppTheme.borderDark,
+                ),
+                const SizedBox(height: 8),
+                // Nav Items
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: List.generate(_destinations.length, (index) {
+                      final d = _destinations[index];
+                      final isSelected = index == selectedIndex;
+                      return _RailNavItem(
+                        icon: isSelected ? d.selectedIcon : d.icon,
+                        label: d.label,
+                        isSelected: isSelected,
+                        onTap: () => onItemTapped(index),
+                      );
+                    }),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // Divider
+          Container(
+            width: 1,
+            color: AppTheme.borderDark,
+          ),
+          // Content
+          Expanded(child: child),
+        ],
+      ),
+    );
+  }
+}
+
+class _RailActionButton extends StatelessWidget {
+  final IconData icon;
+  final List<Color> gradient;
+  final VoidCallback onTap;
+  final String tooltip;
+  final double size;
+
+  const _RailActionButton({
+    required this.icon,
+    required this.gradient,
+    required this.onTap,
+    required this.tooltip,
+    this.size = 46,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Tooltip(
+      message: tooltip,
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          width: size,
+          height: size,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(colors: gradient),
+            borderRadius: BorderRadius.circular(14),
+            boxShadow: [
+              BoxShadow(
+                color: gradient.first.withValues(alpha: 0.3),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Icon(icon, color: Colors.white, size: size * 0.45),
+        ),
+      ),
+    );
+  }
+}
+
+class _RailNavItem extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _RailNavItem({
+    required this.icon,
+    required this.label,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        child: Tooltip(
+          message: label,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            width: 56,
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            decoration: BoxDecoration(
+              color: isSelected
+                  ? AppTheme.primaryColor.withValues(alpha: 0.15)
+                  : Colors.transparent,
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  icon,
+                  size: 22,
+                  color: isSelected ? AppTheme.primaryColor : Colors.white38,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 9,
+                    fontWeight:
+                        isSelected ? FontWeight.w600 : FontWeight.w400,
+                    color: isSelected ? AppTheme.primaryColor : Colors.white38,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ═══════════════════════════════════════════════
+// DESKTOP SHELL — Sidebar espansa
+// ═══════════════════════════════════════════════
+
+class _DesktopShell extends StatelessWidget {
+  final int selectedIndex;
+  final ValueChanged<int> onItemTapped;
+  final VoidCallback onAddTapped;
+  final VoidCallback onChatTapped;
+  final Widget child;
+
+  const _DesktopShell({
+    required this.selectedIndex,
+    required this.onItemTapped,
+    required this.onAddTapped,
+    required this.onChatTapped,
+    required this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Row(
+        children: [
+          // Sidebar
+          _DesktopSidebar(
+            selectedIndex: selectedIndex,
+            onItemTapped: onItemTapped,
+            onAddTapped: onAddTapped,
+            onChatTapped: onChatTapped,
+          ),
+          // Divider
+          Container(
+            width: 1,
+            color: AppTheme.borderDark,
+          ),
+          // Content
+          Expanded(child: child),
+        ],
+      ),
+    );
+  }
+}
+
+class _DesktopSidebar extends StatelessWidget {
+  final int selectedIndex;
+  final ValueChanged<int> onItemTapped;
+  final VoidCallback onAddTapped;
+  final VoidCallback onChatTapped;
+
+  const _DesktopSidebar({
+    required this.selectedIndex,
+    required this.onItemTapped,
+    required this.onAddTapped,
+    required this.onChatTapped,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 250,
+      color: AppTheme.surfaceDark,
+      child: SafeArea(
+        child: Column(
+          children: [
+            const SizedBox(height: 20),
+            // Logo + App Title
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: AppTheme.primaryColor.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: const Icon(
+                      Icons.account_balance_wallet_rounded,
+                      color: AppTheme.primaryColor,
+                      size: 22,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Text(
+                    'Finance App',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                          fontSize: 18,
+                        ),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 28),
+
+            // Azioni rapide
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Column(
+                children: [
+                  // Pulsante Aggiungi
+                  _SidebarActionButton(
+                    icon: Icons.add_rounded,
+                    label: 'Nuovo Movimento',
+                    gradient: const [Color(0xFF8B7CF7), AppTheme.primaryColor, Color(0xFF5A4BD1)],
+                    onTap: onAddTapped,
+                  ),
+                  const SizedBox(height: 10),
+                  // Pulsante Chat
+                  _SidebarActionButton(
+                    icon: Icons.auto_awesome_rounded,
+                    label: 'FinBot – AI',
+                    gradient: const [Color(0xFF00D2D3), Color(0xFF00B894)],
+                    onTap: onChatTapped,
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 20),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: Divider(color: AppTheme.borderDark, height: 1),
+            ),
+            const SizedBox(height: 12),
+
+            // Sezione MENU
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'MENU',
+                  style: TextStyle(
+                    color: Colors.white24,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 1.5,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+
+            // Nav Items
+            Expanded(
+              child: ListView.builder(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                itemCount: _destinations.length,
+                itemBuilder: (context, index) {
+                  final d = _destinations[index];
+                  final isSelected = index == selectedIndex;
+
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 4),
+                    child: Material(
+                      color: Colors.transparent,
+                      borderRadius: BorderRadius.circular(14),
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(14),
+                        onTap: () => onItemTapped(index),
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
+                          decoration: BoxDecoration(
+                            color: isSelected
+                                ? AppTheme.primaryColor.withValues(alpha: 0.12)
+                                : Colors.transparent,
+                            borderRadius: BorderRadius.circular(14),
+                            border: isSelected
+                                ? Border.all(
+                                    color: AppTheme.primaryColor
+                                        .withValues(alpha: 0.25),
+                                    width: 1,
+                                  )
+                                : null,
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                isSelected ? d.selectedIcon : d.icon,
+                                color: isSelected
+                                    ? AppTheme.primaryColor
+                                    : Colors.white54,
+                                size: 22,
+                              ),
+                              const SizedBox(width: 14),
+                              Text(
+                                d.label,
+                                style: TextStyle(
+                                  color: isSelected
+                                      ? Colors.white
+                                      : Colors.white54,
+                                  fontWeight: isSelected
+                                      ? FontWeight.w600
+                                      : FontWeight.w400,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              if (isSelected) ...[
+                                const Spacer(),
+                                Container(
+                                  width: 6,
+                                  height: 6,
+                                  decoration: const BoxDecoration(
+                                    color: AppTheme.primaryColor,
+                                    shape: BoxShape.circle,
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+
+            // Footer
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: Divider(color: AppTheme.borderDark, height: 1),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.info_outline_rounded,
+                    size: 14,
+                    color: Colors.white24,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    'FinanceApp v1.0.0',
+                    style: TextStyle(color: Colors.white24, fontSize: 11),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SidebarActionButton extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final List<Color> gradient;
+  final VoidCallback onTap;
+
+  const _SidebarActionButton({
+    required this.icon,
+    required this.label,
+    required this.gradient,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+            colors: gradient,
+          ),
+          borderRadius: BorderRadius.circular(14),
+          boxShadow: [
+            BoxShadow(
+              color: gradient.first.withValues(alpha: 0.3),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: Colors.white, size: 20),
+            const SizedBox(width: 12),
+            Text(
+              label,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+                fontSize: 14,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ═══════════════════════════════════════════════
+// PREMIUM BOTTOM NAV (originale da mobile)
+// ═══════════════════════════════════════════════
+
+class _PremiumBottomNav extends StatefulWidget {
+  final int selectedIndex;
+  final ValueChanged<int> onItemTapped;
+  final VoidCallback onAddTapped;
+  final VoidCallback onChatTapped;
+  final double bottomPadding;
+
+  const _PremiumBottomNav({
+    required this.selectedIndex,
+    required this.onItemTapped,
+    required this.onAddTapped,
+    required this.onChatTapped,
+    required this.bottomPadding,
+  });
+
+  @override
+  State<_PremiumBottomNav> createState() => _PremiumBottomNavState();
+}
+
+class _PremiumBottomNavState extends State<_PremiumBottomNav>
+    with TickerProviderStateMixin {
+  late AnimationController _fabController;
+  late Animation<double> _fabScale;
+
+  @override
+  void initState() {
+    super.initState();
+    _fabController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 200),
+    );
+    _fabScale = Tween<double>(begin: 1.0, end: 0.85).animate(
+      CurvedAnimation(parent: _fabController, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _fabController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final navHeight = 68 + widget.bottomPadding;
+
+    return SizedBox(
+      height: navHeight + 32,
+      child: Stack(
+        alignment: Alignment.bottomCenter,
+        clipBehavior: Clip.none,
+        children: [
+          // Barra con effetto glassmorphism
+          ClipRect(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+              child: Container(
+                height: navHeight,
+                decoration: BoxDecoration(
+                  color: AppTheme.surfaceDark.withValues(alpha: 0.92),
+                  border: const Border(
+                    top: BorderSide(
+                      color: Color(0xFF2A2A3E),
+                      width: 0.5,
+                    ),
+                  ),
+                ),
+                child: Padding(
+                  padding: EdgeInsets.only(bottom: widget.bottomPadding),
+                  child: Row(
+                    children: [
+                      // Sinistra: Home, Movimenti
+                      Expanded(
+                        flex: 2,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            _MobileNavItem(
+                              icon: Icons.home_rounded,
+                              outlinedIcon: Icons.home_outlined,
+                              label: 'Home',
+                              isSelected: widget.selectedIndex == 0,
+                              onTap: () => widget.onItemTapped(0),
+                            ),
+                            _MobileNavItem(
+                              icon: Icons.swap_horiz_rounded,
+                              outlinedIcon: Icons.swap_horiz_rounded,
+                              label: 'Movimenti',
+                              isSelected: widget.selectedIndex == 1,
+                              onTap: () => widget.onItemTapped(1),
+                            ),
+                          ],
+                        ),
+                      ),
+                      // Spazio centrale per FAB
+                      const SizedBox(width: 80),
+                      // Destra: Grafici, Altro
+                      Expanded(
+                        flex: 2,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            _MobileNavItem(
+                              icon: Icons.insights_rounded,
+                              outlinedIcon: Icons.insights_outlined,
+                              label: 'Grafici',
+                              isSelected: widget.selectedIndex == 2,
+                              onTap: () => widget.onItemTapped(2),
+                            ),
+                            _MobileNavItem(
+                              icon: Icons.grid_view_rounded,
+                              outlinedIcon: Icons.grid_view_rounded,
+                              label: 'Altro',
+                              isSelected: widget.selectedIndex == 3,
+                              onTap: () => widget.onItemTapped(3),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+          // FAB + Chat
+          Positioned(
+            bottom: navHeight - 28,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                // Chat bubble
+                _ChatBubbleButton(onTap: widget.onChatTapped),
+                const SizedBox(width: 10),
+                // FAB principale
+                GestureDetector(
+                  onTapDown: (_) => _fabController.forward(),
+                  onTapUp: (_) {
+                    _fabController.reverse();
+                    widget.onAddTapped();
+                  },
+                  onTapCancel: () => _fabController.reverse(),
+                  child: ScaleTransition(
+                    scale: _fabScale,
+                    child: Container(
+                      width: 58,
+                      height: 58,
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            Color(0xFF8B7CF7),
+                            AppTheme.primaryColor,
+                            Color(0xFF5A4BD1),
+                          ],
+                        ),
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color:
+                                AppTheme.primaryColor.withValues(alpha: 0.4),
+                            blurRadius: 16,
+                            offset: const Offset(0, 6),
+                          ),
+                          BoxShadow(
+                            color:
+                                AppTheme.primaryColor.withValues(alpha: 0.2),
+                            blurRadius: 30,
+                            offset: const Offset(0, 10),
+                          ),
+                        ],
+                      ),
+                      child: const Icon(
+                        Icons.add_rounded,
+                        color: Colors.white,
+                        size: 30,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ChatBubbleButton extends StatefulWidget {
+  final VoidCallback onTap;
+  const _ChatBubbleButton({required this.onTap});
+
+  @override
+  State<_ChatBubbleButton> createState() => _ChatBubbleButtonState();
+}
+
+class _ChatBubbleButtonState extends State<_ChatBubbleButton>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _pulseController;
+  late Animation<double> _pulseAnim;
+
+  @override
+  void initState() {
+    super.initState();
+    _pulseController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 3),
+    )..repeat(reverse: true);
+    _pulseAnim = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
+    );
+    Future.delayed(const Duration(seconds: 9), () {
+      if (mounted) _pulseController.stop();
+    });
+  }
+
+  @override
+  void dispose() {
+    _pulseController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: widget.onTap,
+      child: AppAnimatedBuilder(
+        animation: _pulseAnim,
+        builder: (context, child) {
+          return Container(
+            width: 42,
+            height: 42,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  const Color(0xFF00D2D3),
+                  Color.lerp(
+                    const Color(0xFF00D2D3),
+                    const Color(0xFF00B894),
+                    _pulseAnim.value,
+                  )!,
+                ],
+              ),
+              borderRadius: BorderRadius.circular(14),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF00D2D3)
+                      .withValues(alpha: 0.3 + (_pulseAnim.value * 0.15)),
+                  blurRadius: 10 + (_pulseAnim.value * 4),
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: const Icon(
+              Icons.auto_awesome_rounded,
+              color: Colors.white,
+              size: 20,
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _MobileNavItem extends StatelessWidget {
+  final IconData icon;
+  final IconData outlinedIcon;
+  final String label;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _MobileNavItem({
+    required this.icon,
+    required this.outlinedIcon,
+    required this.label,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: SizedBox(
+        width: 64,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 250),
+              curve: Curves.easeOutCubic,
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+              decoration: BoxDecoration(
+                color: isSelected
+                    ? AppTheme.primaryColor.withValues(alpha: 0.15)
+                    : Colors.transparent,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                isSelected ? icon : outlinedIcon,
+                size: 22,
+                color: isSelected ? AppTheme.primaryColor : Colors.white38,
+              ),
+            ),
+            const SizedBox(height: 2),
+            AnimatedDefaultTextStyle(
+              duration: const Duration(milliseconds: 250),
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                color: isSelected ? AppTheme.primaryColor : Colors.white38,
+              ),
+              child: Text(label),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+

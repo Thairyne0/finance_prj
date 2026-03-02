@@ -5,6 +5,7 @@ import '../../../config/providers.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/balance_card.dart';
+import '../../../core/widgets/responsive_layout.dart';
 import '../../../core/widgets/transaction_tile.dart';
 import '../../../data/local/hive_service.dart';
 import '../widgets/mini_chart_widget.dart';
@@ -20,176 +21,249 @@ class DashboardScreen extends ConsumerWidget {
     final patrimonio = ref.watch(totalPatrimonioProvider);
     final totalIncomeAll = ref.watch(totalIncomeAllTimeProvider);
     final totalExpenseAll = ref.watch(totalExpenseAllTimeProvider);
+    final screenType = ResponsiveLayout.getScreenType(context);
+    final hPadding = ResponsiveLayout.horizontalPadding(context);
 
     return SafeArea(
-      child: CustomScrollView(
-        physics: const BouncingScrollPhysics(),
-        slivers: [
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Header
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
+      child: ResponsiveContent(
+        child: CustomScrollView(
+          physics: const BouncingScrollPhysics(),
+          slivers: [
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(hPadding, 16, hPadding, 0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Header
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Bentornato 👋',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
+                                    color: Colors.white54,
+                                    fontSize: screenType == ScreenType.desktop ? 16 : null,
+                                  ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              'Le tue Finanze',
+                              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                                    fontSize: screenType == ScreenType.desktop ? 30 : null,
+                                  ),
+                            ),
+                          ],
+                        ),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: AppTheme.cardDark,
+                            borderRadius: BorderRadius.circular(14),
+                            border:
+                                Border.all(color: AppTheme.borderDark, width: 1),
+                          ),
+                          child: IconButton(
+                            onPressed: () => context.push('/add-transaction'),
+                            icon: const Icon(Icons.add_rounded,
+                                color: AppTheme.primaryColor),
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    // ── Desktop/Tablet: Layout a griglia ──
+                    if (screenType != ScreenType.mobile) ...[
+                      // Top row: Patrimonio + Balance side by side
+                      Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            'Bentornato 👋',
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium
-                                ?.copyWith(color: Colors.white54),
+                          Expanded(
+                            flex: 3,
+                            child: _PatrimonioCard(
+                              patrimonio: patrimonio,
+                              totalIncome: totalIncomeAll,
+                              totalExpense: totalExpenseAll,
+                            ),
                           ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Le tue Finanze',
-                            style: Theme.of(context).textTheme.headlineMedium,
+                          const SizedBox(width: 20),
+                          Expanded(
+                            flex: 2,
+                            child: Column(
+                              children: [
+                                _MonthSelector(
+                                  selectedDate: selectedDate,
+                                  onPrevious: () {
+                                    ref.read(selectedDateProvider.notifier).state =
+                                        DateTime(selectedDate.year, selectedDate.month - 1);
+                                  },
+                                  onNext: () {
+                                    ref.read(selectedDateProvider.notifier).state =
+                                        DateTime(selectedDate.year, selectedDate.month + 1);
+                                  },
+                                ),
+                                const SizedBox(height: 16),
+                                BalanceCard(
+                                  totalIncome: report.totalIncome,
+                                  totalExpense: report.totalExpense,
+                                  period: Formatters.formatMonthYear(selectedDate),
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: AppTheme.cardDark,
-                          borderRadius: BorderRadius.circular(14),
-                          border:
-                              Border.all(color: AppTheme.borderDark, width: 1),
-                        ),
-                        child: IconButton(
-                          onPressed: () => context.push('/add-transaction'),
-                          icon: const Icon(Icons.add_rounded,
-                              color: AppTheme.primaryColor),
-                        ),
-                      ),
-                    ],
-                  ),
+                      const SizedBox(height: 24),
 
-                  const SizedBox(height: 24),
-
-                  // Patrimonio Totale Card
-                  _PatrimonioCard(
-                    patrimonio: patrimonio,
-                    totalIncome: totalIncomeAll,
-                    totalExpense: totalExpenseAll,
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  // Month Selector
-                  _MonthSelector(
-                    selectedDate: selectedDate,
-                    onPrevious: () {
-                      ref.read(selectedDateProvider.notifier).state = DateTime(
-                        selectedDate.year,
-                        selectedDate.month - 1,
-                      );
-                    },
-                    onNext: () {
-                      ref.read(selectedDateProvider.notifier).state = DateTime(
-                        selectedDate.year,
-                        selectedDate.month + 1,
-                      );
-                    },
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  // Balance Card
-                  BalanceCard(
-                    totalIncome: report.totalIncome,
-                    totalExpense: report.totalExpense,
-                    period: Formatters.formatMonthYear(selectedDate),
-                  ),
-
-                  const SizedBox(height: 24),
-
-                  // Mini Chart
-                  const MiniChartWidget(),
-
-                  const SizedBox(height: 24),
-
-                  // Budget Alerts
-                  _BudgetAlerts(),
-
-                  // Savings Goals Mini
-                  _SavingsGoalsMini(),
-
-                  // Recent Transactions Header
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Ultimi Movimenti',
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
-                      TextButton(
-                        onPressed: () => context.go('/transactions'),
-                        child: Text(
-                          'Vedi tutti',
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyMedium
-                              ?.copyWith(color: AppTheme.primaryColor),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-          // Recent Transactions List
-          if (recentTransactions.isEmpty)
-            SliverToBoxAdapter(
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
-                child: Center(
-                  child: Column(
-                    children: [
-                      Icon(Icons.receipt_long_outlined,
-                          size: 64, color: Colors.white.withValues(alpha: 0.15)),
-                      const SizedBox(height: 16),
-                      Text(
-                        'Nessun movimento ancora',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Colors.white38,
+                      // Second row: Chart + Budget/Savings
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Expanded(
+                            flex: 3,
+                            child: MiniChartWidget(),
+                          ),
+                          const SizedBox(width: 20),
+                          Expanded(
+                            flex: 2,
+                            child: Column(
+                              children: [
+                                _BudgetAlerts(),
+                                _SavingsGoalsMini(),
+                              ],
                             ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Tocca + per aggiungere il primo',
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: Colors.white24,
-                            ),
+                    ] else ...[
+                      // ── Mobile: layout verticale originale ──
+                      _PatrimonioCard(
+                        patrimonio: patrimonio,
+                        totalIncome: totalIncomeAll,
+                        totalExpense: totalExpenseAll,
                       ),
+                      const SizedBox(height: 20),
+                      _MonthSelector(
+                        selectedDate: selectedDate,
+                        onPrevious: () {
+                          ref.read(selectedDateProvider.notifier).state =
+                              DateTime(selectedDate.year, selectedDate.month - 1);
+                        },
+                        onNext: () {
+                          ref.read(selectedDateProvider.notifier).state =
+                              DateTime(selectedDate.year, selectedDate.month + 1);
+                        },
+                      ),
+                      const SizedBox(height: 20),
+                      BalanceCard(
+                        totalIncome: report.totalIncome,
+                        totalExpense: report.totalExpense,
+                        period: Formatters.formatMonthYear(selectedDate),
+                      ),
+                      const SizedBox(height: 24),
+                      const MiniChartWidget(),
+                      const SizedBox(height: 24),
+                      _BudgetAlerts(),
+                      _SavingsGoalsMini(),
                     ],
-                  ),
-                ),
-              ),
-            )
-          else
-            SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              sliver: SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                    return TransactionTile(
-                      transaction: recentTransactions[index],
-                    );
-                  },
-                  childCount: recentTransactions.length,
+
+                    const SizedBox(height: 24),
+
+                    // Recent Transactions Header
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Ultimi Movimenti',
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                        TextButton(
+                          onPressed: () => context.go('/transactions'),
+                          child: Text(
+                            'Vedi tutti',
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(color: AppTheme.primaryColor),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
             ),
 
-          const SliverPadding(padding: EdgeInsets.only(bottom: 100)),
-        ],
+            // Recent Transactions List
+            if (recentTransactions.isEmpty)
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding:
+                      EdgeInsets.symmetric(horizontal: hPadding, vertical: 40),
+                  child: Center(
+                    child: Column(
+                      children: [
+                        Icon(Icons.receipt_long_outlined,
+                            size: 64, color: Colors.white.withValues(alpha: 0.15)),
+                        const SizedBox(height: 16),
+                        Text(
+                          'Nessun movimento ancora',
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                color: Colors.white38,
+                              ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Tocca + per aggiungere il primo',
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                color: Colors.white24,
+                              ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              )
+            else
+              SliverPadding(
+                padding: EdgeInsets.symmetric(horizontal: hPadding),
+                sliver: screenType != ScreenType.mobile
+                    ? SliverGrid(
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: ResponsiveLayout.gridColumns(context),
+                          mainAxisSpacing: 8,
+                          crossAxisSpacing: 12,
+                          mainAxisExtent: 80,
+                        ),
+                        delegate: SliverChildBuilderDelegate(
+                          (context, index) => TransactionTile(
+                            transaction: recentTransactions[index],
+                          ),
+                          childCount: recentTransactions.length,
+                        ),
+                      )
+                    : SliverList(
+                        delegate: SliverChildBuilderDelegate(
+                          (context, index) {
+                            return TransactionTile(
+                              transaction: recentTransactions[index],
+                            );
+                          },
+                          childCount: recentTransactions.length,
+                        ),
+                      ),
+              ),
+
+            const SliverPadding(padding: EdgeInsets.only(bottom: 100)),
+          ],
+        ),
       ),
     );
   }

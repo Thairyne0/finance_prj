@@ -26,8 +26,11 @@ class RecurringScreen extends ConsumerWidget {
         ),
       ),
       body: SafeArea(
-        child: recurring.isEmpty
-            ? _EmptyState()
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 800),
+            child: recurring.isEmpty
+                ? _EmptyState()
             : ListView.builder(
                 physics: const BouncingScrollPhysics(),
                 padding: const EdgeInsets.fromLTRB(20, 12, 20, 100),
@@ -162,6 +165,8 @@ class RecurringScreen extends ConsumerWidget {
                   );
                 },
               ),
+          ),
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showAddRecurring(context, ref),

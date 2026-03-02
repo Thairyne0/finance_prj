@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../config/providers.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/formatters.dart';
+import '../../../core/widgets/responsive_layout.dart';
 import '../../../core/widgets/transaction_tile.dart';
 import '../../../data/models/transaction_model.dart';
 import '../../../data/local/hive_service.dart';
@@ -55,13 +56,17 @@ class _TransactionListScreenState extends ConsumerState<TransactionListScreen> {
     }
 
     return SafeArea(
-      child: CustomScrollView(
-        physics: const BouncingScrollPhysics(),
-        slivers: [
-          // Header
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+      child: ResponsiveContent(
+        child: CustomScrollView(
+          physics: const BouncingScrollPhysics(),
+          slivers: [
+            // Header
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(
+                  ResponsiveLayout.horizontalPadding(context), 16,
+                  ResponsiveLayout.horizontalPadding(context), 0,
+                ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -262,7 +267,9 @@ class _TransactionListScreenState extends ConsumerState<TransactionListScreen> {
             )
           else
             SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: EdgeInsets.symmetric(
+                horizontal: ResponsiveLayout.horizontalPadding(context),
+              ),
               sliver: SliverList(
                 delegate: SliverChildBuilderDelegate(
                   (context, index) {
@@ -302,6 +309,7 @@ class _TransactionListScreenState extends ConsumerState<TransactionListScreen> {
 
           const SliverPadding(padding: EdgeInsets.only(bottom: 100)),
         ],
+        ),
       ),
     );
   }

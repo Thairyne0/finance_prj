@@ -46,13 +46,18 @@ class BudgetScreen extends ConsumerWidget {
         ],
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.fromLTRB(20, 16, 20, 40),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: _buildBudgetContent(
-              context, ref, budgetStatus, selectedDate, spending, unbudgetedSpending,
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 800),
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 40),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: _buildBudgetContent(
+                  context, ref, budgetStatus, selectedDate, spending, unbudgetedSpending,
+                ),
+              ),
             ),
           ),
         ),

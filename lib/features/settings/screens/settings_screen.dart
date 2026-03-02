@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/services/export_service.dart';
+import '../../../core/widgets/responsive_layout.dart';
 import '../../../config/providers.dart';
 import '../../../data/local/hive_service.dart';
 
@@ -12,11 +13,13 @@ class SettingsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final allTransactions = ref.watch(allTransactionsProvider);
+    final hPadding = ResponsiveLayout.horizontalPadding(context);
 
     return SafeArea(
-      child: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.fromLTRB(20, 16, 20, 100),
+      child: ResponsiveContent(
+        child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          padding: EdgeInsets.fromLTRB(hPadding, 16, hPadding, 100),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -191,6 +194,7 @@ class SettingsScreen extends ConsumerWidget {
               ),
             ),
           ],
+        ),
         ),
       ),
     );

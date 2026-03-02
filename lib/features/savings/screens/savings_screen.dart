@@ -25,17 +25,22 @@ class SavingsScreen extends ConsumerWidget {
         ),
       ),
       body: SafeArea(
-        child: goals.isEmpty
-            ? _EmptyState()
-            : ListView.builder(
-                physics: const BouncingScrollPhysics(),
-                padding: const EdgeInsets.fromLTRB(20, 12, 20, 100),
-                itemCount: goals.length,
-                itemBuilder: (context, index) {
-                  final goal = goals[index];
-                  return _GoalCard(goal: goal);
-                },
-              ),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 800),
+            child: goals.isEmpty
+                ? _EmptyState()
+                : ListView.builder(
+                    physics: const BouncingScrollPhysics(),
+                    padding: const EdgeInsets.fromLTRB(20, 12, 20, 100),
+                    itemCount: goals.length,
+                    itemBuilder: (context, index) {
+                      final goal = goals[index];
+                      return _GoalCard(goal: goal);
+                    },
+                  ),
+          ),
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showAddGoal(context, ref),

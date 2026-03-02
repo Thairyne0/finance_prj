@@ -9,7 +9,7 @@ import '../features/recurring/screens/recurring_screen.dart';
 import '../features/savings/screens/savings_screen.dart';
 import '../features/settings/screens/settings_screen.dart';
 import '../features/chat/screens/chat_screen.dart';
-import '../navigation/bottom_nav_shell.dart';
+import '../navigation/responsive_shell.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _shellNavigatorKey = GlobalKey<NavigatorState>();
@@ -20,7 +20,7 @@ final GoRouter appRouter = GoRouter(
   routes: [
     ShellRoute(
       navigatorKey: _shellNavigatorKey,
-      builder: (context, state, child) => BottomNavShell(child: child),
+      builder: (context, state, child) => ResponsiveShell(child: child),
       routes: [
         GoRoute(
           path: '/dashboard',

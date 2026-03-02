@@ -127,7 +127,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
     return Scaffold(
       backgroundColor: AppTheme.scaffoldDark,
       resizeToAvoidBottomInset: true,
-      body: Stack(
+      body: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 800),
+          child: Stack(
         children: [
           // Background gradient
           Positioned(
@@ -206,6 +209,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
             ),
           ),
         ],
+      ),
+        ),
       ),
     );
   }
