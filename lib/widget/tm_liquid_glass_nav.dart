@@ -107,7 +107,7 @@ class _TmLiquidGlassBottomBarState extends State<TmLiquidGlassBottomBar> {
                   indicatorColor: widget.indicatorColor,
                   onTabChanged: widget.onTabSelected,
                   child: LiquidGlass.grouped(
-                    clipBehavior: Clip.none,
+                    clipBehavior: Clip.hardEdge,
                     shape: const LiquidRoundedSuperellipse(borderRadius: 32),
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 4),
@@ -206,52 +206,10 @@ class _BottomBarTab extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               ExcludeSemantics(
-                child: Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    if (tab.glowColor != null)
-                      Positioned(
-                        top: -24,
-                        right: -24,
-                        left: -24,
-                        bottom: -24,
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 300),
-                          transformAlignment: Alignment.center,
-                          curve: Curves.easeOutCirc,
-                          transform: selected
-                              ? Matrix4.identity()
-                              : (Matrix4.diagonal3Values(0.4, 0.4, 1.0)
-                                ..rotateZ(-math.pi)),
-                          child: AnimatedOpacity(
-                            duration: const Duration(milliseconds: 300),
-                            opacity: selected ? 1 : 0,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: tab.glowColor!
-                                        .withValues(alpha: selected ? 0.6 : 0),
-                                    blurRadius: 32,
-                                    spreadRadius: 8,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    AnimatedScale(
-                      scale: 1,
-                      duration: const Duration(milliseconds: 150),
-                      child: Icon(
-                        selected ? (tab.selectedIcon ?? tab.icon) : tab.icon,
-                        color: iconColor,
-                        size: 24,
-                      ),
-                    ),
-                  ],
+                child: Icon(
+                  selected ? (tab.selectedIcon ?? tab.icon) : tab.icon,
+                  color: iconColor,
+                  size: 24,
                 ),
               ),
               const SizedBox(height: 4),

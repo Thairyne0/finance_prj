@@ -25,8 +25,13 @@ void main() {
         statusBarColor: Colors.transparent,
         statusBarIconBrightness: Brightness.light,
         statusBarBrightness: Brightness.dark,
+        systemNavigationBarColor: Colors.transparent,
+        systemNavigationBarDividerColor: Colors.transparent,
       ),
     );
+
+    // Edge-to-edge: contenuto va sotto status bar e nav bar di sistema
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
 
     // Su mobile: portrait only. Su desktop/web: tutte le orientazioni
     if (!kIsWeb && (Platform.isIOS || Platform.isAndroid)) {

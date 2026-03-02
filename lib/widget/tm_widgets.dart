@@ -6,6 +6,7 @@ export 'tm_amount_field.dart';
 export 'tm_bottom_sheet_handle.dart';
 export 'tm_card.dart';
 export 'tm_empty_state.dart';
+export 'tm_fade_scroll.dart';
 export 'tm_filter_chip.dart';
 export 'tm_icon_badge.dart';
 export 'tm_month_selector.dart';

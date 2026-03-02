@@ -30,7 +30,10 @@ class DashboardScreen extends ConsumerWidget {
 
     return SafeArea(
       child: ResponsiveContent(
-        child: CustomScrollView(
+        child: TmFadeScroll(
+          topFadeHeight: 24,
+          bottomFadeHeight: 40,
+          child: CustomScrollView(
           physics: const BouncingScrollPhysics(),
           slivers: [
             SliverToBoxAdapter(
@@ -237,6 +240,7 @@ class DashboardScreen extends ConsumerWidget {
 
             const SliverPadding(padding: EdgeInsets.only(bottom: 100)),
           ],
+          ),
         ),
       ),
     );

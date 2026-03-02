@@ -58,7 +58,10 @@ class _TransactionListScreenState extends ConsumerState<TransactionListScreen> {
 
     return SafeArea(
       child: ResponsiveContent(
-        child: CustomScrollView(
+        child: TmFadeScroll(
+          topFadeHeight: 24,
+          bottomFadeHeight: 40,
+          child: CustomScrollView(
           physics: const BouncingScrollPhysics(),
           slivers: [
             // Header
@@ -299,6 +302,7 @@ class _TransactionListScreenState extends ConsumerState<TransactionListScreen> {
 
           const SliverPadding(padding: EdgeInsets.only(bottom: 100)),
         ],
+        ),
         ),
       ),
     );

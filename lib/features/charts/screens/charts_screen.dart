@@ -24,53 +24,57 @@ class ChartsScreen extends ConsumerWidget {
 
     return SafeArea(
       child: ResponsiveContent(
-        child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          padding: EdgeInsets.fromLTRB(hPadding, topPad, hPadding, 100),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Grafici',
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      fontSize: screenType == ScreenType.desktop ? 30 : null,
-                    ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                Formatters.formatMonthYear(selectedDate),
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyMedium
-                    ?.copyWith(color: Colors.white54),
-              ),
-              SizedBox(height: vSpacing),
-
-              // Savings Rate indicator
-              _SavingsIndicator(report: report),
-              SizedBox(height: vSpacing),
-
-              // ── Desktop/Tablet: Charts in griglia ──
-              if (screenType != ScreenType.mobile) ...[
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Expanded(child: TrendLineChartWidget()),
-                    SizedBox(width: colGap),
-                    const Expanded(child: IncomeExpenseBarChart()),
-                  ],
+        child: TmFadeScroll(
+          topFadeHeight: 24,
+          bottomFadeHeight: 40,
+          child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            padding: EdgeInsets.fromLTRB(hPadding, topPad, hPadding, 100),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Grafici',
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                        fontSize: screenType == ScreenType.desktop ? 30 : null,
+                      ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  Formatters.formatMonthYear(selectedDate),
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyMedium
+                      ?.copyWith(color: Colors.white54),
                 ),
                 SizedBox(height: vSpacing),
-                const CategoryPieChartWidget(),
-              ] else ...[
-                // ── Mobile: layout verticale ──
-                const TrendLineChartWidget(),
+
+                // Savings Rate indicator
+                _SavingsIndicator(report: report),
                 SizedBox(height: vSpacing),
-                const IncomeExpenseBarChart(),
-                SizedBox(height: vSpacing),
-                const CategoryPieChartWidget(),
+
+                // ── Desktop/Tablet: Charts in griglia ──
+                if (screenType != ScreenType.mobile) ...[
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Expanded(child: TrendLineChartWidget()),
+                      SizedBox(width: colGap),
+                      const Expanded(child: IncomeExpenseBarChart()),
+                    ],
+                  ),
+                  SizedBox(height: vSpacing),
+                  const CategoryPieChartWidget(),
+                ] else ...[
+                  // ── Mobile: layout verticale ──
+                  const TrendLineChartWidget(),
+                  SizedBox(height: vSpacing),
+                  const IncomeExpenseBarChart(),
+                  SizedBox(height: vSpacing),
+                  const CategoryPieChartWidget(),
+                ],
               ],
-            ],
+            ),
           ),
         ),
       ),

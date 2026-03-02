@@ -20,7 +20,10 @@ class SettingsScreen extends ConsumerWidget {
 
     return SafeArea(
       child: ResponsiveContent(
-        child: SingleChildScrollView(
+        child: TmFadeScroll(
+          topFadeHeight: 24,
+          bottomFadeHeight: 40,
+          child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
           padding: EdgeInsets.fromLTRB(hPadding, topPad, hPadding, 100),
         child: Column(
@@ -197,6 +200,7 @@ class SettingsScreen extends ConsumerWidget {
               ),
             ),
           ],
+          ),
         ),
         ),
       ),
