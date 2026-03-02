@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import '../../core/utils/formatters.dart';
+import '../../widget/tm_widgets.dart';
 
 class BalanceCard extends StatelessWidget {
   final double totalIncome;
@@ -114,13 +115,13 @@ class _BalanceDetail extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(icon, color: color, size: 16),
+          TmIconBadge(
+            icon: icon,
+            color: color,
+            size: 32,
+            iconSize: 16,
+            borderRadius: 10,
+            opacity: 0.2,
           ),
           const SizedBox(width: 10),
           Expanded(

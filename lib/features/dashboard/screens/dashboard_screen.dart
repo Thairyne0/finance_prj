@@ -8,6 +8,7 @@ import '../../../core/widgets/balance_card.dart';
 import '../../../core/widgets/responsive_layout.dart';
 import '../../../core/widgets/transaction_tile.dart';
 import '../../../data/local/hive_service.dart';
+import '../../../widget/tm_widgets.dart';
 import '../widgets/mini_chart_widget.dart';
 
 class DashboardScreen extends ConsumerWidget {
@@ -23,6 +24,9 @@ class DashboardScreen extends ConsumerWidget {
     final totalExpenseAll = ref.watch(totalExpenseAllTimeProvider);
     final screenType = ResponsiveLayout.getScreenType(context);
     final hPadding = ResponsiveLayout.horizontalPadding(context);
+    final vSpacing = ResponsiveLayout.sectionSpacing(context);
+    final colGap = ResponsiveLayout.columnGap(context);
+    final topPad = ResponsiveLayout.topPadding(context);
 
     return SafeArea(
       child: ResponsiveContent(
@@ -31,7 +35,7 @@ class DashboardScreen extends ConsumerWidget {
           slivers: [
             SliverToBoxAdapter(
               child: Padding(
-                padding: EdgeInsets.fromLTRB(hPadding, 16, hPadding, 0),
+                padding: EdgeInsets.fromLTRB(hPadding, topPad, hPadding, 0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -77,7 +81,7 @@ class DashboardScreen extends ConsumerWidget {
                       ],
                     ),
 
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 28),
 
                     // ── Desktop/Tablet: Layout a griglia ──
                     if (screenType != ScreenType.mobile) ...[
@@ -93,12 +97,12 @@ class DashboardScreen extends ConsumerWidget {
                               totalExpense: totalExpenseAll,
                             ),
                           ),
-                          const SizedBox(width: 20),
+                          SizedBox(width: colGap),
                           Expanded(
                             flex: 2,
                             child: Column(
                               children: [
-                                _MonthSelector(
+                                TmMonthSelector(
                                   selectedDate: selectedDate,
                                   onPrevious: () {
                                     ref.read(selectedDateProvider.notifier).state =
@@ -109,7 +113,7 @@ class DashboardScreen extends ConsumerWidget {
                                         DateTime(selectedDate.year, selectedDate.month + 1);
                                   },
                                 ),
-                                const SizedBox(height: 16),
+                                const SizedBox(height: 20),
                                 BalanceCard(
                                   totalIncome: report.totalIncome,
                                   totalExpense: report.totalExpense,
@@ -120,7 +124,7 @@ class DashboardScreen extends ConsumerWidget {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 24),
+                      SizedBox(height: vSpacing),
 
                       // Second row: Chart + Budget/Savings
                       Row(
@@ -130,7 +134,7 @@ class DashboardScreen extends ConsumerWidget {
                             flex: 3,
                             child: MiniChartWidget(),
                           ),
-                          const SizedBox(width: 20),
+                          SizedBox(width: colGap),
                           Expanded(
                             flex: 2,
                             child: Column(
@@ -150,7 +154,7 @@ class DashboardScreen extends ConsumerWidget {
                         totalExpense: totalExpenseAll,
                       ),
                       const SizedBox(height: 20),
-                      _MonthSelector(
+                      TmMonthSelector(
                         selectedDate: selectedDate,
                         onPrevious: () {
                           ref.read(selectedDateProvider.notifier).state =
@@ -174,27 +178,13 @@ class DashboardScreen extends ConsumerWidget {
                       _SavingsGoalsMini(),
                     ],
 
-                    const SizedBox(height: 24),
+                    SizedBox(height: vSpacing),
 
                     // Recent Transactions Header
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Ultimi Movimenti',
-                          style: Theme.of(context).textTheme.titleLarge,
-                        ),
-                        TextButton(
-                          onPressed: () => context.go('/transactions'),
-                          child: Text(
-                            'Vedi tutti',
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium
-                                ?.copyWith(color: AppTheme.primaryColor),
-                          ),
-                        ),
-                      ],
+                    TmSectionHeader(
+                      title: 'Ultimi Movimenti',
+                      actionLabel: 'Vedi tutti',
+                      onAction: () => context.go('/transactions'),
                     ),
                   ],
                 ),
@@ -207,27 +197,11 @@ class DashboardScreen extends ConsumerWidget {
                 child: Padding(
                   padding:
                       EdgeInsets.symmetric(horizontal: hPadding, vertical: 40),
-                  child: Center(
-                    child: Column(
-                      children: [
-                        Icon(Icons.receipt_long_outlined,
-                            size: 64, color: Colors.white.withValues(alpha: 0.15)),
-                        const SizedBox(height: 16),
-                        Text(
-                          'Nessun movimento ancora',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                color: Colors.white38,
-                              ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Tocca + per aggiungere il primo',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: Colors.white24,
-                              ),
-                        ),
-                      ],
-                    ),
+                  child: const TmEmptyState(
+                    icon: Icons.receipt_long_outlined,
+                    title: 'Nessun movimento ancora',
+                    subtitle: 'Tocca + per aggiungere il primo',
+                    iconSize: 64,
                   ),
                 ),
               )
@@ -238,9 +212,9 @@ class DashboardScreen extends ConsumerWidget {
                     ? SliverGrid(
                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: ResponsiveLayout.gridColumns(context),
-                          mainAxisSpacing: 8,
-                          crossAxisSpacing: 12,
-                          mainAxisExtent: 80,
+                          mainAxisSpacing: 10,
+                          crossAxisSpacing: colGap,
+                          mainAxisExtent: 86,
                         ),
                         delegate: SliverChildBuilderDelegate(
                           (context, index) => TransactionTile(
@@ -269,53 +243,6 @@ class DashboardScreen extends ConsumerWidget {
   }
 }
 
-class _MonthSelector extends StatelessWidget {
-  final DateTime selectedDate;
-  final VoidCallback onPrevious;
-  final VoidCallback onNext;
-
-  const _MonthSelector({
-    required this.selectedDate,
-    required this.onPrevious,
-    required this.onNext,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-      decoration: BoxDecoration(
-        color: AppTheme.cardDark,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppTheme.borderDark),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          IconButton(
-            onPressed: onPrevious,
-            icon: const Icon(Icons.chevron_left_rounded,
-                color: Colors.white70),
-            iconSize: 24,
-          ),
-          Text(
-            Formatters.formatMonthYear(selectedDate),
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-          ),
-          IconButton(
-            onPressed: onNext,
-            icon: const Icon(Icons.chevron_right_rounded,
-                color: Colors.white70),
-            iconSize: 24,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 class _BudgetAlerts extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -334,19 +261,10 @@ class _BudgetAlerts extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text('⚠️ Budget', style: Theme.of(context).textTheme.titleLarge),
-            TextButton(
-              onPressed: () => context.push('/budget'),
-              child: Text('Vedi tutti',
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyMedium
-                      ?.copyWith(color: AppTheme.primaryColor)),
-            ),
-          ],
+        TmSectionHeader(
+          title: '⚠️ Budget',
+          actionLabel: 'Vedi tutti',
+          onAction: () => context.push('/budget'),
         ),
         const SizedBox(height: 8),
         ...alerts.take(3).map((entry) {
@@ -379,14 +297,11 @@ class _BudgetAlerts extends ConsumerWidget {
                           style: const TextStyle(
                               fontWeight: FontWeight.w600, fontSize: 14)),
                       const SizedBox(height: 4),
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(4),
-                        child: LinearProgressIndicator(
-                          value: percent.clamp(0.0, 1.0),
-                          minHeight: 6,
-                          backgroundColor: AppTheme.borderDark,
-                          valueColor: AlwaysStoppedAnimation(color),
-                        ),
+                      TmProgressBar(
+                        value: percent,
+                        color: color,
+                        height: 6,
+                        borderRadius: 4,
                       ),
                     ],
                   ),
@@ -419,19 +334,10 @@ class _SavingsGoalsMini extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text('🎯 Obiettivi', style: Theme.of(context).textTheme.titleLarge),
-            TextButton(
-              onPressed: () => context.push('/savings'),
-              child: Text('Vedi tutti',
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyMedium
-                      ?.copyWith(color: AppTheme.primaryColor)),
-            ),
-          ],
+        TmSectionHeader(
+          title: '🎯 Obiettivi',
+          actionLabel: 'Vedi tutti',
+          onAction: () => context.push('/savings'),
         ),
         const SizedBox(height: 8),
         ...activeGoals.map((goal) {
@@ -446,18 +352,12 @@ class _SavingsGoalsMini extends ConsumerWidget {
             ),
             child: Row(
               children: [
-                Container(
-                  width: 38,
-                  height: 38,
-                  decoration: BoxDecoration(
-                    color: color.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(11),
-                  ),
-                  child: Icon(
-                    IconData(goal.iconCodePoint, fontFamily: 'MaterialIcons'),
-                    color: color,
-                    size: 18,
-                  ),
+                TmIconBadge.fromCodePoint(
+                  iconCodePoint: goal.iconCodePoint,
+                  colorValue: goal.colorValue,
+                  size: 38,
+                  iconSize: 18,
+                  borderRadius: 11,
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -468,14 +368,11 @@ class _SavingsGoalsMini extends ConsumerWidget {
                           style: const TextStyle(
                               fontWeight: FontWeight.w600, fontSize: 14)),
                       const SizedBox(height: 6),
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(4),
-                        child: LinearProgressIndicator(
-                          value: goal.progress,
-                          minHeight: 6,
-                          backgroundColor: AppTheme.borderDark,
-                          valueColor: AlwaysStoppedAnimation(color),
-                        ),
+                      TmProgressBar(
+                        value: goal.progress,
+                        color: color,
+                        height: 6,
+                        borderRadius: 4,
                       ),
                     ],
                   ),

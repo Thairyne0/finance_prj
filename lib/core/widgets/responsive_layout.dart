@@ -39,9 +39,9 @@ class ResponsiveLayout extends StatelessWidget {
       case ScreenType.mobile:
         return double.infinity;
       case ScreenType.tablet:
-        return 700;
+        return 800;
       case ScreenType.desktop:
-        return 1100;
+        return 1200;
     }
   }
 
@@ -63,9 +63,57 @@ class ResponsiveLayout extends StatelessWidget {
       case ScreenType.mobile:
         return 20;
       case ScreenType.tablet:
-        return 32;
+        return 36;
       case ScreenType.desktop:
-        return 40;
+        return 48;
+    }
+  }
+
+  /// Spacing verticale tra sezioni
+  static double sectionSpacing(BuildContext context) {
+    switch (getScreenType(context)) {
+      case ScreenType.mobile:
+        return 24;
+      case ScreenType.tablet:
+        return 28;
+      case ScreenType.desktop:
+        return 32;
+    }
+  }
+
+  /// Gap tra colonne in layout a griglia
+  static double columnGap(BuildContext context) {
+    switch (getScreenType(context)) {
+      case ScreenType.mobile:
+        return 12;
+      case ScreenType.tablet:
+        return 20;
+      case ScreenType.desktop:
+        return 28;
+    }
+  }
+
+  /// Larghezza massima per schermate modali/secondarie (budget, savings, ecc.)
+  static double modalMaxWidth(BuildContext context) {
+    switch (getScreenType(context)) {
+      case ScreenType.mobile:
+        return double.infinity;
+      case ScreenType.tablet:
+        return 700;
+      case ScreenType.desktop:
+        return 900;
+    }
+  }
+
+  /// Padding top della pagina
+  static double topPadding(BuildContext context) {
+    switch (getScreenType(context)) {
+      case ScreenType.mobile:
+        return 16;
+      case ScreenType.tablet:
+        return 24;
+      case ScreenType.desktop:
+        return 32;
     }
   }
 

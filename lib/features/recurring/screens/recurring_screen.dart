@@ -6,8 +6,10 @@ import 'package:uuid/uuid.dart';
 import '../../../config/providers.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/formatters.dart';
+import '../../../core/widgets/responsive_layout.dart';
 import '../../../data/models/recurring_transaction_model.dart';
 import '../../../data/local/hive_service.dart';
+import '../../../widget/tm_widgets.dart';
 
 class RecurringScreen extends ConsumerWidget {
   const RecurringScreen({super.key});
@@ -30,7 +32,11 @@ class RecurringScreen extends ConsumerWidget {
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 800),
             child: recurring.isEmpty
-                ? _EmptyState()
+                ? const TmEmptyState(
+                    icon: Icons.repeat_rounded,
+                    title: 'Nessuna transazione ricorrente',
+                    subtitle: 'Aggiungi bollette, abbonamenti, stipendio...',
+                  )
             : ListView.builder(
                 physics: const BouncingScrollPhysics(),
                 padding: const EdgeInsets.fromLTRB(20, 12, 20, 100),
@@ -205,14 +211,7 @@ class RecurringScreen extends ConsumerWidget {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Center(
-                    child: Container(
-                      width: 40, height: 4,
-                      decoration: BoxDecoration(
-                          color: Colors.white24,
-                          borderRadius: BorderRadius.circular(2)),
-                    ),
-                  ),
+                  const TmBottomSheetHandle(),
                   const SizedBox(height: 20),
                   Text('Nuova Ricorrente',
                       style: Theme.of(ctx).textTheme.titleLarge),
@@ -309,32 +308,7 @@ class RecurringScreen extends ConsumerWidget {
   }
 }
 
-class _EmptyState extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.repeat_rounded,
-              size: 56, color: Colors.white.withValues(alpha: 0.12)),
-          const SizedBox(height: 16),
-          Text('Nessuna transazione ricorrente',
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyMedium
-                  ?.copyWith(color: Colors.white38)),
-          const SizedBox(height: 8),
-          Text('Aggiungi bollette, abbonamenti, stipendio...',
-              style: Theme.of(context)
-                  .textTheme
-                  .bodySmall
-                  ?.copyWith(color: Colors.white24)),
-        ],
-      ),
-    );
-  }
-}
+
 
 
 

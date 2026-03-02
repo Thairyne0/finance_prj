@@ -7,6 +7,7 @@ import '../../../config/providers.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../data/models/savings_goal_model.dart';
+import '../../../widget/tm_widgets.dart';
 
 class SavingsScreen extends ConsumerWidget {
   const SavingsScreen({super.key});
@@ -29,7 +30,11 @@ class SavingsScreen extends ConsumerWidget {
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 800),
             child: goals.isEmpty
-                ? _EmptyState()
+                ? const TmEmptyState(
+                    icon: Icons.savings_outlined,
+                    title: 'Nessun obiettivo di risparmio',
+                    subtitle: 'Crea un obiettivo per iniziare a risparmiare',
+                  )
                 : ListView.builder(
                     physics: const BouncingScrollPhysics(),
                     padding: const EdgeInsets.fromLTRB(20, 12, 20, 100),
@@ -97,14 +102,7 @@ class SavingsScreen extends ConsumerWidget {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Center(
-                    child: Container(
-                      width: 40, height: 4,
-                      decoration: BoxDecoration(
-                          color: Colors.white24,
-                          borderRadius: BorderRadius.circular(2)),
-                    ),
-                  ),
+                  const TmBottomSheetHandle(),
                   const SizedBox(height: 20),
                   Text('Nuovo Obiettivo',
                       style: Theme.of(ctx).textTheme.titleLarge),
@@ -301,17 +299,11 @@ class _GoalCard extends ConsumerWidget {
           children: [
             Row(
               children: [
-                Container(
-                  width: 44, height: 44,
-                  decoration: BoxDecoration(
-                    color: color.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  child: Icon(
-                    IconData(goal.iconCodePoint, fontFamily: 'MaterialIcons'),
-                    color: color,
-                    size: 22,
-                  ),
+                TmIconBadge.fromCodePoint(
+                  iconCodePoint: goal.iconCodePoint,
+                  colorValue: goal.colorValue,
+                  size: 44,
+                  iconSize: 22,
                 ),
                 const SizedBox(width: 14),
                 Expanded(
@@ -361,14 +353,9 @@ class _GoalCard extends ConsumerWidget {
             ),
             const SizedBox(height: 16),
             // Progress bar
-            ClipRRect(
-              borderRadius: BorderRadius.circular(6),
-              child: LinearProgressIndicator(
-                value: goal.progress,
-                minHeight: 8,
-                backgroundColor: AppTheme.borderDark,
-                valueColor: AlwaysStoppedAnimation(color),
-              ),
+            TmProgressBar(
+              value: goal.progress,
+              color: color,
             ),
             const SizedBox(height: 10),
             Row(
@@ -456,32 +443,7 @@ class _GoalCard extends ConsumerWidget {
   }
 }
 
-class _EmptyState extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.savings_outlined,
-              size: 56, color: Colors.white.withValues(alpha: 0.12)),
-          const SizedBox(height: 16),
-          Text('Nessun obiettivo di risparmio',
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyMedium
-                  ?.copyWith(color: Colors.white38)),
-          const SizedBox(height: 8),
-          Text('Crea un obiettivo per iniziare a risparmiare',
-              style: Theme.of(context)
-                  .textTheme
-                  .bodySmall
-                  ?.copyWith(color: Colors.white24)),
-        ],
-      ),
-    );
-  }
-}
+
 
 
 

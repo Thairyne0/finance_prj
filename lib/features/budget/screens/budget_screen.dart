@@ -6,8 +6,10 @@ import 'package:uuid/uuid.dart';
 import '../../../config/providers.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/formatters.dart';
+import '../../../core/widgets/responsive_layout.dart';
 import '../../../data/models/budget_model.dart';
 import '../../../data/local/hive_service.dart';
+import '../../../widget/tm_widgets.dart';
 import '../widgets/budget_progress_card.dart';
 
 class BudgetScreen extends ConsumerWidget {
@@ -48,10 +50,17 @@ class BudgetScreen extends ConsumerWidget {
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 800),
+            constraints: BoxConstraints(
+              maxWidth: ResponsiveLayout.modalMaxWidth(context),
+            ),
             child: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.fromLTRB(20, 16, 20, 40),
+              padding: EdgeInsets.fromLTRB(
+                ResponsiveLayout.horizontalPadding(context),
+                ResponsiveLayout.topPadding(context),
+                ResponsiveLayout.horizontalPadding(context),
+                40,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: _buildBudgetContent(
@@ -95,7 +104,17 @@ class BudgetScreen extends ConsumerWidget {
 
     // Budget cards
     if (budgetStatus.isEmpty) {
-      widgets.add(_EmptyBudget());
+      widgets.add(
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(vertical: 60),
+          child: const TmEmptyState(
+            icon: Icons.pie_chart_outline_rounded,
+            title: 'Nessun budget impostato',
+            subtitle: 'Imposta limiti di spesa per categoria',
+          ),
+        ),
+      );
     } else {
       for (final entry in budgetStatus.entries) {
         final cat = HiveService.getCategoryById(entry.key);
@@ -236,16 +255,11 @@ class _TotalBudgetSummary extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: LinearProgressIndicator(
-              value: percent.clamp(0.0, 1.0),
-              minHeight: 10,
-              backgroundColor: AppTheme.borderDark,
-              valueColor: AlwaysStoppedAnimation(
-                isOver ? AppTheme.expenseColor : AppTheme.incomeColor,
-              ),
-            ),
+          TmProgressBar(
+            value: percent,
+            color: isOver ? AppTheme.expenseColor : AppTheme.incomeColor,
+            height: 10,
+            borderRadius: 8,
           ),
           const SizedBox(height: 12),
           Row(
@@ -315,16 +329,7 @@ class _AddBudgetButton extends ConsumerWidget {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Center(
-                    child: Container(
-                      width: 40,
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: Colors.white24,
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                    ),
-                  ),
+                  const TmBottomSheetHandle(),
                   const SizedBox(height: 20),
                   Text('Nuovo Budget',
                       style: Theme.of(ctx).textTheme.titleLarge),
@@ -404,36 +409,6 @@ class _AddBudgetButton extends ConsumerWidget {
   }
 }
 
-class _EmptyBudget extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 60),
-      child: Column(
-        children: [
-          Icon(Icons.pie_chart_outline_rounded,
-              size: 56, color: Colors.white.withValues(alpha: 0.12)),
-          const SizedBox(height: 16),
-          Text(
-            'Nessun budget impostato',
-            style: Theme.of(context)
-                .textTheme
-                .bodyMedium
-                ?.copyWith(color: Colors.white38),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Imposta limiti di spesa per categoria',
-            style: Theme.of(context)
-                .textTheme
-                .bodySmall
-                ?.copyWith(color: Colors.white24),
-          ),
-        ],
-      ),
-    );
-  }
-}
+
 
 

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:uuid/uuid.dart';
@@ -8,6 +7,7 @@ import '../../../core/theme/app_theme.dart';
 import '../../../data/models/transaction_model.dart';
 import '../../../data/local/hive_service.dart';
 import '../../../data/models/category_model.dart';
+import '../../../widget/tm_widgets.dart';
 
 class AddTransactionScreen extends ConsumerStatefulWidget {
   const AddTransactionScreen({super.key});
@@ -157,34 +157,12 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
                 const SizedBox(height: 28),
 
                 // Amount Field
-                Text(
-                  'Importo',
-                  style: Theme.of(context).textTheme.labelLarge,
-                ),
-                const SizedBox(height: 8),
-                TextFormField(
+                TmAmountField(
                   controller: _amountController,
-                  keyboardType:
-                      const TextInputType.numberWithOptions(decimal: true),
-                  inputFormatters: [
-                    FilteringTextInputFormatter.allow(
-                        RegExp(r'^\d+[.,]?\d{0,2}')),
-                  ],
-                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.w700,
-                        color: _type == TransactionType.expense
-                            ? AppTheme.expenseColor
-                            : AppTheme.incomeColor,
-                      ),
-                  decoration: InputDecoration(
-                    prefixText: '€ ',
-                    prefixStyle:
-                        Theme.of(context).textTheme.headlineSmall?.copyWith(
-                              fontWeight: FontWeight.w700,
-                              color: Colors.white38,
-                            ),
-                    hintText: '0.00',
-                  ),
+                  label: 'Importo',
+                  amountColor: _type == TransactionType.expense
+                      ? AppTheme.expenseColor
+                      : AppTheme.incomeColor,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Inserisci un importo';

@@ -7,6 +7,7 @@ import '../../../core/widgets/responsive_layout.dart';
 import '../../../core/widgets/transaction_tile.dart';
 import '../../../data/models/transaction_model.dart';
 import '../../../data/local/hive_service.dart';
+import '../../../widget/tm_widgets.dart';
 
 class TransactionListScreen extends ConsumerStatefulWidget {
   const TransactionListScreen({super.key});
@@ -64,7 +65,8 @@ class _TransactionListScreenState extends ConsumerState<TransactionListScreen> {
             SliverToBoxAdapter(
               child: Padding(
                 padding: EdgeInsets.fromLTRB(
-                  ResponsiveLayout.horizontalPadding(context), 16,
+                  ResponsiveLayout.horizontalPadding(context),
+                  ResponsiveLayout.topPadding(context),
                   ResponsiveLayout.horizontalPadding(context), 0,
                 ),
               child: Column(
@@ -160,7 +162,7 @@ class _TransactionListScreenState extends ConsumerState<TransactionListScreen> {
                   const SizedBox(height: 20),
 
                   // Month nav
-                  _MonthNavBar(
+                  TmMonthSelector(
                     selectedDate: selectedDate,
                     onPrevious: () {
                       ref.read(selectedDateProvider.notifier).state = DateTime(
@@ -184,13 +186,13 @@ class _TransactionListScreenState extends ConsumerState<TransactionListScreen> {
                     physics: const BouncingScrollPhysics(),
                     child: Row(
                       children: [
-                        _FilterChip(
+                        TmFilterChip(
                           label: 'Tutti',
                           isSelected: _filterType == null,
                           onTap: () => setState(() => _filterType = null),
                         ),
                         const SizedBox(width: 8),
-                        _FilterChip(
+                        TmFilterChip(
                           label: 'Spese',
                           isSelected: _filterType == TransactionType.expense,
                           color: AppTheme.expenseColor,
@@ -200,7 +202,7 @@ class _TransactionListScreenState extends ConsumerState<TransactionListScreen> {
                                   : TransactionType.expense),
                         ),
                         const SizedBox(width: 8),
-                        _FilterChip(
+                        TmFilterChip(
                           label: 'Entrate',
                           isSelected: _filterType == TransactionType.income,
                           color: AppTheme.incomeColor,
@@ -214,7 +216,7 @@ class _TransactionListScreenState extends ConsumerState<TransactionListScreen> {
                         ...HiveService.defaultCategories.map((cat) {
                           return Padding(
                             padding: const EdgeInsets.only(right: 8),
-                            child: _FilterChip(
+                            child: TmFilterChip(
                               label: cat.name,
                               isSelected: _filterCategoryId == cat.id,
                               color: Color(cat.colorValue),
@@ -246,22 +248,10 @@ class _TransactionListScreenState extends ConsumerState<TransactionListScreen> {
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 60),
-                child: Center(
-                  child: Column(
-                    children: [
-                      Icon(Icons.search_off_rounded,
-                          size: 56,
-                          color: Colors.white.withValues(alpha: 0.12)),
-                      const SizedBox(height: 16),
-                      Text(
-                        'Nessun movimento trovato',
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyMedium
-                            ?.copyWith(color: Colors.white38),
-                      ),
-                    ],
-                  ),
+                child: const TmEmptyState(
+                  icon: Icons.search_off_rounded,
+                  title: 'Nessun movimento trovato',
+                  subtitle: '',
                 ),
               ),
             )
@@ -315,97 +305,6 @@ class _TransactionListScreenState extends ConsumerState<TransactionListScreen> {
   }
 }
 
-class _MonthNavBar extends StatelessWidget {
-  final DateTime selectedDate;
-  final VoidCallback onPrevious;
-  final VoidCallback onNext;
-
-  const _MonthNavBar({
-    required this.selectedDate,
-    required this.onPrevious,
-    required this.onNext,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-      decoration: BoxDecoration(
-        color: AppTheme.cardDark,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppTheme.borderDark),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          IconButton(
-            onPressed: onPrevious,
-            icon: const Icon(Icons.chevron_left_rounded,
-                color: Colors.white70, size: 22),
-          ),
-          Text(
-            Formatters.formatMonthYear(selectedDate),
-            style: Theme.of(context)
-                .textTheme
-                .titleMedium
-                ?.copyWith(fontWeight: FontWeight.w600),
-          ),
-          IconButton(
-            onPressed: onNext,
-            icon: const Icon(Icons.chevron_right_rounded,
-                color: Colors.white70, size: 22),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _FilterChip extends StatelessWidget {
-  final String label;
-  final bool isSelected;
-  final Color? color;
-  final VoidCallback onTap;
-
-  const _FilterChip({
-    required this.label,
-    required this.isSelected,
-    this.color,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final chipColor = color ?? AppTheme.primaryColor;
-
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? chipColor.withValues(alpha: 0.2)
-              : AppTheme.cardDark,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: isSelected ? chipColor : AppTheme.borderDark,
-            width: isSelected ? 1.5 : 1,
-          ),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            color: isSelected ? chipColor : Colors.white54,
-            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-            fontSize: 13,
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 class _QuickSummary extends StatelessWidget {
   final List<TransactionModel> transactions;
 
@@ -426,7 +325,7 @@ class _QuickSummary extends StatelessWidget {
     return Row(
       children: [
         Expanded(
-          child: _SummaryChip(
+          child: TmSummaryChip(
             label: 'Entrate',
             amount: income,
             color: AppTheme.incomeColor,
@@ -435,7 +334,7 @@ class _QuickSummary extends StatelessWidget {
         ),
         const SizedBox(width: 10),
         Expanded(
-          child: _SummaryChip(
+          child: TmSummaryChip(
             label: 'Uscite',
             amount: expense,
             color: AppTheme.expenseColor,
@@ -444,7 +343,7 @@ class _QuickSummary extends StatelessWidget {
         ),
         const SizedBox(width: 10),
         Expanded(
-          child: _SummaryChip(
+          child: TmSummaryChip(
             label: 'Saldo',
             amount: income - expense,
             color: (income - expense) >= 0
@@ -458,55 +357,5 @@ class _QuickSummary extends StatelessWidget {
   }
 }
 
-class _SummaryChip extends StatelessWidget {
-  final String label;
-  final double amount;
-  final Color color;
-  final IconData icon;
-
-  const _SummaryChip({
-    required this.label,
-    required this.amount,
-    required this.color,
-    required this.icon,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: color.withValues(alpha: 0.2)),
-      ),
-      child: Column(
-        children: [
-          Icon(icon, color: color, size: 18),
-          const SizedBox(height: 6),
-          Text(
-            label,
-            style: Theme.of(context)
-                .textTheme
-                .bodySmall
-                ?.copyWith(color: Colors.white54, fontSize: 11),
-          ),
-          const SizedBox(height: 4),
-          FittedBox(
-            fit: BoxFit.scaleDown,
-            child: Text(
-              Formatters.formatCompact(amount),
-              style: TextStyle(
-                color: color,
-                fontWeight: FontWeight.w700,
-                fontSize: 14,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
 
 

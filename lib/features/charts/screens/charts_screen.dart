@@ -4,6 +4,7 @@ import '../../../config/providers.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/responsive_layout.dart';
+import '../../../widget/tm_widgets.dart';
 import '../widgets/line_chart_widget.dart';
 import '../widgets/pie_chart_widget.dart';
 import '../widgets/bar_chart_widget.dart';
@@ -17,12 +18,15 @@ class ChartsScreen extends ConsumerWidget {
     final report = ref.watch(monthlyReportProvider);
     final screenType = ResponsiveLayout.getScreenType(context);
     final hPadding = ResponsiveLayout.horizontalPadding(context);
+    final vSpacing = ResponsiveLayout.sectionSpacing(context);
+    final colGap = ResponsiveLayout.columnGap(context);
+    final topPad = ResponsiveLayout.topPadding(context);
 
     return SafeArea(
       child: ResponsiveContent(
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
-          padding: EdgeInsets.fromLTRB(hPadding, 16, hPadding, 100),
+          padding: EdgeInsets.fromLTRB(hPadding, topPad, hPadding, 100),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -40,30 +44,30 @@ class ChartsScreen extends ConsumerWidget {
                     .bodyMedium
                     ?.copyWith(color: Colors.white54),
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: vSpacing),
 
               // Savings Rate indicator
               _SavingsIndicator(report: report),
-              const SizedBox(height: 24),
+              SizedBox(height: vSpacing),
 
               // ── Desktop/Tablet: Charts in griglia ──
               if (screenType != ScreenType.mobile) ...[
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
-                    Expanded(child: TrendLineChartWidget()),
-                    SizedBox(width: 20),
-                    Expanded(child: IncomeExpenseBarChart()),
+                  children: [
+                    const Expanded(child: TrendLineChartWidget()),
+                    SizedBox(width: colGap),
+                    const Expanded(child: IncomeExpenseBarChart()),
                   ],
                 ),
-                const SizedBox(height: 24),
+                SizedBox(height: vSpacing),
                 const CategoryPieChartWidget(),
               ] else ...[
                 // ── Mobile: layout verticale ──
                 const TrendLineChartWidget(),
-                const SizedBox(height: 24),
+                SizedBox(height: vSpacing),
                 const IncomeExpenseBarChart(),
-                const SizedBox(height: 24),
+                SizedBox(height: vSpacing),
                 const CategoryPieChartWidget(),
               ],
             ],
@@ -112,22 +116,14 @@ class _SavingsIndicator extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Container(
-            width: 56,
-            height: 56,
-            decoration: BoxDecoration(
-              color: (isPositive ? AppTheme.incomeColor : AppTheme.expenseColor)
-                  .withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Icon(
-              isPositive
-                  ? Icons.trending_up_rounded
-                  : Icons.trending_down_rounded,
-              color:
-                  isPositive ? AppTheme.incomeColor : AppTheme.expenseColor,
-              size: 28,
-            ),
+          TmIconBadge(
+            icon: isPositive
+                ? Icons.trending_up_rounded
+                : Icons.trending_down_rounded,
+            color: isPositive ? AppTheme.incomeColor : AppTheme.expenseColor,
+            size: 56,
+            iconSize: 28,
+            borderRadius: 16,
           ),
           const SizedBox(width: 16),
           Expanded(

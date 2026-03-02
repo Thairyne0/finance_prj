@@ -6,6 +6,7 @@ import '../../../core/services/export_service.dart';
 import '../../../core/widgets/responsive_layout.dart';
 import '../../../config/providers.dart';
 import '../../../data/local/hive_service.dart';
+import '../../../widget/tm_widgets.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -14,12 +15,14 @@ class SettingsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final allTransactions = ref.watch(allTransactionsProvider);
     final hPadding = ResponsiveLayout.horizontalPadding(context);
+    final topPad = ResponsiveLayout.topPadding(context);
+    final vSpacing = ResponsiveLayout.sectionSpacing(context);
 
     return SafeArea(
       child: ResponsiveContent(
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
-          padding: EdgeInsets.fromLTRB(hPadding, 16, hPadding, 100),
+          padding: EdgeInsets.fromLTRB(hPadding, topPad, hPadding, 100),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -27,7 +30,7 @@ class SettingsScreen extends ConsumerWidget {
               'Impostazioni',
               style: Theme.of(context).textTheme.headlineMedium,
             ),
-            const SizedBox(height: 32),
+            SizedBox(height: vSpacing + 8),
 
             // Quick Actions
             _SettingsGroup(
@@ -64,7 +67,7 @@ class SettingsScreen extends ConsumerWidget {
               ],
             ),
 
-            const SizedBox(height: 24),
+            SizedBox(height: vSpacing),
 
             // Valuta
             _SettingsGroup(
@@ -94,7 +97,7 @@ class SettingsScreen extends ConsumerWidget {
             ),
 
 
-            const SizedBox(height: 24),
+            SizedBox(height: vSpacing),
 
             // Dati
             _SettingsGroup(
@@ -167,7 +170,7 @@ class SettingsScreen extends ConsumerWidget {
               ],
             ),
 
-            const SizedBox(height: 24),
+            SizedBox(height: vSpacing),
 
             _SettingsGroup(
               title: 'Info',
@@ -182,7 +185,7 @@ class SettingsScreen extends ConsumerWidget {
               ],
             ),
 
-            const SizedBox(height: 32),
+            SizedBox(height: vSpacing + 8),
 
             Center(
               child: Text(
@@ -231,16 +234,7 @@ class SettingsScreen extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Center(
-              child: Container(
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: Colors.white24,
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-            ),
+            const TmBottomSheetHandle(),
             const SizedBox(height: 20),
             Text('Seleziona Valuta',
                 style: Theme.of(ctx).textTheme.titleLarge),
@@ -404,14 +398,13 @@ class _SettingsItem extends StatelessWidget {
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       onTap: onTap,
-      leading: Container(
-        width: 40,
-        height: 40,
-        decoration: BoxDecoration(
-          color: iconColor.withValues(alpha: 0.12),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Icon(icon, color: iconColor, size: 20),
+      leading: TmIconBadge(
+        icon: icon,
+        color: iconColor,
+        size: 40,
+        iconSize: 20,
+        borderRadius: 12,
+        opacity: 0.12,
       ),
       title: Text(
         title,

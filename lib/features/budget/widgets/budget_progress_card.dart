@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/formatters.dart';
+import '../../../widget/tm_widgets.dart';
 
 class BudgetProgressCard extends StatelessWidget {
   final String categoryName;
@@ -32,8 +33,6 @@ class BudgetProgressCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final catColor = Color(colorValue);
-
     return Dismissible(
       key: Key('$categoryName-budget'),
       direction: DismissDirection.endToStart,
@@ -63,18 +62,12 @@ class BudgetProgressCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: catColor.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(
-                    IconData(iconCodePoint, fontFamily: 'MaterialIcons'),
-                    color: catColor,
-                    size: 20,
-                  ),
+                TmIconBadge.fromCodePoint(
+                  iconCodePoint: iconCodePoint,
+                  colorValue: colorValue,
+                  size: 40,
+                  iconSize: 20,
+                  borderRadius: 12,
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -116,14 +109,10 @@ class BudgetProgressCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 14),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(6),
-              child: LinearProgressIndicator(
-                value: percent.clamp(0.0, 1.0),
-                minHeight: 8,
-                backgroundColor: AppTheme.borderDark,
-                valueColor: AlwaysStoppedAnimation(progressColor),
-              ),
+            TmProgressBar(
+              value: percent,
+              color: progressColor,
+              height: 8,
             ),
             const SizedBox(height: 10),
             Row(

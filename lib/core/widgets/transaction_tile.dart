@@ -3,6 +3,7 @@ import '../../core/theme/app_theme.dart';
 import '../../core/utils/formatters.dart';
 import '../../data/models/transaction_model.dart';
 import '../../data/local/hive_service.dart';
+import '../../widget/tm_widgets.dart';
 
 class TransactionTile extends StatelessWidget {
   final TransactionModel transaction;
@@ -34,18 +35,11 @@ class TransactionTile extends StatelessWidget {
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         onTap: onTap,
-        leading: Container(
-          width: 48,
-          height: 48,
-          decoration: BoxDecoration(
-            color: Color(category.colorValue).withValues(alpha: 0.15),
-            borderRadius: BorderRadius.circular(14),
-          ),
-          child: Icon(
-            IconData(category.iconCodePoint, fontFamily: 'MaterialIcons'),
-            color: Color(category.colorValue),
-            size: 22,
-          ),
+        leading: TmIconBadge.fromCodePoint(
+          iconCodePoint: category.iconCodePoint,
+          colorValue: category.colorValue,
+          size: 48,
+          iconSize: 22,
         ),
         title: Text(
           transaction.description.isNotEmpty
