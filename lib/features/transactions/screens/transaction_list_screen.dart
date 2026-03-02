@@ -273,24 +273,11 @@ class _TransactionListScreenState extends ConsumerState<TransactionListScreen> {
                         ref
                             .read(allTransactionsProvider.notifier)
                             .delete(transaction.id);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: const Text('Movimento eliminato'),
-                            backgroundColor: AppTheme.cardDark,
-                            behavior: SnackBarBehavior.floating,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            action: SnackBarAction(
-                              label: 'Annulla',
-                              textColor: AppTheme.primaryColor,
-                              onPressed: () {
-                                ref
-                                    .read(allTransactionsProvider.notifier)
-                                    .add(transaction);
-                              },
-                            ),
-                          ),
+                        TmTopNotification.show(
+                          context,
+                          message: 'Movimento eliminato',
+                          icon: Icons.delete_outline_rounded,
+                          iconColor: AppTheme.expenseColor,
                         );
                       },
                     );

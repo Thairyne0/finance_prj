@@ -13,4 +13,5 @@ export 'tm_month_selector.dart';
 export 'tm_progress_bar.dart';
 export 'tm_section_header.dart';
 export 'tm_summary_chip.dart';
+export 'tm_top_notification.dart';
 

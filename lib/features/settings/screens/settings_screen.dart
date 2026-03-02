@@ -116,19 +116,12 @@ class SettingsScreen extends ConsumerWidget {
                       _showSnack(context, 'Nessun movimento da esportare');
                       return;
                     }
-                    final messenger = ScaffoldMessenger.of(context);
                     try {
                       await ExportService.exportToCsv(allTransactions);
                     } catch (e) {
-                      messenger.showSnackBar(
-                        SnackBar(
-                          content: const Text('Errore durante l\'esportazione'),
-                          backgroundColor: AppTheme.cardDark,
-                          behavior: SnackBarBehavior.floating,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12)),
-                        ),
-                      );
+                      if (context.mounted) {
+                        TmTopNotification.error(context, 'Errore durante l\'esportazione');
+                      }
                     }
                   },
                 ),
@@ -138,28 +131,15 @@ class SettingsScreen extends ConsumerWidget {
                   title: 'Backup Completo',
                   subtitle: 'Esporta tutti i dati in JSON',
                   onTap: () async {
-                    final messenger = ScaffoldMessenger.of(context);
                     try {
                       await ExportService.exportBackupJson();
-                      messenger.showSnackBar(
-                        SnackBar(
-                          content: const Text('Backup creato con successo'),
-                          backgroundColor: AppTheme.cardDark,
-                          behavior: SnackBarBehavior.floating,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12)),
-                        ),
-                      );
+                      if (context.mounted) {
+                        TmTopNotification.success(context, 'Backup creato con successo');
+                      }
                     } catch (e) {
-                      messenger.showSnackBar(
-                        SnackBar(
-                          content: const Text('Errore durante il backup'),
-                          backgroundColor: AppTheme.cardDark,
-                          behavior: SnackBarBehavior.floating,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12)),
-                        ),
-                      );
+                      if (context.mounted) {
+                        TmTopNotification.error(context, 'Errore durante il backup');
+                      }
                     }
                   },
                 ),
@@ -208,14 +188,7 @@ class SettingsScreen extends ConsumerWidget {
   }
 
   void _showSnack(BuildContext context, String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: AppTheme.cardDark,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      ),
-    );
+    TmTopNotification.warning(context, message);
   }
 
   void _showCurrencyPicker(BuildContext context, WidgetRef ref) {
@@ -229,6 +202,8 @@ class SettingsScreen extends ConsumerWidget {
     showModalBottomSheet(
       context: context,
       backgroundColor: AppTheme.cardDark,
+      isScrollControlled: true,
+      useSafeArea: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -295,7 +270,6 @@ class SettingsScreen extends ConsumerWidget {
 
 
   void _showDeleteConfirmation(BuildContext context, WidgetRef ref) {
-    final messenger = ScaffoldMessenger.of(context);
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -316,15 +290,7 @@ class SettingsScreen extends ConsumerWidget {
             onPressed: () {
               ref.read(allTransactionsProvider.notifier).deleteAll();
               Navigator.pop(ctx);
-              messenger.showSnackBar(
-                SnackBar(
-                  content: const Text('Tutti i dati sono stati eliminati'),
-                  backgroundColor: AppTheme.cardDark,
-                  behavior: SnackBarBehavior.floating,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
-                ),
-              );
+              TmTopNotification.success(context, 'Tutti i dati sono stati eliminati');
             },
             child: const Text('Elimina',
                 style: TextStyle(color: AppTheme.expenseColor)),
