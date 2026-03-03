@@ -35,14 +35,7 @@ class ResponsiveLayout extends StatelessWidget {
 
   /// Larghezza massima del contenuto in base allo screen type
   static double contentMaxWidth(BuildContext context) {
-    switch (getScreenType(context)) {
-      case ScreenType.mobile:
-        return double.infinity;
-      case ScreenType.tablet:
-        return 800;
-      case ScreenType.desktop:
-        return 1200;
-    }
+    return double.infinity;
   }
 
   /// Numero di colonne per griglie adattive
@@ -63,9 +56,9 @@ class ResponsiveLayout extends StatelessWidget {
       case ScreenType.mobile:
         return 20;
       case ScreenType.tablet:
-        return 36;
+        return 32;
       case ScreenType.desktop:
-        return 48;
+        return 40;
     }
   }
 
@@ -77,7 +70,7 @@ class ResponsiveLayout extends StatelessWidget {
       case ScreenType.tablet:
         return 28;
       case ScreenType.desktop:
-        return 32;
+        return 36;
     }
   }
 
@@ -89,20 +82,13 @@ class ResponsiveLayout extends StatelessWidget {
       case ScreenType.tablet:
         return 20;
       case ScreenType.desktop:
-        return 28;
+        return 24;
     }
   }
 
   /// Larghezza massima per schermate modali/secondarie (budget, savings, ecc.)
   static double modalMaxWidth(BuildContext context) {
-    switch (getScreenType(context)) {
-      case ScreenType.mobile:
-        return double.infinity;
-      case ScreenType.tablet:
-        return 700;
-      case ScreenType.desktop:
-        return 900;
-    }
+    return double.infinity;
   }
 
   /// Padding top della pagina
@@ -113,8 +99,28 @@ class ResponsiveLayout extends StatelessWidget {
       case ScreenType.tablet:
         return 24;
       case ScreenType.desktop:
+        return 28;
+    }
+  }
+
+  /// Bottom padding per il contenuto (tiene conto della navbar su mobile)
+  static double bottomContentPadding(BuildContext context) {
+    switch (getScreenType(context)) {
+      case ScreenType.mobile:
+        return 120; // sopra la liquid glass navbar
+      case ScreenType.tablet:
+        return 40;
+      case ScreenType.desktop:
         return 32;
     }
+  }
+
+  /// ScrollPhysics adatta alla piattaforma
+  static ScrollPhysics scrollPhysics(BuildContext context) {
+    if (getScreenType(context) == ScreenType.mobile) {
+      return const BouncingScrollPhysics();
+    }
+    return const ClampingScrollPhysics();
   }
 
   @override
@@ -133,7 +139,7 @@ class ResponsiveLayout extends StatelessWidget {
   }
 }
 
-/// Wrapper che centra e limita il contenuto in base al breakpoint
+/// Wrapper che occupa tutta la larghezza disponibile (nessun vincolo di max width).
 class ResponsiveContent extends StatelessWidget {
   final Widget child;
   final double? maxWidth;
@@ -146,14 +152,14 @@ class ResponsiveContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: ConstrainedBox(
-        constraints: BoxConstraints(
-          maxWidth: maxWidth ?? ResponsiveLayout.contentMaxWidth(context),
+    if (maxWidth != null) {
+      return Center(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(maxWidth: maxWidth!),
+          child: child,
         ),
-        child: child,
-      ),
-    );
+      );
+    }
+    return SizedBox.expand(child: child);
   }
 }
-

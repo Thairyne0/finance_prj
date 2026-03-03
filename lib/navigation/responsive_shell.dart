@@ -449,19 +449,13 @@ class _DesktopShell extends StatelessWidget {
     return Scaffold(
       body: Row(
         children: [
-          // Sidebar
           _DesktopSidebar(
             selectedIndex: selectedIndex,
             onItemTapped: onItemTapped,
             onAddTapped: onAddTapped,
             onChatTapped: onChatTapped,
           ),
-          // Divider
-          Container(
-            width: 1,
-            color: AppTheme.borderDark,
-          ),
-          // Content
+          Container(width: 1, color: AppTheme.borderDark),
           Expanded(child: child),
         ],
       ),
@@ -485,12 +479,14 @@ class _DesktopSidebar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 250,
+      width: 260,
       color: AppTheme.surfaceDark,
       child: SafeArea(
+        right: false,
+        bottom: false,
         child: Column(
           children: [
-            const SizedBox(height: 20),
+            const SizedBox(height: 24),
             // Logo + App Title
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -510,33 +506,31 @@ class _DesktopSidebar extends StatelessWidget {
                   ),
                   const SizedBox(width: 12),
                   Text(
-                    'Finance App',
+                    'FinanceApp',
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.w700,
                           color: Colors.white,
-                          fontSize: 18,
+                          fontSize: 17,
                         ),
                   ),
                 ],
               ),
             ),
 
-            const SizedBox(height: 28),
+            const SizedBox(height: 24),
 
             // Azioni rapide
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 14),
               child: Column(
                 children: [
-                  // Pulsante Aggiungi
                   _SidebarActionButton(
                     icon: Icons.add_rounded,
                     label: 'Nuovo Movimento',
                     gradient: const [Color(0xFF8B7CF7), AppTheme.primaryColor, Color(0xFF5A4BD1)],
                     onTap: onAddTapped,
                   ),
-                  const SizedBox(height: 10),
-                  // Pulsante Chat
+                  const SizedBox(height: 8),
                   _SidebarActionButton(
                     icon: Icons.auto_awesome_rounded,
                     label: 'FinBot – AI',
@@ -549,61 +543,56 @@ class _DesktopSidebar extends StatelessWidget {
 
             const SizedBox(height: 20),
             const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20),
+              padding: EdgeInsets.symmetric(horizontal: 16),
               child: Divider(color: AppTheme.borderDark, height: 1),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 8),
 
-            // Sezione MENU
+            // Label MENU
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.fromLTRB(20, 4, 20, 6),
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
                   'MENU',
                   style: TextStyle(
                     color: Colors.white24,
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 1.5,
+                    fontSize: 10,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 1.8,
                   ),
                 ),
               ),
             ),
-            const SizedBox(height: 8),
 
             // Nav Items
             Expanded(
               child: ListView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
+                padding: const EdgeInsets.symmetric(horizontal: 10),
                 itemCount: _destinations.length,
                 itemBuilder: (context, index) {
                   final d = _destinations[index];
                   final isSelected = index == selectedIndex;
 
                   return Padding(
-                    padding: const EdgeInsets.only(bottom: 4),
+                    padding: const EdgeInsets.only(bottom: 2),
                     child: Material(
                       color: Colors.transparent,
-                      borderRadius: BorderRadius.circular(14),
+                      borderRadius: BorderRadius.circular(12),
                       child: InkWell(
-                        borderRadius: BorderRadius.circular(14),
+                        borderRadius: BorderRadius.circular(12),
                         onTap: () => onItemTapped(index),
                         child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 200),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 12,
-                          ),
+                          duration: const Duration(milliseconds: 180),
+                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
                           decoration: BoxDecoration(
                             color: isSelected
                                 ? AppTheme.primaryColor.withValues(alpha: 0.12)
                                 : Colors.transparent,
-                            borderRadius: BorderRadius.circular(14),
+                            borderRadius: BorderRadius.circular(12),
                             border: isSelected
                                 ? Border.all(
-                                    color: AppTheme.primaryColor
-                                        .withValues(alpha: 0.25),
+                                    color: AppTheme.primaryColor.withValues(alpha: 0.2),
                                     width: 1,
                                   )
                                 : null,
@@ -612,29 +601,23 @@ class _DesktopSidebar extends StatelessWidget {
                             children: [
                               Icon(
                                 isSelected ? d.selectedIcon : d.icon,
-                                color: isSelected
-                                    ? AppTheme.primaryColor
-                                    : Colors.white54,
-                                size: 22,
+                                color: isSelected ? AppTheme.primaryColor : Colors.white38,
+                                size: 20,
                               ),
-                              const SizedBox(width: 14),
+                              const SizedBox(width: 12),
                               Text(
                                 d.label,
                                 style: TextStyle(
-                                  color: isSelected
-                                      ? Colors.white
-                                      : Colors.white54,
-                                  fontWeight: isSelected
-                                      ? FontWeight.w600
-                                      : FontWeight.w400,
+                                  color: isSelected ? Colors.white : Colors.white54,
+                                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
                                   fontSize: 14,
                                 ),
                               ),
                               if (isSelected) ...[
                                 const Spacer(),
                                 Container(
-                                  width: 6,
-                                  height: 6,
+                                  width: 5,
+                                  height: 5,
                                   decoration: const BoxDecoration(
                                     color: AppTheme.primaryColor,
                                     shape: BoxShape.circle,
@@ -653,24 +636,21 @@ class _DesktopSidebar extends StatelessWidget {
 
             // Footer
             const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20),
+              padding: EdgeInsets.symmetric(horizontal: 16),
               child: Divider(color: AppTheme.borderDark, height: 1),
             ),
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.info_outline_rounded,
-                    size: 14,
-                    color: Colors.white24,
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    'FinanceApp v1.0.0',
-                    style: TextStyle(color: Colors.white24, fontSize: 11),
-                  ),
-                ],
+            SafeArea(
+              top: false,
+              right: false,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+                child: Row(
+                  children: [
+                    const Icon(Icons.info_outline_rounded, size: 13, color: Colors.white24),
+                    const SizedBox(width: 8),
+                    Text('FinanceApp v1.0.0', style: TextStyle(color: Colors.white24, fontSize: 11)),
+                  ],
+                ),
               ),
             ),
           ],

@@ -23,13 +23,14 @@ class ChartsScreen extends ConsumerWidget {
     final topPad = ResponsiveLayout.topPadding(context);
 
     return SafeArea(
+      bottom: false,
       child: ResponsiveContent(
-        child: TmFadeScroll(
+          child: TmFadeScroll(
           topFadeHeight: 24,
-          bottomFadeHeight: 40,
+          bottomFadeHeight: screenType == ScreenType.mobile ? 80 : 40,
           child: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            padding: EdgeInsets.fromLTRB(hPadding, topPad, hPadding, 100),
+            physics: ResponsiveLayout.scrollPhysics(context),
+            padding: EdgeInsets.fromLTRB(hPadding, topPad, hPadding, ResponsiveLayout.bottomContentPadding(context)),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

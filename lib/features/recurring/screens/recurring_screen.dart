@@ -6,6 +6,7 @@ import 'package:uuid/uuid.dart';
 import '../../../config/providers.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/formatters.dart';
+import '../../../core/widgets/responsive_layout.dart';
 import '../../../data/models/recurring_transaction_model.dart';
 import '../../../data/local/hive_service.dart';
 import '../../../widget/tm_widgets.dart';
@@ -29,7 +30,7 @@ class RecurringScreen extends ConsumerWidget {
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 800),
+            constraints: BoxConstraints(maxWidth: ResponsiveLayout.modalMaxWidth(context)),
             child: recurring.isEmpty
                 ? const TmEmptyState(
                     icon: Icons.repeat_rounded,
@@ -37,8 +38,13 @@ class RecurringScreen extends ConsumerWidget {
                     subtitle: 'Aggiungi bollette, abbonamenti, stipendio...',
                   )
             : ListView.builder(
-                physics: const BouncingScrollPhysics(),
-                padding: const EdgeInsets.fromLTRB(20, 12, 20, 100),
+                physics: ResponsiveLayout.scrollPhysics(context),
+                padding: EdgeInsets.fromLTRB(
+                  ResponsiveLayout.horizontalPadding(context),
+                  12,
+                  ResponsiveLayout.horizontalPadding(context),
+                  ResponsiveLayout.bottomContentPadding(context),
+                ),
                 itemCount: recurring.length,
                 itemBuilder: (context, index) {
                   final item = recurring[index];

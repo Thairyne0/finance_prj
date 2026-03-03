@@ -54,12 +54,12 @@ class BudgetScreen extends ConsumerWidget {
               maxWidth: ResponsiveLayout.modalMaxWidth(context),
             ),
             child: SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
+              physics: ResponsiveLayout.scrollPhysics(context),
               padding: EdgeInsets.fromLTRB(
                 ResponsiveLayout.horizontalPadding(context),
                 ResponsiveLayout.topPadding(context),
                 ResponsiveLayout.horizontalPadding(context),
-                40,
+                ResponsiveLayout.bottomContentPadding(context),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

@@ -57,12 +57,13 @@ class _TransactionListScreenState extends ConsumerState<TransactionListScreen> {
     }
 
     return SafeArea(
+      bottom: false,
       child: ResponsiveContent(
         child: TmFadeScroll(
           topFadeHeight: 24,
-          bottomFadeHeight: 40,
+          bottomFadeHeight: ResponsiveLayout.getScreenType(context) == ScreenType.mobile ? 80 : 40,
           child: CustomScrollView(
-          physics: const BouncingScrollPhysics(),
+          physics: ResponsiveLayout.scrollPhysics(context),
           slivers: [
             // Header
             SliverToBoxAdapter(
@@ -287,7 +288,7 @@ class _TransactionListScreenState extends ConsumerState<TransactionListScreen> {
               ),
             ),
 
-          const SliverPadding(padding: EdgeInsets.only(bottom: 100)),
+          SliverPadding(padding: EdgeInsets.only(bottom: ResponsiveLayout.bottomContentPadding(context))),
         ],
         ),
         ),

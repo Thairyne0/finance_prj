@@ -19,10 +19,13 @@ class TransactionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final category = HiveService.getCategoryById(transaction.categoryId);
+    final category  = HiveService.getCategoryById(transaction.categoryId);
     final isExpense = transaction.type == TransactionType.expense;
-    final color = isExpense ? AppTheme.expenseColor : AppTheme.incomeColor;
-    final sign = isExpense ? '-' : '+';
+    final color     = isExpense ? AppTheme.expenseColor : AppTheme.incomeColor;
+    final sign      = isExpense ? '-' : '+';
+
+    final bool hasProduct = transaction.productName != null &&
+        transaction.productName!.isNotEmpty;
 
     Widget tile = Container(
       margin: const EdgeInsets.symmetric(vertical: 4),
@@ -31,93 +34,117 @@ class TransactionTile extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: AppTheme.borderDark, width: 1),
       ),
-      child: ListTile(
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        onTap: onTap,
-        leading: TmIconBadge.fromCodePoint(
-          iconCodePoint: category.iconCodePoint,
-          colorValue: category.colorValue,
-          size: 48,
-          iconSize: 22,
-        ),
-        title: Text(
-          transaction.description.isNotEmpty
-              ? transaction.description
-              : category.name,
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const SizedBox(height: 4),
-            Row(
-              children: [
-                Text(
-                  category.name,
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
-                if (transaction.productName != null &&
-                    transaction.productName!.isNotEmpty) ...[
-                  Text(' • ',
-                      style: Theme.of(context).textTheme.bodySmall),
-                  Expanded(
-                    child: Text(
-                      transaction.productName!,
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodySmall
-                          ?.copyWith(color: AppTheme.secondaryColor),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
+            // ── Icona categoria ──────────────────────────────────────
+            TmIconBadge.fromCodePoint(
+              iconCodePoint: category.iconCodePoint,
+              colorValue: category.colorValue,
+              size: 42,
+              iconSize: 19,
+            ),
+            const SizedBox(width: 10),
+
+            // ── Testo centrale ───────────────────────────────────────
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Titolo
+                  Text(
+                    transaction.description.isNotEmpty
+                        ? transaction.description
+                        : category.name,
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 13,
+                          height: 1.2,
+                        ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 2),
+
+                  // Categoria • prodotto
+                  Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          hasProduct
+                              ? '${category.name} · ${transaction.productName!}'
+                              : category.name,
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                color: Colors.white38,
+                                fontSize: 11,
+                                height: 1.2,
+                              ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 2),
+
+                  // Pagamento + data — tutto in un unico Flexible
+                  Row(
+                    children: [
+                      Icon(
+                        IconData(
+                          transaction.paymentIconCodePoint,
+                          fontFamily: 'MaterialIcons',
+                        ),
+                        size: 11,
+                        color: transaction.paymentMethod == PaymentMethod.cash
+                            ? AppTheme.warningColor.withValues(alpha: 0.65)
+                            : AppTheme.primaryColor.withValues(alpha: 0.65),
+                      ),
+                      const SizedBox(width: 3),
+                      Flexible(
+                        child: Text(
+                          '${transaction.paymentLabel}  ·  ${Formatters.formatDate(transaction.date)}',
+                          style: TextStyle(
+                            color: transaction.paymentMethod == PaymentMethod.cash
+                                ? AppTheme.warningColor.withValues(alpha: 0.65)
+                                : AppTheme.primaryColor.withValues(alpha: 0.65),
+                            fontSize: 11,
+                            fontWeight: FontWeight.w500,
+                            height: 1.2,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
-              ],
+              ),
             ),
-            const SizedBox(height: 4),
-            Row(
-              children: [
-                Icon(
-                  IconData(transaction.paymentIconCodePoint,
-                      fontFamily: 'MaterialIcons'),
-                  size: 12,
-                  color: transaction.paymentMethod == PaymentMethod.cash
-                      ? AppTheme.warningColor.withValues(alpha: 0.7)
-                      : AppTheme.primaryColor.withValues(alpha: 0.7),
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  transaction.paymentLabel,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: transaction.paymentMethod == PaymentMethod.cash
-                            ? AppTheme.warningColor.withValues(alpha: 0.7)
-                            : AppTheme.primaryColor.withValues(alpha: 0.7),
-                        fontSize: 11,
-                        fontWeight: FontWeight.w500,
+
+            const SizedBox(width: 8),
+
+            // ── Importo ──────────────────────────────────────────────
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 85),
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.centerRight,
+                child: Text(
+                  '$sign${Formatters.formatCurrency(transaction.amount)}',
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        color: color,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 14,
                       ),
                 ),
-                Text(
-                  '  •  ${Formatters.formatDate(transaction.date)}',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Colors.white38,
-                        fontSize: 11,
-                      ),
-                ),
-              ],
+              ),
             ),
           ],
-        ),
-        trailing: Text(
-          '$sign${Formatters.formatCurrency(transaction.amount)}',
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color: color,
-                fontWeight: FontWeight.w700,
-              ),
         ),
       ),
     );
@@ -134,7 +161,10 @@ class TransactionTile extends StatelessWidget {
             color: AppTheme.expenseColor.withValues(alpha: 0.2),
             borderRadius: BorderRadius.circular(16),
           ),
-          child: const Icon(Icons.delete_outline, color: AppTheme.expenseColor),
+          child: const Icon(
+            Icons.delete_outline,
+            color: AppTheme.expenseColor,
+          ),
         ),
         child: tile,
       );
