@@ -62,6 +62,13 @@ class SettingsScreen extends ConsumerWidget {
                   onTap: () => context.push('/savings'),
                 ),
                 _SettingsItem(
+                  icon: Icons.currency_bitcoin_rounded,
+                  iconColor: const Color(0xFFF7931A),
+                  title: 'Bitcoin & Crypto',
+                  subtitle: 'Prezzo live BTC e portafoglio',
+                  onTap: () => context.push('/crypto'),
+                ),
+                _SettingsItem(
                   icon: Icons.auto_awesome_rounded,
                   iconColor: const Color(0xFF00D2D3),
                   title: 'FinBot – Assistente AI',

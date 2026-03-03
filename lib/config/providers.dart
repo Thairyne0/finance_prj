@@ -1,4 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../core/services/crypto_service.dart';
 import '../data/repositories/transaction_repository.dart';
 import '../data/repositories/budget_repository.dart';
 import '../data/repositories/recurring_repository.dart';
@@ -309,6 +311,26 @@ class RecurringListNotifier
   }
 }
 
+/// Lista di alert budget: categorie al >=80% o superate
+final budgetAlertsProvider = Provider<List<({String categoryId, double percent, bool isOver})>>((ref) {
+  final status = ref.watch(budgetStatusProvider);
+  final alerts = <({String categoryId, double percent, bool isOver})>[];
+  for (final entry in status.entries) {
+    final percent = entry.value.budget.limit > 0
+        ? entry.value.spent / entry.value.budget.limit
+        : 0.0;
+    if (percent >= 0.8) {
+      alerts.add((
+        categoryId: entry.key,
+        percent: percent,
+        isOver: entry.value.spent > entry.value.budget.limit,
+      ));
+    }
+  }
+  alerts.sort((a, b) => b.percent.compareTo(a.percent));
+  return alerts;
+});
+
 // ──────────────────────────────────────────
 // SAVINGS GOALS
 // ──────────────────────────────────────────
@@ -344,3 +366,52 @@ class SavingsListNotifier extends StateNotifier<List<SavingsGoalModel>> {
     refresh();
   }
 }
+
+// ──────────────────────────────────────────
+// CRYPTO
+// ──────────────────────────────────────────
+
+/// Prezzo BTC real-time da CoinGecko — refresh ogni 90s, con cache e retry
+final bitcoinPriceProvider = FutureProvider<CryptoPrice>((ref) async {
+  final price = await CryptoService.fetchBitcoinPrice();
+  // Schedula il prossimo refresh dopo 90s
+  Future.delayed(const Duration(seconds: 90), () {
+    if (ref.state.hasValue) {
+      ref.invalidateSelf();
+    }
+  });
+  return price;
+});
+
+/// Quantità di BTC posseduta dall'utente (salvata in SharedPreferences)
+final userBtcAmountProvider =
+    StateNotifierProvider<UserBtcAmountNotifier, double>((ref) {
+  return UserBtcAmountNotifier();
+});
+
+class UserBtcAmountNotifier extends StateNotifier<double> {
+  static const _key = 'user_btc_amount';
+
+  UserBtcAmountNotifier() : super(0.0) {
+    _load();
+  }
+
+  Future<void> _load() async {
+    final prefs = await SharedPreferences.getInstance();
+    state = prefs.getDouble(_key) ?? 0.0;
+  }
+
+  Future<void> set(double amount) async {
+    state = amount;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setDouble(_key, amount);
+  }
+}
+
+/// Valore portafoglio BTC in EUR
+final btcPortfolioValueProvider = Provider<AsyncValue<double>>((ref) {
+  final priceAsync = ref.watch(bitcoinPriceProvider);
+  final btcAmount = ref.watch(userBtcAmountProvider);
+  return priceAsync.whenData((price) => price.priceEur * btcAmount);
+});
+

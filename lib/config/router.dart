@@ -9,6 +9,7 @@ import '../features/recurring/screens/recurring_screen.dart';
 import '../features/savings/screens/savings_screen.dart';
 import '../features/settings/screens/settings_screen.dart';
 import '../features/chat/screens/chat_screen.dart';
+import '../features/crypto/screens/crypto_screen.dart';
 import '../navigation/responsive_shell.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -96,6 +97,12 @@ final GoRouter appRouter = GoRouter(
           );
         },
       ),
+    ),
+    GoRoute(
+      path: '/crypto',
+      name: 'crypto',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) => const CryptoScreen(),
     ),
   ],
 );

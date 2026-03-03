@@ -11,6 +11,7 @@ import '../../../data/models/budget_model.dart';
 import '../../../data/local/hive_service.dart';
 import '../../../widget/tm_widgets.dart';
 import '../widgets/budget_progress_card.dart';
+import '../widgets/budget_alert_banner.dart';
 
 class BudgetScreen extends ConsumerWidget {
   const BudgetScreen({super.key});
@@ -95,6 +96,9 @@ class BudgetScreen extends ConsumerWidget {
     );
 
     widgets.add(const SizedBox(height: 24));
+
+    // Alert budget (>=80% o superati)
+    widgets.add(BudgetAlertBanner());
 
     // Riepilogo totale budget
     if (budgetStatus.isNotEmpty) {
@@ -337,7 +341,7 @@ class _AddBudgetButton extends ConsumerWidget {
                   const SizedBox(height: 20),
                   // Categoria
                   DropdownButtonFormField<String>(
-                    value: selectedCatId,
+                    initialValue: selectedCatId,
                     dropdownColor: AppTheme.cardDarkAlt,
                     decoration: const InputDecoration(labelText: 'Categoria'),
                     items: availableCategories.map<DropdownMenuItem<String>>((c) {

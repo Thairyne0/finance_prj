@@ -9,6 +9,7 @@ import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/responsive_layout.dart';
 import '../../../data/models/savings_goal_model.dart';
 import '../../../widget/tm_widgets.dart';
+import '../widgets/savings_summary_card.dart';
 
 class SavingsScreen extends ConsumerWidget {
   const SavingsScreen({super.key});
@@ -44,9 +45,12 @@ class SavingsScreen extends ConsumerWidget {
                       ResponsiveLayout.horizontalPadding(context),
                       ResponsiveLayout.bottomContentPadding(context),
                     ),
-                    itemCount: goals.length,
+                    itemCount: goals.length + 1,
                     itemBuilder: (context, index) {
-                      final goal = goals[index];
+                      if (index == 0) {
+                        return SavingsSummaryCard();
+                      }
+                      final goal = goals[index - 1];
                       return _GoalCard(goal: goal);
                     },
                   ),

@@ -5,6 +5,7 @@ import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/responsive_layout.dart';
 import '../../../core/widgets/transaction_tile.dart';
+import '../../../core/services/export_service.dart';
 import '../../../data/models/transaction_model.dart';
 import '../../../data/local/hive_service.dart';
 import '../../../widget/tm_widgets.dart';
@@ -83,30 +84,64 @@ class _TransactionListScreenState extends ConsumerState<TransactionListScreen> {
                         'Movimenti',
                         style: Theme.of(context).textTheme.headlineMedium,
                       ),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: AppTheme.cardDark,
-                          borderRadius: BorderRadius.circular(14),
-                          border: Border.all(color: AppTheme.borderDark),
-                        ),
-                        child: IconButton(
-                          onPressed: () {
-                            setState(() {
-                              _showSearch = !_showSearch;
-                              if (!_showSearch) {
-                                _searchController.clear();
-                              }
-                            });
-                          },
-                          icon: Icon(
-                            _showSearch
-                                ? Icons.close_rounded
-                                : Icons.search_rounded,
-                            color: _showSearch
-                                ? AppTheme.expenseColor
-                                : AppTheme.primaryColor,
+                      Row(
+                        children: [
+                          // Bottone export CSV mensile
+                          Container(
+                            decoration: BoxDecoration(
+                              color: AppTheme.cardDark,
+                              borderRadius: BorderRadius.circular(14),
+                              border: Border.all(color: AppTheme.borderDark),
+                            ),
+                            child: IconButton(
+                              tooltip: 'Esporta mese in CSV',
+                              onPressed: () async {
+                                if (monthlyTransactions.isEmpty) {
+                                  TmTopNotification.warning(context, 'Nessun movimento da esportare');
+                                  return;
+                                }
+                                try {
+                                  await ExportService.exportToCsv(monthlyTransactions);
+                                } catch (e) {
+                                  if (context.mounted) {
+                                    TmTopNotification.error(context, 'Errore durante l\'esportazione');
+                                  }
+                                }
+                              },
+                              icon: const Icon(
+                                Icons.file_download_outlined,
+                                color: Colors.cyan,
+                              ),
+                            ),
                           ),
-                        ),
+                          const SizedBox(width: 8),
+                          // Bottone ricerca
+                          Container(
+                            decoration: BoxDecoration(
+                              color: AppTheme.cardDark,
+                              borderRadius: BorderRadius.circular(14),
+                              border: Border.all(color: AppTheme.borderDark),
+                            ),
+                            child: IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  _showSearch = !_showSearch;
+                                  if (!_showSearch) {
+                                    _searchController.clear();
+                                  }
+                                });
+                              },
+                              icon: Icon(
+                                _showSearch
+                                    ? Icons.close_rounded
+                                    : Icons.search_rounded,
+                                color: _showSearch
+                                    ? AppTheme.expenseColor
+                                    : AppTheme.primaryColor,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),

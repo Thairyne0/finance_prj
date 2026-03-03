@@ -1,3 +1,4 @@
+import 'dart:ui' show lerpDouble;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -10,11 +11,16 @@ import '../../../data/local/hive_service.dart';
 import '../../../widget/tm_widgets.dart';
 import '../widgets/mini_chart_widget.dart';
 
-class DashboardScreen extends ConsumerWidget {
+class DashboardScreen extends ConsumerStatefulWidget {
   const DashboardScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<DashboardScreen> createState() => _DashboardScreenState();
+}
+
+class _DashboardScreenState extends ConsumerState<DashboardScreen> {
+  @override
+  Widget build(BuildContext context) {
     final report          = ref.watch(monthlyReportProvider);
     final recentTx        = ref.watch(recentTransactionsProvider);
     final selectedDate    = ref.watch(selectedDateProvider);
@@ -35,6 +41,10 @@ class DashboardScreen extends ConsumerWidget {
     void nextMonth() => ref.read(selectedDateProvider.notifier).state =
         DateTime(selectedDate.year, selectedDate.month + 1);
 
+    // Altezze hero: expanded = altezza piena, collapsed = altezza compatta sticky
+    final double heroExpanded  = isMobile ? (topPad + 220) : (topPad + 200);
+    final double heroCollapsed = isMobile ? 72.0 : 64.0;
+
     return SafeArea(
       bottom: false,
       child: ResponsiveContent(
@@ -45,16 +55,18 @@ class DashboardScreen extends ConsumerWidget {
             physics: ResponsiveLayout.scrollPhysics(context),
             slivers: [
 
-              // ─── HERO PATRIMONIO ─────────────────────────────────────
-              SliverToBoxAdapter(
-                child: _HeroPatrimonioCard(
+              // ─── HERO PATRIMONIO STICKY ──────────────────────────────
+              SliverPersistentHeader(
+                pinned: true,
+                delegate: _PatrimonioHeaderDelegate(
                   patrimonio: patrimonio,
                   totalIncome: totalIncomeAll,
                   totalExpense: totalExpenseAll,
-                  topPad: topPad,
                   hPad: hPad,
                   isDesktop: isDesktop,
                   onAdd: isMobile ? () => context.push('/add-transaction') : null,
+                  expandedHeight: heroExpanded,
+                  collapsedHeight: heroCollapsed,
                 ),
               ),
 
@@ -129,8 +141,13 @@ class DashboardScreen extends ConsumerWidget {
                 ),
                 SliverToBoxAdapter(child: SizedBox(height: vSpace * 0.7)),
 
-                // Mini chart full width
-                const SliverToBoxAdapter(child: MiniChartWidget()),
+                // Mini chart con padding corretto
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: hPad),
+                    child: const MiniChartWidget(),
+                  ),
+                ),
                 SliverToBoxAdapter(child: SizedBox(height: vSpace * 0.7)),
 
                 // Budget
@@ -145,6 +162,14 @@ class DashboardScreen extends ConsumerWidget {
                   child: Padding(
                     padding: EdgeInsets.symmetric(horizontal: hPad),
                     child: _SavingsGoalsMini(),
+                  ),
+                ),
+
+                // Bitcoin mini card
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: hPad),
+                    child: _BitcoinMiniCard(),
                   ),
                 ),
 
@@ -347,7 +372,460 @@ class _FadingTransactionListState extends State<_FadingTransactionList> {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// HERO PATRIMONIO CARD
+// PATRIMONIO STICKY HEADER DELEGATE
+// ═══════════════════════════════════════════════════════════════
+
+class _PatrimonioHeaderDelegate extends SliverPersistentHeaderDelegate {
+  final double patrimonio;
+  final double totalIncome;
+  final double totalExpense;
+  final double hPad;
+  final bool isDesktop;
+  final VoidCallback? onAdd;
+  final double expandedHeight;
+  final double collapsedHeight;
+
+  _PatrimonioHeaderDelegate({
+    required this.patrimonio,
+    required this.totalIncome,
+    required this.totalExpense,
+    required this.hPad,
+    required this.isDesktop,
+    required this.expandedHeight,
+    required this.collapsedHeight,
+    this.onAdd,
+  });
+
+  @override
+  double get maxExtent => expandedHeight;
+  @override
+  double get minExtent => collapsedHeight;
+  @override
+  bool shouldRebuild(_PatrimonioHeaderDelegate old) =>
+      old.patrimonio != patrimonio ||
+      old.totalIncome != totalIncome ||
+      old.totalExpense != totalExpense;
+
+  @override
+  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+    // t = 0 completamente espanso, t = 1 completamente collassato
+    final t = (shrinkOffset / (expandedHeight - collapsedHeight)).clamp(0.0, 1.0);
+    final isPositive = patrimonio >= 0;
+    final accent = isPositive ? AppTheme.incomeColor : AppTheme.expenseColor;
+
+    return _PatrimonioAnimatedHeader(
+      t: t,
+      patrimonio: patrimonio,
+      totalIncome: totalIncome,
+      totalExpense: totalExpense,
+      hPad: hPad,
+      isDesktop: isDesktop,
+      onAdd: onAdd,
+      accent: accent,
+      isPositive: isPositive,
+      collapsedHeight: collapsedHeight,
+    );
+  }
+}
+
+// ─── Widget animato che interpola tra espanso e compatto ──────
+
+class _PatrimonioAnimatedHeader extends StatefulWidget {
+  final double t;
+  final double patrimonio;
+  final double totalIncome;
+  final double totalExpense;
+  final double hPad;
+  final bool isDesktop;
+  final VoidCallback? onAdd;
+  final Color accent;
+  final bool isPositive;
+  final double collapsedHeight;
+
+  const _PatrimonioAnimatedHeader({
+    required this.t,
+    required this.patrimonio,
+    required this.totalIncome,
+    required this.totalExpense,
+    required this.hPad,
+    required this.isDesktop,
+    required this.onAdd,
+    required this.accent,
+    required this.isPositive,
+    required this.collapsedHeight,
+    // ignore: unused_element
+  });
+
+  @override
+  State<_PatrimonioAnimatedHeader> createState() =>
+      _PatrimonioAnimatedHeaderState();
+}
+
+class _PatrimonioAnimatedHeaderState extends State<_PatrimonioAnimatedHeader>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _shimmerController;
+  late final Animation<double> _shimmer;
+
+  @override
+  void initState() {
+    super.initState();
+    _shimmerController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 6),
+    )..repeat(reverse: true);
+    _shimmer = CurvedAnimation(parent: _shimmerController, curve: Curves.easeInOut);
+  }
+
+  @override
+  void dispose() {
+    _shimmerController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final t       = widget.t;
+    final accent  = widget.accent;
+    final hPad    = widget.hPad;
+
+    return AnimatedBuilder(
+      animation: _shimmer,
+      builder: (context, _) {
+        final sv = _shimmer.value;
+
+        // Sfondo: gradiente pieno quando espanso, più scuro e solido quando collassato
+        final bgGradient = LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            AppTheme.surfaceDark,
+            accent.withValues(alpha: (0.08 + sv * 0.16) * (1 - t * 0.5)),
+            accent.withValues(alpha: (0.18 + sv * 0.10) * (1 - t * 0.5)),
+            Color.lerp(AppTheme.cardDarkAlt, AppTheme.surfaceDark, t)!,
+          ],
+          stops: [0.0, 0.2 + sv * 0.15, 0.55 + sv * 0.15, 1.0],
+        );
+
+        // Font size: 38 → 22, accelerato
+        final fontSize = lerpDouble(widget.isDesktop ? 44 : 38, 22, t)!;
+        // Opacità label "Patrimonio totale": sparisce nel primo 30% dello scroll
+        final labelOpacity = (1.0 - t * 3.5).clamp(0.0, 1.0);
+        // Badge scale
+        final badgeScale = lerpDouble(1.0, 0.75, t)!;
+        // Opacità intero layout espanso: sparisce entro t=0.45
+        final expandedOpacity = (1.0 - t * 2.2).clamp(0.0, 1.0);
+
+        return Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+            gradient: bgGradient,
+            border: Border(
+              bottom: BorderSide(
+                color: accent.withValues(alpha: 0.12 + sv * 0.08),
+                width: 1,
+              ),
+            ),
+          ),
+          child: Stack(
+            children: [
+              // ── LAYOUT ESPANSO (clippato, fades out proporzionalmente) ──
+              if (expandedOpacity > 0)
+                Positioned.fill(
+                  child: ClipRect(
+                    child: IgnorePointer(
+                      ignoring: expandedOpacity < 0.05,
+                      child: Opacity(
+                        opacity: expandedOpacity,
+                        child: Padding(
+                          padding: EdgeInsets.fromLTRB(
+                            hPad,
+                            lerpDouble(12, 6, t)!,
+                            hPad,
+                          lerpDouble(16, 8, t)!,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            // Header row
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Opacity(
+                                  opacity: labelOpacity,
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Patrimonio totale',
+                                        style: TextStyle(
+                                          color: Colors.white38,
+                                          fontSize: widget.isDesktop ? 14 : 12,
+                                          fontWeight: FontWeight.w500,
+                                          letterSpacing: 0.3,
+                                        ),
+                                      ),
+                                      Text(
+                                        Formatters.formatMonthYear(DateTime.now()),
+                                        style: const TextStyle(color: Colors.white24, fontSize: 11),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Row(
+                                  children: [
+                                    Transform.scale(
+                                      scale: badgeScale,
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                                        decoration: BoxDecoration(
+                                          color: accent.withValues(alpha: 0.15),
+                                          borderRadius: BorderRadius.circular(20),
+                                          border: Border.all(color: accent.withValues(alpha: 0.3)),
+                                        ),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Icon(
+                                              widget.isPositive
+                                                  ? Icons.trending_up_rounded
+                                                  : Icons.trending_down_rounded,
+                                              color: accent,
+                                              size: 14,
+                                            ),
+                                            const SizedBox(width: 4),
+                                            Text(
+                                              widget.isPositive ? 'Positivo' : 'Negativo',
+                                              style: TextStyle(color: accent, fontSize: 12, fontWeight: FontWeight.w600),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    if (widget.onAdd != null) ...[
+                                      const SizedBox(width: 10),
+                                      GestureDetector(
+                                        onTap: widget.onAdd,
+                                        child: Container(
+                                          width: 38, height: 38,
+                                          decoration: BoxDecoration(
+                                            color: AppTheme.cardDark,
+                                            borderRadius: BorderRadius.circular(12),
+                                            border: Border.all(color: AppTheme.borderDark),
+                                          ),
+                                          child: const Icon(Icons.add_rounded, color: AppTheme.primaryColor, size: 20),
+                                        ),
+                                      ),
+                                    ],
+                                  ],
+                                ),
+                              ],
+                            ),
+
+                            SizedBox(height: lerpDouble(12, 6, t)!),
+
+                            // Importo grande
+                            FittedBox(
+                              fit: BoxFit.scaleDown,
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                Formatters.formatCurrency(widget.patrimonio),
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: fontSize,
+                                  fontWeight: FontWeight.w800,
+                                  letterSpacing: -1,
+                                  height: 1.1,
+                                ),
+                              ),
+                            ),
+
+                            // Quick stats: scalano in altezza proporzionalmente a t
+                            ClipRect(
+                              child: Align(
+                                alignment: Alignment.topCenter,
+                                heightFactor: (1.0 - t * 3.0).clamp(0.0, 1.0),
+                                child: Opacity(
+                                  opacity: (1.0 - t * 4.0).clamp(0.0, 1.0),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      SizedBox(height: lerpDouble(16, 0, t)!),
+                                      Row(
+                                        children: [
+                                          _QuickStat(
+                                            label: 'Entrate totali',
+                                            amount: widget.totalIncome,
+                                            icon: Icons.south_west_rounded,
+                                            color: AppTheme.incomeColor,
+                                          ),
+                                          const SizedBox(width: 10),
+                                          _QuickStat(
+                                            label: 'Uscite totali',
+                                            amount: widget.totalExpense,
+                                            icon: Icons.north_east_rounded,
+                                            color: AppTheme.expenseColor,
+                                          ),
+                                          const SizedBox(width: 10),
+                                          Expanded(
+                                            child: Container(
+                                              padding: const EdgeInsets.all(12),
+                                              decoration: BoxDecoration(
+                                                color: Colors.white.withValues(alpha: 0.05),
+                                                borderRadius: BorderRadius.circular(14),
+                                                border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+                                              ),
+                                              child: Column(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  Row(
+                                                    children: [
+                                                      Icon(Icons.savings_rounded, color: AppTheme.warningColor, size: 14),
+                                                      const SizedBox(width: 5),
+                                                      const Text('Risparmio',
+                                                          style: TextStyle(color: Colors.white38, fontSize: 11, fontWeight: FontWeight.w500)),
+                                                    ],
+                                                  ),
+                                                  const SizedBox(height: 6),
+                                                  Text(
+                                                    widget.totalIncome > 0
+                                                        ? '${((1 - widget.totalExpense / widget.totalIncome).clamp(0, 1) * 100).toStringAsFixed(0)}%'
+                                                        : '—',
+                                                    style: const TextStyle(color: AppTheme.warningColor, fontSize: 16, fontWeight: FontWeight.w700),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+
+              // ── LAYOUT COMPATTO (visibile quando t > 0.5) ──
+              Positioned.fill(
+                child: Opacity(
+                  opacity: (t * 2.0 - 1.0).clamp(0.0, 1.0),
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: hPad),
+                    child: Row(
+                      children: [
+                        // Icona
+                        Container(
+                          width: 34, height: 34,
+                          decoration: BoxDecoration(
+                            color: accent.withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(color: accent.withValues(alpha: 0.3)),
+                          ),
+                          child: Icon(
+                            widget.isPositive ? Icons.account_balance_wallet_rounded : Icons.warning_rounded,
+                            color: accent, size: 16,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        // Label + importo
+                        Expanded(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Patrimonio totale',
+                                style: TextStyle(color: Colors.white38, fontSize: 11, fontWeight: FontWeight.w500),
+                              ),
+                              Text(
+                                Formatters.formatCurrency(widget.patrimonio),
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w800,
+                                  letterSpacing: -0.5,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        // Mini stats in row
+                        _MiniStatChip(
+                          label: 'Entrate',
+                          value: Formatters.formatCompact(widget.totalIncome),
+                          color: AppTheme.incomeColor,
+                        ),
+                        const SizedBox(width: 8),
+                        _MiniStatChip(
+                          label: 'Uscite',
+                          value: Formatters.formatCompact(widget.totalExpense),
+                          color: AppTheme.expenseColor,
+                        ),
+                        if (widget.onAdd != null) ...[
+                          const SizedBox(width: 8),
+                          GestureDetector(
+                            onTap: widget.onAdd,
+                            child: Container(
+                              width: 34, height: 34,
+                              decoration: BoxDecoration(
+                                color: AppTheme.cardDark,
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(color: AppTheme.borderDark),
+                              ),
+                              child: const Icon(Icons.add_rounded, color: AppTheme.primaryColor, size: 18),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _MiniStatChip extends StatelessWidget {
+  final String label;
+  final String value;
+  final Color color;
+
+  const _MiniStatChip({required this.label, required this.value, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: color.withValues(alpha: 0.25)),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(label, style: TextStyle(color: color.withValues(alpha: 0.7), fontSize: 9, fontWeight: FontWeight.w500)),
+          Text(value, style: TextStyle(color: color, fontSize: 12, fontWeight: FontWeight.w700)),
+        ],
+      ),
+    );
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// HERO PATRIMONIO CARD (legacy — mantenuto per compatibilità)
 // ═══════════════════════════════════════════════════════════════
 
 class _HeroPatrimonioCard extends StatefulWidget {
@@ -1108,3 +1586,102 @@ class _SavingsGoalsMini extends ConsumerWidget {
   }
 }
 
+// ═══════════════════════════════════════════════════════════════
+// BITCOIN MINI CARD (Dashboard)
+// ═══════════════════════════════════════════════════════════════
+
+class _BitcoinMiniCard extends ConsumerWidget {
+  const _BitcoinMiniCard();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final priceAsync = ref.watch(bitcoinPriceProvider);
+    final btcAmount  = ref.watch(userBtcAmountProvider);
+
+    return GestureDetector(
+      onTap: () => context.push('/crypto'),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              const Color(0xFFF7931A).withValues(alpha: 0.10),
+              AppTheme.cardDark,
+            ],
+          ),
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: const Color(0xFFF7931A).withValues(alpha: 0.22)),
+        ),
+        child: Row(
+          children: [
+            // Icon BTC
+            Container(
+              width: 40, height: 40,
+              decoration: BoxDecoration(
+                color: const Color(0xFFF7931A).withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Center(
+                child: Text('₿', style: TextStyle(color: Color(0xFFF7931A), fontSize: 20, fontWeight: FontWeight.w700)),
+              ),
+            ),
+            const SizedBox(width: 14),
+            // Prezzo
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('Bitcoin', style: TextStyle(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.w600)),
+                  priceAsync.when(
+                    loading: () => const Text('Caricamento...', style: TextStyle(color: Colors.white24, fontSize: 12)),
+                    error: (e, st) => const Text('Errore connessione', style: TextStyle(color: AppTheme.expenseColor, fontSize: 12)),
+                    data: (price) {
+                      final isUp = price.change24h >= 0;
+                      final color = isUp ? AppTheme.incomeColor : AppTheme.expenseColor;
+                      return Row(
+                        children: [
+                          Text(
+                            Formatters.formatCurrency(price.priceEur),
+                            style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w700),
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            '${isUp ? '+' : ''}${price.change24h.toStringAsFixed(2)}%',
+                            style: TextStyle(color: color, fontSize: 12, fontWeight: FontWeight.w600),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+            // Valore portafoglio (se impostato)
+            if (btcAmount > 0)
+              priceAsync.maybeWhen(
+                data: (price) => Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      '₿ ${btcAmount.toStringAsFixed(btcAmount < 1 ? 6 : 4)}',
+                      style: const TextStyle(color: Colors.white38, fontSize: 11),
+                    ),
+                    Text(
+                      Formatters.formatCurrency(btcAmount * price.priceEur),
+                      style: const TextStyle(color: AppTheme.incomeColor, fontSize: 13, fontWeight: FontWeight.w700),
+                    ),
+                  ],
+                ),
+                orElse: () => const SizedBox.shrink(),
+              ),
+            const SizedBox(width: 8),
+            const Icon(Icons.chevron_right_rounded, color: Colors.white24, size: 18),
+          ],
+        ),
+      ),
+    );
+  }
+}

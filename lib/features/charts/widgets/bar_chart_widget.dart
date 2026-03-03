@@ -80,6 +80,7 @@ class IncomeExpenseBarChart extends ConsumerWidget {
                         bottomTitles: AxisTitles(
                           sideTitles: SideTitles(
                             showTitles: true,
+                            interval: 1,
                             getTitlesWidget: (value, meta) {
                               final i = value.toInt();
                               if (i < 0 || i >= reports.length) {

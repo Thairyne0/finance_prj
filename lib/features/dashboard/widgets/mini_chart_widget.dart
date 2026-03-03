@@ -70,6 +70,7 @@ class MiniChartWidget extends ConsumerWidget {
                         bottomTitles: AxisTitles(
                           sideTitles: SideTitles(
                             showTitles: true,
+                            interval: 1,
                             getTitlesWidget: (value, meta) {
                               final index = value.toInt();
                               if (index < 0 || index >= reports.length) {
