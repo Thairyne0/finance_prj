@@ -17,7 +17,7 @@ class IncomeExpenseBarChart extends ConsumerWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: AppTheme.cardDark,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(6),
         border: Border.all(color: AppTheme.borderDark),
       ),
       child: Column(
@@ -93,7 +93,7 @@ class IncomeExpenseBarChart extends ConsumerWidget {
                                     DateTime(reports[i].year, reports[i].month),
                                   ),
                                   style: const TextStyle(
-                                    color: Colors.white38,
+                                    color: AppTheme.textMuted,
                                     fontSize: 11,
                                   ),
                                 ),
@@ -154,7 +154,7 @@ class IncomeExpenseBarChart extends ConsumerWidget {
                       style: Theme.of(context)
                           .textTheme
                           .bodySmall
-                          ?.copyWith(color: Colors.white24),
+                          ?.copyWith(color: AppTheme.textMuted),
                     ),
                   ),
           ),
@@ -190,7 +190,7 @@ class _Dot extends StatelessWidget {
         ),
         const SizedBox(width: 4),
         Text(label,
-            style: const TextStyle(color: Colors.white54, fontSize: 11)),
+            style: const TextStyle(color: AppTheme.textTertiary, fontSize: 11)),
       ],
     );
   }

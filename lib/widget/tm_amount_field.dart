@@ -44,7 +44,7 @@ class TmAmountField extends StatelessWidget {
             prefixStyle: amountColor != null
                 ? Theme.of(context).textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.w700,
-                      color: Colors.white38,
+                      color: const Color(0xFF454A5C),
                     )
                 : null,
             hintText: hintText,

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../core/theme/app_theme.dart';
 
-/// Barra di progresso animata con gradient fill e glow sottile.
+/// Progress bar Marathon — barra neon con glow e sfondo incassato.
 class TmProgressBar extends StatefulWidget {
   final double value;
   final Color? color;
@@ -16,8 +16,8 @@ class TmProgressBar extends StatefulWidget {
     required this.value,
     this.color,
     this.backgroundColor,
-    this.height = 8,
-    this.borderRadius = 6,
+    this.height = 6,
+    this.borderRadius = 2,
     this.gradient,
     this.duration = const Duration(milliseconds: 800),
   });
@@ -64,9 +64,8 @@ class _TmProgressBarState extends State<TmProgressBar>
 
   @override
   Widget build(BuildContext context) {
-    final baseColor = widget.color ?? AppTheme.primaryColor;
+    final c = widget.color ?? AppTheme.primaryColor;
     final bg = widget.backgroundColor ?? AppTheme.borderDark;
-    final br = widget.borderRadius;
 
     return AnimatedBuilder(
       animation: _progress,
@@ -74,28 +73,22 @@ class _TmProgressBarState extends State<TmProgressBar>
         return Container(
           height: widget.height,
           decoration: BoxDecoration(
-            color: bg,
-            borderRadius: BorderRadius.circular(br),
+            color: bg.withValues(alpha: 0.5),
+            borderRadius: BorderRadius.circular(widget.borderRadius),
           ),
           child: FractionallySizedBox(
             alignment: Alignment.centerLeft,
             widthFactor: _progress.value,
             child: Container(
               decoration: BoxDecoration(
-                gradient: widget.gradient ??
-                    LinearGradient(
-                      colors: [
-                        baseColor,
-                        baseColor.withValues(alpha: 0.65),
-                      ],
-                    ),
-                borderRadius: BorderRadius.circular(br),
+                color: c,
+                borderRadius: BorderRadius.circular(widget.borderRadius),
                 boxShadow: [
+                  BoxShadow(color: c.withValues(alpha: 0.5), blurRadius: 8),
                   BoxShadow(
-                    color: baseColor.withValues(alpha: 0.35),
-                    blurRadius: 8,
-                    offset: const Offset(0, 0),
-                  ),
+                      color: c.withValues(alpha: 0.2),
+                      blurRadius: 20,
+                      spreadRadius: -4),
                 ],
               ),
             ),

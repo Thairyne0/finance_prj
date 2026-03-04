@@ -45,7 +45,7 @@ class BottomNavShell extends StatelessWidget {
     return Scaffold(
       body: child,
       extendBody: true,
-      bottomNavigationBar: _PremiumBottomNav(
+      bottomNavigationBar: _MarathonBottomNav(
         selectedIndex: selectedIndex,
         onItemTapped: (index) => _onItemTapped(context, index),
         onAddTapped: () {
@@ -62,14 +62,18 @@ class BottomNavShell extends StatelessWidget {
   }
 }
 
-class _PremiumBottomNav extends StatefulWidget {
+// ═══════════════════════════════════════════════════════════════
+// MARATHON-STYLE BOTTOM NAV — pannello HUD industriale
+// ═══════════════════════════════════════════════════════════════
+
+class _MarathonBottomNav extends StatefulWidget {
   final int selectedIndex;
   final ValueChanged<int> onItemTapped;
   final VoidCallback onAddTapped;
   final VoidCallback onChatTapped;
   final double bottomPadding;
 
-  const _PremiumBottomNav({
+  const _MarathonBottomNav({
     required this.selectedIndex,
     required this.onItemTapped,
     required this.onAddTapped,
@@ -78,168 +82,117 @@ class _PremiumBottomNav extends StatefulWidget {
   });
 
   @override
-  State<_PremiumBottomNav> createState() => _PremiumBottomNavState();
+  State<_MarathonBottomNav> createState() => _MarathonBottomNavState();
 }
 
-class _PremiumBottomNavState extends State<_PremiumBottomNav>
+class _MarathonBottomNavState extends State<_MarathonBottomNav>
     with TickerProviderStateMixin {
-  late AnimationController _fabController;
+  late AnimationController _fabCtrl;
   late Animation<double> _fabScale;
 
   @override
   void initState() {
     super.initState();
-    _fabController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 200),
-    );
-    _fabScale = Tween<double>(begin: 1.0, end: 0.85).animate(
-      CurvedAnimation(parent: _fabController, curve: Curves.easeInOut),
+    _fabCtrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 150));
+    _fabScale = Tween<double>(begin: 1.0, end: 0.88).animate(
+      CurvedAnimation(parent: _fabCtrl, curve: Curves.easeInOut),
     );
   }
 
   @override
-  void dispose() {
-    _fabController.dispose();
-    super.dispose();
-  }
+  void dispose() { _fabCtrl.dispose(); super.dispose(); }
 
   @override
   Widget build(BuildContext context) {
-    final navHeight = 68 + widget.bottomPadding;
+    final navH = 64 + widget.bottomPadding;
 
     return SizedBox(
-      height: navHeight + 32,
+      height: navH + 32,
       child: Stack(
         alignment: Alignment.bottomCenter,
         clipBehavior: Clip.none,
         children: [
-          // Barra con effetto glassmorphism
+          // ── Barra HUD ─────────────────────────────────────────
           ClipRect(
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
               child: Container(
-                height: navHeight,
+                height: navH,
                 decoration: BoxDecoration(
                   color: AppTheme.surfaceDark.withValues(alpha: 0.92),
-                  border: const Border(
-                    top: BorderSide(
-                      color: Color(0xFF2A2A3E),
-                      width: 0.5,
-                    ),
+                  border: Border(
+                    top: BorderSide(color: AppTheme.primaryColor.withValues(alpha: 0.25), width: 0.5),
                   ),
+                  boxShadow: [
+                    BoxShadow(color: Colors.black.withValues(alpha: 0.5), blurRadius: 20, offset: const Offset(0, -4)),
+                    BoxShadow(color: AppTheme.primaryColor.withValues(alpha: 0.05), blurRadius: 30, offset: const Offset(0, -2)),
+                  ],
                 ),
                 child: Padding(
                   padding: EdgeInsets.only(bottom: widget.bottomPadding),
-                  child: Row(
-                    children: [
-                      // Sinistra: Home, Movimenti
-                      Expanded(
-                        flex: 2,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            _NavItem(
-                              icon: Icons.home_rounded,
-                              outlinedIcon: Icons.home_outlined,
-                              label: 'Home',
-                              isSelected: widget.selectedIndex == 0,
-                              onTap: () => widget.onItemTapped(0),
-                            ),
-                            _NavItem(
-                              icon: Icons.swap_horiz_rounded,
-                              outlinedIcon: Icons.swap_horiz_rounded,
-                              label: 'Movimenti',
-                              isSelected: widget.selectedIndex == 1,
-                              onTap: () => widget.onItemTapped(1),
-                            ),
-                          ],
-                        ),
-                      ),
-                      // Spazio centrale per FAB
-                      const SizedBox(width: 80),
-                      // Destra: Grafici, Altro
-                      Expanded(
-                        flex: 2,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            _NavItem(
-                              icon: Icons.insights_rounded,
-                              outlinedIcon: Icons.insights_outlined,
-                              label: 'Grafici',
-                              isSelected: widget.selectedIndex == 2,
-                              onTap: () => widget.onItemTapped(2),
-                            ),
-                            _NavItem(
-                              icon: Icons.grid_view_rounded,
-                              outlinedIcon: Icons.grid_view_rounded,
-                              label: 'Altro',
-                              isSelected: widget.selectedIndex == 3,
-                              onTap: () => widget.onItemTapped(3),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
+                  child: Row(children: [
+                    Expanded(flex: 2, child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        _NavItem(icon: Icons.dashboard_rounded, outlinedIcon: Icons.dashboard_outlined,
+                          label: 'HQ', isSelected: widget.selectedIndex == 0,
+                          onTap: () => widget.onItemTapped(0)),
+                        _NavItem(icon: Icons.swap_horiz_rounded, outlinedIcon: Icons.swap_horiz_rounded,
+                          label: 'LOG', isSelected: widget.selectedIndex == 1,
+                          onTap: () => widget.onItemTapped(1)),
+                      ],
+                    )),
+                    const SizedBox(width: 76),
+                    Expanded(flex: 2, child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        _NavItem(icon: Icons.insights_rounded, outlinedIcon: Icons.insights_outlined,
+                          label: 'DATA', isSelected: widget.selectedIndex == 2,
+                          onTap: () => widget.onItemTapped(2)),
+                        _NavItem(icon: Icons.tune_rounded, outlinedIcon: Icons.tune_rounded,
+                          label: 'SYS', isSelected: widget.selectedIndex == 3,
+                          onTap: () => widget.onItemTapped(3)),
+                      ],
+                    )),
+                  ]),
                 ),
               ),
             ),
           ),
 
-          // FAB + Chat
+          // ── FAB + Chat ────────────────────────────────────────
           Positioned(
-            bottom: navHeight - 28,
+            bottom: navH - 26,
             child: Row(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                // Chat bubble
                 _ChatBubbleButton(onTap: widget.onChatTapped),
-                const SizedBox(width: 10),
-                // FAB principale
+                const SizedBox(width: 8),
+                // FAB — rosso ossidato Marathon
                 GestureDetector(
-                  onTapDown: (_) => _fabController.forward(),
-                  onTapUp: (_) {
-                    _fabController.reverse();
-                    widget.onAddTapped();
-                  },
-                  onTapCancel: () => _fabController.reverse(),
+                  onTapDown: (_) => _fabCtrl.forward(),
+                  onTapUp: (_) { _fabCtrl.reverse(); widget.onAddTapped(); },
+                  onTapCancel: () => _fabCtrl.reverse(),
                   child: ScaleTransition(
                     scale: _fabScale,
                     child: Container(
-                      width: 58,
-                      height: 58,
+                      width: 54, height: 54,
                       decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [
-                            Color(0xFF8B7CF7),
-                            AppTheme.primaryColor,
-                            Color(0xFF5A4BD1),
-                          ],
+                        color: AppTheme.primaryColor,
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border(
+                          top: BorderSide(color: Colors.white.withValues(alpha: 0.15), width: 0.5),
+                          left: BorderSide(color: Colors.white.withValues(alpha: 0.08), width: 0.5),
+                          right: BorderSide(color: Colors.black.withValues(alpha: 0.2), width: 0.5),
+                          bottom: BorderSide(color: Colors.black.withValues(alpha: 0.3), width: 0.5),
                         ),
-                        borderRadius: BorderRadius.circular(20),
                         boxShadow: [
-                          BoxShadow(
-                            color: AppTheme.primaryColor.withValues(alpha: 0.4),
-                            blurRadius: 16,
-                            offset: const Offset(0, 6),
-                          ),
-                          BoxShadow(
-                            color: AppTheme.primaryColor.withValues(alpha: 0.2),
-                            blurRadius: 30,
-                            offset: const Offset(0, 10),
-                          ),
+                          BoxShadow(color: AppTheme.primaryColor.withValues(alpha: 0.4), blurRadius: 16, offset: const Offset(0, 4)),
+                          BoxShadow(color: AppTheme.primaryColor.withValues(alpha: 0.15), blurRadius: 40, offset: const Offset(0, 8)),
                         ],
                       ),
-                      child: const Icon(
-                        Icons.add_rounded,
-                        color: Colors.white,
-                        size: 30,
-                      ),
+                      child: const Icon(Icons.add_rounded, color: AppTheme.textPrimary, size: 28),
                     ),
                   ),
                 ),
@@ -252,40 +205,32 @@ class _PremiumBottomNavState extends State<_PremiumBottomNav>
   }
 }
 
+// ── Chat bubble — ciano neon ──────────────────────────────────────
 class _ChatBubbleButton extends StatefulWidget {
   final VoidCallback onTap;
   const _ChatBubbleButton({required this.onTap});
-
   @override
   State<_ChatBubbleButton> createState() => _ChatBubbleButtonState();
 }
 
 class _ChatBubbleButtonState extends State<_ChatBubbleButton>
     with SingleTickerProviderStateMixin {
-  late AnimationController _pulseController;
+  late AnimationController _pulse;
   late Animation<double> _pulseAnim;
 
   @override
   void initState() {
     super.initState();
-    _pulseController = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 3),
-    )..repeat(reverse: true);
+    _pulse = AnimationController(vsync: this, duration: const Duration(seconds: 3))
+      ..repeat(reverse: true);
     _pulseAnim = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
+      CurvedAnimation(parent: _pulse, curve: Curves.easeInOut),
     );
-    // Ferma l'animazione dopo qualche secondo per risparmiare batteria
-    Future.delayed(const Duration(seconds: 9), () {
-      if (mounted) _pulseController.stop();
-    });
+    Future.delayed(const Duration(seconds: 9), () { if (mounted) _pulse.stop(); });
   }
 
   @override
-  void dispose() {
-    _pulseController.dispose();
-    super.dispose();
-  }
+  void dispose() { _pulse.dispose(); super.dispose(); }
 
   @override
   Widget build(BuildContext context) {
@@ -295,36 +240,24 @@ class _ChatBubbleButtonState extends State<_ChatBubbleButton>
         animation: _pulseAnim,
         builder: (context, child) {
           return Container(
-            width: 42,
-            height: 42,
+            width: 40, height: 40,
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  const Color(0xFF00D2D3),
-                  Color.lerp(
-                    const Color(0xFF00D2D3),
-                    const Color(0xFF00B894),
-                    _pulseAnim.value,
-                  )!,
-                ],
+              color: AppTheme.secondaryColor.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(4),
+              border: Border(
+                top: BorderSide(color: AppTheme.secondaryColor.withValues(alpha: 0.4 + _pulseAnim.value * 0.2), width: 0.5),
+                left: BorderSide(color: AppTheme.secondaryColor.withValues(alpha: 0.15), width: 0.5),
+                right: BorderSide(color: AppTheme.secondaryColor.withValues(alpha: 0.15), width: 0.5),
+                bottom: BorderSide(color: AppTheme.secondaryColor.withValues(alpha: 0.05), width: 0.5),
               ),
-              borderRadius: BorderRadius.circular(14),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF00D2D3)
-                      .withValues(alpha: 0.3 + (_pulseAnim.value * 0.15)),
-                  blurRadius: 10 + (_pulseAnim.value * 4),
-                  offset: const Offset(0, 4),
+                  color: AppTheme.secondaryColor.withValues(alpha: 0.2 + _pulseAnim.value * 0.1),
+                  blurRadius: 10 + _pulseAnim.value * 4, offset: const Offset(0, 2),
                 ),
               ],
             ),
-            child: const Icon(
-              Icons.auto_awesome_rounded,
-              color: Colors.white,
-              size: 20,
-            ),
+            child: Icon(Icons.auto_awesome_rounded, color: AppTheme.secondaryColor, size: 18),
           );
         },
       ),
@@ -332,7 +265,7 @@ class _ChatBubbleButtonState extends State<_ChatBubbleButton>
   }
 }
 
-
+// ── Nav item — stile HUD label uppercase ──────────────────────────
 class _NavItem extends StatelessWidget {
   final IconData icon;
   final IconData outlinedIcon;
@@ -341,11 +274,8 @@ class _NavItem extends StatelessWidget {
   final VoidCallback onTap;
 
   const _NavItem({
-    required this.icon,
-    required this.outlinedIcon,
-    required this.label,
-    required this.isSelected,
-    required this.onTap,
+    required this.icon, required this.outlinedIcon,
+    required this.label, required this.isSelected, required this.onTap,
   });
 
   @override
@@ -354,34 +284,34 @@ class _NavItem extends StatelessWidget {
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: SizedBox(
-        width: 64,
+        width: 60,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             AnimatedContainer(
-              duration: const Duration(milliseconds: 250),
+              duration: const Duration(milliseconds: 200),
               curve: Curves.easeOutCubic,
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
               decoration: BoxDecoration(
-                color: isSelected
-                    ? AppTheme.primaryColor.withValues(alpha: 0.15)
-                    : Colors.transparent,
-                borderRadius: BorderRadius.circular(12),
+                color: isSelected ? AppTheme.primaryColor.withValues(alpha: 0.12) : Colors.transparent,
+                borderRadius: BorderRadius.circular(4),
+                border: isSelected
+                    ? Border(top: BorderSide(color: AppTheme.primaryColor.withValues(alpha: 0.5), width: 0.5))
+                    : null,
               ),
               child: Icon(
-                isSelected ? icon : outlinedIcon,
-                size: 22,
-                color: isSelected ? AppTheme.primaryColor : Colors.white38,
+                isSelected ? icon : outlinedIcon, size: 21,
+                color: isSelected ? AppTheme.primaryColor : AppTheme.textTertiary,
               ),
             ),
             const SizedBox(height: 2),
             AnimatedDefaultTextStyle(
-              duration: const Duration(milliseconds: 250),
+              duration: const Duration(milliseconds: 200),
               style: TextStyle(
-                fontSize: 10,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                color: isSelected ? AppTheme.primaryColor : Colors.white38,
+                fontSize: 9, fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                color: isSelected ? AppTheme.primaryColor : AppTheme.textTertiary,
+                letterSpacing: 1.2,
               ),
               child: Text(label),
             ),

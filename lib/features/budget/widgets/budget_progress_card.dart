@@ -42,7 +42,7 @@ class BudgetProgressCard extends StatelessWidget {
         padding: const EdgeInsets.only(right: 24),
         decoration: BoxDecoration(
           color: AppTheme.expenseColor.withValues(alpha: 0.2),
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(6),
         ),
         child: const Icon(Icons.delete_outline, color: AppTheme.expenseColor),
       ),
@@ -50,7 +50,7 @@ class BudgetProgressCard extends StatelessWidget {
         padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
           color: AppTheme.cardDark,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(6),
           border: Border.all(
             color: isOver
                 ? AppTheme.expenseColor.withValues(alpha: 0.4)
@@ -86,7 +86,7 @@ class BudgetProgressCard extends StatelessWidget {
                         style: TextStyle(
                           color: isOver
                               ? AppTheme.expenseColor
-                              : Colors.white54,
+                              : AppTheme.textTertiary,
                           fontSize: 12,
                         ),
                       ),
@@ -124,7 +124,7 @@ class BudgetProgressCard extends StatelessWidget {
                 ),
                 Text(
                   Formatters.formatCurrency(budgetLimit),
-                  style: const TextStyle(color: Colors.white38, fontSize: 13),
+                  style: const TextStyle(color: AppTheme.textMuted, fontSize: 13),
                 ),
               ],
             ),

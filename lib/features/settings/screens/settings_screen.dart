@@ -168,7 +168,7 @@ class SettingsScreen extends ConsumerWidget {
               items: [
                 _SettingsItem(
                   icon: Icons.info_outline_rounded,
-                  iconColor: Colors.white54,
+                  iconColor: AppTheme.textTertiary,
                   title: 'Versione',
                   subtitle: '1.0.0',
                   onTap: () {},
@@ -184,7 +184,7 @@ class SettingsScreen extends ConsumerWidget {
                 style: Theme.of(context)
                     .textTheme
                     .bodySmall
-                    ?.copyWith(color: Colors.white24),
+                    ?.copyWith(color: AppTheme.textMuted),
               ),
             ),
           ],
@@ -213,7 +213,7 @@ class SettingsScreen extends ConsumerWidget {
       isScrollControlled: true,
       useSafeArea: true,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(8)),
       ),
       builder: (ctx) => Padding(
         padding: const EdgeInsets.fromLTRB(20, 24, 20, 40),
@@ -256,7 +256,7 @@ class SettingsScreen extends ConsumerWidget {
                       style: TextStyle(
                         color: isSelected
                             ? AppTheme.primaryColor
-                            : Colors.white54,
+                            : AppTheme.textTertiary,
                         fontWeight: FontWeight.w700,
                         fontSize: 16,
                       ),
@@ -282,17 +282,17 @@ class SettingsScreen extends ConsumerWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: AppTheme.cardDark,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
         title: const Text('Cancella tutti i dati?'),
         content: const Text(
           'Questa azione è irreversibile. Tutti i movimenti, budget e obiettivi verranno eliminati.',
-          style: TextStyle(color: Colors.white70),
+          style: TextStyle(color: AppTheme.textSecondary),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
             child:
-                const Text('Annulla', style: TextStyle(color: Colors.white54)),
+                const Text('Annulla', style: TextStyle(color: AppTheme.textTertiary)),
           ),
           TextButton(
             onPressed: () {
@@ -325,7 +325,7 @@ class _SettingsGroup extends StatelessWidget {
           child: Text(
             title.toUpperCase(),
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Colors.white38,
+                  color: AppTheme.textMuted,
                   letterSpacing: 1.5,
                   fontWeight: FontWeight.w600,
                 ),
@@ -334,15 +334,14 @@ class _SettingsGroup extends StatelessWidget {
         Container(
           decoration: BoxDecoration(
             color: AppTheme.cardDark,
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: AppTheme.borderDark, width: 0.8),
-            boxShadow: [
-              BoxShadow(
-                color: AppTheme.primaryColor.withValues(alpha: 0.03),
-                blurRadius: 20,
-                spreadRadius: -8,
-              ),
-            ],
+            borderRadius: BorderRadius.circular(4),
+            border: Border(
+              top: BorderSide(color: AppTheme.primaryColor.withValues(alpha: 0.2), width: 0.5),
+              left: BorderSide(color: AppTheme.borderDark.withValues(alpha: 0.5), width: 0.5),
+              right: BorderSide(color: AppTheme.borderDark.withValues(alpha: 0.5), width: 0.5),
+              bottom: BorderSide(color: AppTheme.borderDark.withValues(alpha: 0.2), width: 0.5),
+            ),
+            boxShadow: AppTheme.realisticShadow(elevation: 0.4),
           ),
           child: Column(
             children: List.generate(items.length, (i) {
@@ -386,9 +385,9 @@ class _SettingsItem extends StatelessWidget {
       leading: TmIconBadge(
         icon: icon,
         color: iconColor,
-        size: 40,
-        iconSize: 20,
-        borderRadius: 12,
+        size: 38,
+        iconSize: 18,
+        borderRadius: 4,
         opacity: 0.12,
         enableGlow: true,
       ),
@@ -404,10 +403,10 @@ class _SettingsItem extends StatelessWidget {
         style: Theme.of(context)
             .textTheme
             .bodySmall
-            ?.copyWith(color: Colors.white38),
+            ?.copyWith(color: AppTheme.textMuted),
       ),
       trailing:
-          const Icon(Icons.chevron_right_rounded, color: Colors.white24),
+          const Icon(Icons.chevron_right_rounded, color: AppTheme.textMuted),
     );
   }
 }

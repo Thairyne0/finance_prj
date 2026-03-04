@@ -585,7 +585,7 @@ class _PatrimonioAnimatedHeaderState extends State<_PatrimonioAnimatedHeader>
                                               Text(
                                                 'Patrimonio totale',
                                                 style: TextStyle(
-                                                  color: Colors.white38,
+                                                  color: AppTheme.textMuted,
                                                   fontSize: widget.isDesktop ? 14 : 12,
                                                   fontWeight: FontWeight.w500,
                                                   letterSpacing: 0.3,
@@ -593,7 +593,7 @@ class _PatrimonioAnimatedHeaderState extends State<_PatrimonioAnimatedHeader>
                                               ),
                                               Text(
                                                 Formatters.formatMonthYear(DateTime.now()),
-                                                style: const TextStyle(color: Colors.white24, fontSize: 11),
+                                                style: const TextStyle(color: AppTheme.textMuted, fontSize: 11),
                                               ),
                                             ],
                                           ),
@@ -606,7 +606,7 @@ class _PatrimonioAnimatedHeaderState extends State<_PatrimonioAnimatedHeader>
                                                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                                                 decoration: BoxDecoration(
                                                   color: accent.withValues(alpha: 0.15),
-                                                  borderRadius: BorderRadius.circular(20),
+                                                  borderRadius: BorderRadius.circular(6),
                                                   border: Border.all(color: accent.withValues(alpha: 0.3)),
                                                 ),
                                                 child: Row(
@@ -657,7 +657,7 @@ class _PatrimonioAnimatedHeaderState extends State<_PatrimonioAnimatedHeader>
                                       child: Text(
                                         Formatters.formatCurrency(widget.patrimonio),
                                         style: TextStyle(
-                                          color: Colors.white,
+                                          color: AppTheme.textPrimary,
                                           fontSize: fontSize,
                                           fontWeight: FontWeight.w800,
                                           letterSpacing: -1,
@@ -698,7 +698,7 @@ class _PatrimonioAnimatedHeaderState extends State<_PatrimonioAnimatedHeader>
                                                       padding: const EdgeInsets.all(12),
                                                       decoration: BoxDecoration(
                                                         color: Colors.white.withValues(alpha: 0.05),
-                                                        borderRadius: BorderRadius.circular(14),
+                                                        borderRadius: BorderRadius.circular(4),
                                                         border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
                                                       ),
                                                       child: Column(
@@ -709,7 +709,7 @@ class _PatrimonioAnimatedHeaderState extends State<_PatrimonioAnimatedHeader>
                                                               Icon(Icons.savings_rounded, color: AppTheme.warningColor, size: 14),
                                                               const SizedBox(width: 5),
                                                               const Text('Risparmio',
-                                                                  style: TextStyle(color: Colors.white38, fontSize: 11, fontWeight: FontWeight.w500)),
+                                                                  style: TextStyle(color: AppTheme.textMuted, fontSize: 11, fontWeight: FontWeight.w500)),
                                                             ],
                                                           ),
                                                           const SizedBox(height: 6),
@@ -765,11 +765,11 @@ class _PatrimonioAnimatedHeaderState extends State<_PatrimonioAnimatedHeader>
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     const Text('Patrimonio totale',
-                                        style: TextStyle(color: Colors.white38, fontSize: 11, fontWeight: FontWeight.w500)),
+                                        style: TextStyle(color: AppTheme.textMuted, fontSize: 11, fontWeight: FontWeight.w500)),
                                     Text(
                                       Formatters.formatCurrency(widget.patrimonio),
                                       style: const TextStyle(
-                                        color: Colors.white,
+                                        color: AppTheme.textPrimary,
                                         fontSize: 18,
                                         fontWeight: FontWeight.w800,
                                         letterSpacing: -0.5,
@@ -858,7 +858,6 @@ class _HeroPatrimonioCard extends StatefulWidget {
   final double topPad;
   final double hPad;
   final bool isDesktop;
-  final VoidCallback? onAdd;
 
   const _HeroPatrimonioCard({
     required this.patrimonio,
@@ -867,7 +866,6 @@ class _HeroPatrimonioCard extends StatefulWidget {
     required this.topPad,
     required this.hPad,
     required this.isDesktop,
-    this.onAdd,
   });
 
   @override
@@ -951,7 +949,7 @@ class _HeroPatrimonioCardState extends State<_HeroPatrimonioCard>
                       Text(
                         'Patrimonio totale',
                         style: TextStyle(
-                          color: Colors.white38,
+                          color: AppTheme.textMuted,
                           fontSize: widget.isDesktop ? 14 : 12,
                           fontWeight: FontWeight.w500,
                           letterSpacing: 0.3,
@@ -961,7 +959,7 @@ class _HeroPatrimonioCardState extends State<_HeroPatrimonioCard>
                       Text(
                         Formatters.formatMonthYear(DateTime.now()),
                         style: TextStyle(
-                          color: Colors.white24,
+                          color: AppTheme.textMuted,
                           fontSize: 11,
                         ),
                       ),
@@ -974,7 +972,7 @@ class _HeroPatrimonioCardState extends State<_HeroPatrimonioCard>
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                         decoration: BoxDecoration(
                           color: accent.withValues(alpha: 0.15),
-                          borderRadius: BorderRadius.circular(20),
+                          borderRadius: BorderRadius.circular(6),
                           border: Border.all(color: accent.withValues(alpha: 0.3)),
                         ),
                         child: Row(
@@ -997,26 +995,6 @@ class _HeroPatrimonioCardState extends State<_HeroPatrimonioCard>
                           ],
                         ),
                       ),
-                      if (widget.onAdd != null) ...[
-                        const SizedBox(width: 10),
-                        GestureDetector(
-                          onTap: widget.onAdd,
-                          child: Container(
-                            width: 38,
-                            height: 38,
-                            decoration: BoxDecoration(
-                              color: AppTheme.cardDark,
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: AppTheme.borderDark),
-                            ),
-                            child: const Icon(
-                              Icons.add_rounded,
-                              color: AppTheme.primaryColor,
-                              size: 20,
-                            ),
-                          ),
-                        ),
-                      ],
                     ],
                   ),
                 ],
@@ -1031,7 +1009,7 @@ class _HeroPatrimonioCardState extends State<_HeroPatrimonioCard>
                 child: Text(
                   Formatters.formatCurrency(widget.patrimonio),
                   style: TextStyle(
-                    color: Colors.white,
+                    color: AppTheme.textPrimary,
                     fontSize: widget.isDesktop ? 44 : 38,
                     fontWeight: FontWeight.w800,
                     letterSpacing: -1,
@@ -1065,7 +1043,7 @@ class _HeroPatrimonioCardState extends State<_HeroPatrimonioCard>
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
                         color: Colors.white.withValues(alpha: 0.05),
-                        borderRadius: BorderRadius.circular(14),
+                        borderRadius: BorderRadius.circular(4),
                         border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
                       ),
                       child: Column(
@@ -1079,7 +1057,7 @@ class _HeroPatrimonioCardState extends State<_HeroPatrimonioCard>
                               Text(
                                 'Risparmio',
                                 style: TextStyle(
-                                    color: Colors.white38,
+                                    color: AppTheme.textMuted,
                                     fontSize: 11,
                                     fontWeight: FontWeight.w500),
                               ),
@@ -1130,7 +1108,7 @@ class _QuickStat extends StatelessWidget {
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: color.withValues(alpha: 0.08),
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(4),
           border: Border.all(color: color.withValues(alpha: 0.18)),
         ),
         child: Column(
@@ -1144,7 +1122,7 @@ class _QuickStat extends StatelessWidget {
                   child: Text(
                     label,
                     style: TextStyle(
-                      color: Colors.white38,
+                      color: AppTheme.textMuted,
                       fontSize: 11,
                       fontWeight: FontWeight.w500,
                     ),
@@ -1199,7 +1177,7 @@ class _MonthBalanceCard extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: AppTheme.cardDark,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(6),
         border: Border.all(color: AppTheme.borderDark),
       ),
       child: Column(
@@ -1212,7 +1190,7 @@ class _MonthBalanceCard extends StatelessWidget {
                 IconButton(
                   onPressed: onPrev,
                   icon: const Icon(Icons.chevron_left_rounded,
-                      color: Colors.white54, size: 22),
+                      color: AppTheme.textTertiary, size: 22),
                   visualDensity: VisualDensity.compact,
                   padding: EdgeInsets.zero,
                 ),
@@ -1221,7 +1199,7 @@ class _MonthBalanceCard extends StatelessWidget {
                     Formatters.formatMonthYear(selectedDate).toUpperCase(),
                     textAlign: TextAlign.center,
                     style: const TextStyle(
-                      color: Colors.white60,
+                      color: AppTheme.textTertiary,
                       fontSize: 11,
                       fontWeight: FontWeight.w700,
                       letterSpacing: 1.4,
@@ -1231,7 +1209,7 @@ class _MonthBalanceCard extends StatelessWidget {
                 IconButton(
                   onPressed: onNext,
                   icon: const Icon(Icons.chevron_right_rounded,
-                      color: Colors.white54, size: 22),
+                      color: AppTheme.textTertiary, size: 22),
                   visualDensity: VisualDensity.compact,
                   padding: EdgeInsets.zero,
                 ),
@@ -1255,7 +1233,7 @@ class _MonthBalanceCard extends StatelessWidget {
                       Text(
                         'Bilancio mensile',
                         style: TextStyle(
-                          color: Colors.white38,
+                          color: AppTheme.textMuted,
                           fontSize: 11,
                           fontWeight: FontWeight.w500,
                         ),
@@ -1267,7 +1245,7 @@ class _MonthBalanceCard extends StatelessWidget {
                         child: Text(
                           Formatters.formatCurrency(balance),
                           style: TextStyle(
-                            color: Colors.white,
+                            color: AppTheme.textPrimary,
                             fontSize: 24,
                             fontWeight: FontWeight.w800,
                             height: 1,
@@ -1400,7 +1378,7 @@ class _BarRow extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(label,
-                  style: const TextStyle(color: Colors.white38, fontSize: 10)),
+                  style: const TextStyle(color: AppTheme.textMuted, fontSize: 10)),
               FittedBox(
                 fit: BoxFit.scaleDown,
                 alignment: Alignment.centerLeft,
@@ -1464,7 +1442,7 @@ class _BudgetAlerts extends ConsumerWidget {
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
             decoration: BoxDecoration(
               color: color.withValues(alpha: 0.07),
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(4),
               border: Border.all(color: color.withValues(alpha: 0.22)),
             ),
             child: Row(
@@ -1549,7 +1527,7 @@ class _SavingsGoalsMini extends ConsumerWidget {
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
             decoration: BoxDecoration(
               color: AppTheme.cardDark,
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(4),
               border: Border.all(color: AppTheme.borderDark),
             ),
             child: Row(
@@ -1594,7 +1572,7 @@ class _SavingsGoalsMini extends ConsumerWidget {
                       Text(
                         'Mancano ${Formatters.formatCurrency(remaining)} · ${goal.daysLeft}gg',
                         style: const TextStyle(
-                            color: Colors.white38, fontSize: 11),
+                            color: AppTheme.textMuted, fontSize: 11),
                       ),
                     ],
                   ),
@@ -1657,9 +1635,9 @@ class _BitcoinMiniCard extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Bitcoin', style: TextStyle(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.w600)),
+                  const Text('Bitcoin', style: TextStyle(color: AppTheme.textSecondary, fontSize: 13, fontWeight: FontWeight.w600)),
                   priceAsync.when(
-                    loading: () => const Text('Caricamento...', style: TextStyle(color: Colors.white24, fontSize: 12)),
+                    loading: () => const Text('Caricamento...', style: TextStyle(color: AppTheme.textMuted, fontSize: 12)),
                     error: (e, st) => const Text('Errore connessione', style: TextStyle(color: AppTheme.expenseColor, fontSize: 12)),
                     data: (price) {
                       final isUp = price.change24h >= 0;
@@ -1668,7 +1646,7 @@ class _BitcoinMiniCard extends ConsumerWidget {
                         children: [
                           Text(
                             Formatters.formatCurrency(price.priceEur),
-                            style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w700),
+                            style: const TextStyle(color: AppTheme.textPrimary, fontSize: 14, fontWeight: FontWeight.w700),
                           ),
                           const SizedBox(width: 6),
                           Text(
@@ -1690,7 +1668,7 @@ class _BitcoinMiniCard extends ConsumerWidget {
                   children: [
                     Text(
                       '₿ ${btcAmount.toStringAsFixed(btcAmount < 1 ? 6 : 4)}',
-                      style: const TextStyle(color: Colors.white38, fontSize: 11),
+                      style: const TextStyle(color: AppTheme.textMuted, fontSize: 11),
                     ),
                     Text(
                       Formatters.formatCurrency(btcAmount * price.priceEur),
@@ -1701,7 +1679,7 @@ class _BitcoinMiniCard extends ConsumerWidget {
                 orElse: () => const SizedBox.shrink(),
               ),
             const SizedBox(width: 8),
-            const Icon(Icons.chevron_right_rounded, color: Colors.white24, size: 18),
+            const Icon(Icons.chevron_right_rounded, color: AppTheme.textMuted, size: 18),
           ],
         ),
       ),

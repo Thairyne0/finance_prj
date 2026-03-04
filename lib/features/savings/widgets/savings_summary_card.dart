@@ -24,7 +24,7 @@ class SavingsSummaryCard extends ConsumerWidget {
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
         color: AppTheme.cardDark,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(6),
         border: Border.all(color: AppTheme.borderDark),
       ),
       child: Column(
@@ -73,7 +73,7 @@ class SavingsSummaryCard extends ConsumerWidget {
                 child: _SummaryItem(
                   label: 'Target totale',
                   value: Formatters.formatCurrency(total),
-                  color: Colors.white70,
+                  color: AppTheme.textSecondary,
                 ),
               ),
               Expanded(
@@ -95,7 +95,7 @@ class SavingsSummaryCard extends ConsumerWidget {
           const SizedBox(height: 8),
           Text(
             '${(overallProgress * 100).toStringAsFixed(1)}% del totale risparmiato',
-            style: const TextStyle(color: Colors.white38, fontSize: 12),
+            style: const TextStyle(color: AppTheme.textMuted, fontSize: 12),
           ),
         ],
       ),
@@ -120,7 +120,7 @@ class _SummaryItem extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(label,
-            style: const TextStyle(color: Colors.white38, fontSize: 11)),
+            style: const TextStyle(color: AppTheme.textMuted, fontSize: 11)),
         const SizedBox(height: 4),
         Text(value,
             style: TextStyle(

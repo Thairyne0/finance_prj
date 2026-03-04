@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// Handle modulare premium per la parte superiore dei BottomSheet.
+/// Handle Marathon-style per bottom sheet — linea rossa sottile.
 class TmBottomSheetHandle extends StatelessWidget {
   const TmBottomSheetHandle({super.key});
 
@@ -8,21 +8,20 @@ class TmBottomSheetHandle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Container(
-        width: 36,
-        height: 4,
-        margin: const EdgeInsets.only(top: 8, bottom: 4),
+        width: 40,
+        height: 3,
+        margin: const EdgeInsets.only(top: 10, bottom: 6),
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              Colors.white.withValues(alpha: 0.12),
-              Colors.white.withValues(alpha: 0.25),
-              Colors.white.withValues(alpha: 0.12),
+              const Color(0xFFD4432F).withValues(alpha: 0.1),
+              const Color(0xFFD4432F).withValues(alpha: 0.4),
+              const Color(0xFFD4432F).withValues(alpha: 0.1),
             ],
           ),
-          borderRadius: BorderRadius.circular(2),
+          borderRadius: BorderRadius.circular(1),
         ),
       ),
     );
   }
 }
-

@@ -32,7 +32,7 @@ class PatrimonioChartWidget extends ConsumerWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: AppTheme.cardDark,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(6),
         border: Border.all(color: AppTheme.borderDark),
       ),
       child: Column(
@@ -89,7 +89,7 @@ class PatrimonioChartWidget extends ConsumerWidget {
                         return Text(
                           Formatters.formatCompact(value),
                           style: const TextStyle(
-                              color: Colors.white24, fontSize: 10),
+                              color: AppTheme.textMuted, fontSize: 10),
                         );
                       },
                     ),
@@ -115,7 +115,7 @@ class PatrimonioChartWidget extends ConsumerWidget {
                           child: Text(
                             Formatters.formatShortMonth(data[idx].month),
                             style: const TextStyle(
-                                color: Colors.white38, fontSize: 10),
+                                color: AppTheme.textMuted, fontSize: 10),
                           ),
                         );
                       },

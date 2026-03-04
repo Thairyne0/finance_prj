@@ -91,7 +91,7 @@ class BudgetScreen extends ConsumerWidget {
         style: Theme.of(context)
             .textTheme
             .bodyMedium
-            ?.copyWith(color: Colors.white54),
+            ?.copyWith(color: AppTheme.textTertiary),
       ),
     );
 
@@ -149,7 +149,7 @@ class BudgetScreen extends ConsumerWidget {
         Text(
           'SPESE SENZA BUDGET',
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Colors.white38,
+                color: AppTheme.textMuted,
                 letterSpacing: 1.5,
                 fontWeight: FontWeight.w600,
               ),
@@ -166,7 +166,7 @@ class BudgetScreen extends ConsumerWidget {
                 const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
               color: AppTheme.cardDark,
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(4),
               border: Border.all(color: AppTheme.borderDark),
             ),
             child: Row(
@@ -222,7 +222,7 @@ class _TotalBudgetSummary extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: AppTheme.cardDark,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(6),
         border: Border.all(
           color: isOver
               ? AppTheme.expenseColor.withValues(alpha: 0.4)
@@ -299,7 +299,7 @@ class _AddBudgetButton extends ConsumerWidget {
     return Container(
       decoration: BoxDecoration(
         color: AppTheme.cardDark,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(4),
         border: Border.all(color: AppTheme.borderDark),
       ),
       child: IconButton(

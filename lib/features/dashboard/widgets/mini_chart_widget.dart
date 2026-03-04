@@ -18,7 +18,7 @@ class MiniChartWidget extends ConsumerWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: AppTheme.cardDark,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(6),
         border: Border.all(color: AppTheme.borderDark),
       ),
       child: Column(
@@ -83,7 +83,7 @@ class MiniChartWidget extends ConsumerWidget {
                                   Formatters.formatShortMonth(
                                       DateTime(r.year, r.month)),
                                   style: const TextStyle(
-                                    color: Colors.white38,
+                                    color: AppTheme.textMuted,
                                     fontSize: 11,
                                   ),
                                 ),
@@ -152,7 +152,7 @@ class MiniChartWidget extends ConsumerWidget {
                     child: Text(
                       'Aggiungi transazioni per vedere il grafico',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Colors.white24,
+                            color: AppTheme.textMuted,
                           ),
                     ),
                   ),
@@ -195,7 +195,7 @@ class _LegendDot extends StatelessWidget {
         Text(
           label,
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Colors.white54,
+                color: AppTheme.textTertiary,
                 fontSize: 11,
               ),
         ),

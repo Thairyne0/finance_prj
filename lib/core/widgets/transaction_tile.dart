@@ -33,153 +33,103 @@ class TransactionTile extends StatelessWidget {
     Widget tile = GestureDetector(
       onTap: onTap,
       child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 4),
+        margin: const EdgeInsets.symmetric(vertical: 2),
         decoration: BoxDecoration(
           color: AppTheme.cardDark,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppTheme.borderDark, width: 0.8),
+          borderRadius: BorderRadius.circular(4),
+          border: Border(
+            top: BorderSide(color: AppTheme.borderDark.withValues(alpha: 0.5), width: 0.5),
+            left: BorderSide(color: catColor.withValues(alpha: 0.5), width: 2),
+            right: BorderSide(color: AppTheme.borderDark.withValues(alpha: 0.2), width: 0.5),
+            bottom: BorderSide(color: AppTheme.borderDark.withValues(alpha: 0.2), width: 0.5),
+          ),
+          boxShadow: AppTheme.realisticShadow(elevation: 0.3),
         ),
-        child: Row(
-          children: [
-            // ── Linea accento laterale ────────────────────────────────
-            Container(
-              width: 3,
-              height: 52,
-              margin: const EdgeInsets.only(left: 2),
-              decoration: BoxDecoration(
-                color: catColor.withValues(alpha: 0.6),
-                borderRadius: BorderRadius.circular(2),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              TmIconBadge.fromCodePoint(
+                iconCodePoint: category.iconCodePoint,
+                colorValue: category.colorValue,
+                size: 40, iconSize: 18, enableGlow: true,
               ),
-            ),
-            // ── Contenuto principale ─────────────────────────────────
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    // Icona categoria con glow
-                    TmIconBadge.fromCodePoint(
-                      iconCodePoint: category.iconCodePoint,
-                      colorValue: category.colorValue,
-                      size: 42,
-                      iconSize: 19,
-                      enableGlow: true,
-                    ),
-                    const SizedBox(width: 10),
-
-                    // Testo centrale
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            transaction.description.isNotEmpty
-                                ? transaction.description
-                                : category.name,
-                            style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 13,
-                                  height: 1.2,
-                                ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          const SizedBox(height: 2),
-                          Row(
-                            children: [
-                              Flexible(
-                                child: Text(
-                                  hasProduct
-                                      ? '${category.name} · ${transaction.productName!}'
-                                      : category.name,
-                                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                        color: Colors.white38,
-                                        fontSize: 11,
-                                        height: 1.2,
-                                      ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 2),
-                          Row(
-                            children: [
-                              Icon(
-                                IconData(
-                                  transaction.paymentIconCodePoint,
-                                  fontFamily: 'MaterialIcons',
-                                ),
-                                size: 11,
-                                color: transaction.paymentMethod == PaymentMethod.cash
-                                    ? AppTheme.warningColor.withValues(alpha: 0.65)
-                                    : AppTheme.primaryColor.withValues(alpha: 0.65),
-                              ),
-                              const SizedBox(width: 3),
-                              Flexible(
-                                child: Text(
-                                  '${transaction.paymentLabel}  ·  ${Formatters.formatDate(transaction.date)}',
-                                  style: TextStyle(
-                                    color: transaction.paymentMethod == PaymentMethod.cash
-                                        ? AppTheme.warningColor.withValues(alpha: 0.65)
-                                        : AppTheme.primaryColor.withValues(alpha: 0.65),
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w500,
-                                    height: 1.2,
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
+                    Text(
+                      (transaction.description.isNotEmpty
+                          ? transaction.description : category.name).toUpperCase(),
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w600, fontSize: 12.5,
+                        color: AppTheme.textPrimary, height: 1.2, letterSpacing: 0.5,
                       ),
+                      maxLines: 1, overflow: TextOverflow.ellipsis,
                     ),
-
-                    const SizedBox(width: 8),
-
-                    // Importo con colore
-                    ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 85),
-                      child: FittedBox(
-                        fit: BoxFit.scaleDown,
-                        alignment: Alignment.centerRight,
-                        child: Text(
-                          '$sign${Formatters.formatCurrency(transaction.amount)}',
-                          style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                                color: color,
-                                fontWeight: FontWeight.w700,
-                                fontSize: 14,
-                              ),
+                    const SizedBox(height: 3),
+                    Text(
+                      hasProduct ? '${category.name} · ${transaction.productName!}' : category.name,
+                      style: TextStyle(color: AppTheme.textTertiary, fontSize: 10.5, height: 1.2),
+                      maxLines: 1, overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 2),
+                    Row(children: [
+                      Icon(
+                        IconData(transaction.paymentIconCodePoint, fontFamily: 'MaterialIcons'),
+                        size: 10,
+                        color: transaction.paymentMethod == PaymentMethod.cash
+                            ? AppTheme.warningColor.withValues(alpha: 0.6)
+                            : AppTheme.secondaryColor.withValues(alpha: 0.5),
+                      ),
+                      const SizedBox(width: 3),
+                      Flexible(child: Text(
+                        '${transaction.paymentLabel}  ·  ${Formatters.formatDate(transaction.date)}',
+                        style: TextStyle(
+                          color: transaction.paymentMethod == PaymentMethod.cash
+                              ? AppTheme.warningColor.withValues(alpha: 0.5)
+                              : AppTheme.secondaryColor.withValues(alpha: 0.4),
+                          fontSize: 10, fontWeight: FontWeight.w500, height: 1.2,
                         ),
-                      ),
-                    ),
+                        maxLines: 1, overflow: TextOverflow.ellipsis,
+                      )),
+                    ]),
                   ],
                 ),
               ),
-            ),
-          ],
+              const SizedBox(width: 8),
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 85),
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerRight,
+                  child: Text(
+                    '$sign${Formatters.formatCurrency(transaction.amount)}',
+                    style: TextStyle(
+                      color: color, fontWeight: FontWeight.w700, fontSize: 14,
+                      shadows: [Shadow(color: color.withValues(alpha: 0.3), blurRadius: 8)],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
 
-    // Animazione staggered opzionale
     if (animationIndex != null) {
       tile = TweenAnimationBuilder<double>(
         tween: Tween(begin: 0.0, end: 1.0),
-        duration: Duration(milliseconds: 350 + (animationIndex! * 40).clamp(0, 300)),
+        duration: Duration(milliseconds: 300 + (animationIndex! * 35).clamp(0, 250)),
         curve: Curves.easeOutCubic,
         builder: (context, val, child) {
           return Opacity(
             opacity: val,
-            child: Transform.translate(
-              offset: Offset(30 * (1 - val), 0),
-              child: child,
-            ),
+            child: Transform.translate(offset: Offset(20 * (1 - val), 0), child: child),
           );
         },
         child: tile,
@@ -195,18 +145,14 @@ class TransactionTile extends StatelessWidget {
           alignment: Alignment.centerRight,
           padding: const EdgeInsets.only(right: 24),
           decoration: BoxDecoration(
-            color: AppTheme.expenseColor.withValues(alpha: 0.15),
-            borderRadius: BorderRadius.circular(16),
+            color: AppTheme.expenseColor.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(4),
           ),
-          child: const Icon(
-            Icons.delete_outline,
-            color: AppTheme.expenseColor,
-          ),
+          child: const Icon(Icons.delete_outline, color: AppTheme.expenseColor),
         ),
         child: tile,
       );
     }
-
     return tile;
   }
 }

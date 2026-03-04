@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// Icona circolare/arrotondata con sfondo colorato e glow opzionale.
+/// Badge icona Marathon-style con sfondo neon e bordo luminoso.
 class TmIconBadge extends StatelessWidget {
   final IconData icon;
   final Color color;
@@ -16,19 +16,18 @@ class TmIconBadge extends StatelessWidget {
     required this.color,
     this.size = 44,
     this.iconSize = 22,
-    this.borderRadius = 14,
+    this.borderRadius = 4,
     this.opacity = 0.15,
     this.enableGlow = false,
   });
 
-  /// Crea da un codice icona (es. da Hive/model)
   factory TmIconBadge.fromCodePoint({
     Key? key,
     required int iconCodePoint,
     required int colorValue,
     double size = 44,
     double iconSize = 22,
-    double borderRadius = 14,
+    double borderRadius = 4,
     double opacity = 0.15,
     bool enableGlow = false,
   }) {
@@ -52,13 +51,22 @@ class TmIconBadge extends StatelessWidget {
       decoration: BoxDecoration(
         color: color.withValues(alpha: opacity),
         borderRadius: BorderRadius.circular(borderRadius),
+        border: Border(
+          top: BorderSide(color: color.withValues(alpha: 0.3), width: 0.5),
+          left: BorderSide(color: color.withValues(alpha: 0.1), width: 0.5),
+          right: BorderSide(color: color.withValues(alpha: 0.1), width: 0.5),
+          bottom: BorderSide(color: color.withValues(alpha: 0.05), width: 0.5),
+        ),
         boxShadow: enableGlow
             ? [
                 BoxShadow(
-                  color: color.withValues(alpha: 0.25),
-                  blurRadius: 12,
-                  spreadRadius: -2,
-                ),
+                    color: color.withValues(alpha: 0.25),
+                    blurRadius: 12,
+                    spreadRadius: -3),
+                BoxShadow(
+                    color: color.withValues(alpha: 0.08),
+                    blurRadius: 24,
+                    spreadRadius: -6),
               ]
             : null,
       ),

@@ -260,7 +260,7 @@ class _TabletShell extends StatelessWidget {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: AppTheme.primaryColor.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(4),
                   ),
                   child: const Icon(
                     Icons.account_balance_wallet_rounded,
@@ -350,7 +350,7 @@ class _RailActionButton extends StatelessWidget {
           height: size,
           decoration: BoxDecoration(
             gradient: LinearGradient(colors: gradient),
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(4),
             boxShadow: [
               BoxShadow(
                 color: gradient.first.withValues(alpha: 0.3),
@@ -359,7 +359,7 @@ class _RailActionButton extends StatelessWidget {
               ),
             ],
           ),
-          child: Icon(icon, color: Colors.white, size: size * 0.45),
+          child: Icon(icon, color: AppTheme.textPrimary, size: size * 0.45),
         ),
       ),
     );
@@ -396,7 +396,7 @@ class _RailNavItem extends StatelessWidget {
               color: isSelected
                   ? AppTheme.primaryColor.withValues(alpha: 0.15)
                   : Colors.transparent,
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(4),
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -404,7 +404,7 @@ class _RailNavItem extends StatelessWidget {
                 Icon(
                   icon,
                   size: 22,
-                  color: isSelected ? AppTheme.primaryColor : Colors.white38,
+                  color: isSelected ? AppTheme.primaryColor : AppTheme.textMuted,
                 ),
                 const SizedBox(height: 4),
                 Text(
@@ -413,7 +413,7 @@ class _RailNavItem extends StatelessWidget {
                     fontSize: 9,
                     fontWeight:
                         isSelected ? FontWeight.w600 : FontWeight.w400,
-                    color: isSelected ? AppTheme.primaryColor : Colors.white38,
+                    color: isSelected ? AppTheme.primaryColor : AppTheme.textMuted,
                   ),
                 ),
               ],
@@ -496,7 +496,7 @@ class _DesktopSidebar extends StatelessWidget {
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
                       color: AppTheme.primaryColor.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(14),
+                      borderRadius: BorderRadius.circular(4),
                     ),
                     child: const Icon(
                       Icons.account_balance_wallet_rounded,
@@ -509,7 +509,7 @@ class _DesktopSidebar extends StatelessWidget {
                     'FinanceApp',
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.w700,
-                          color: Colors.white,
+                          color: AppTheme.textPrimary,
                           fontSize: 17,
                         ),
                   ),
@@ -556,7 +556,7 @@ class _DesktopSidebar extends StatelessWidget {
                 child: Text(
                   'MENU',
                   style: TextStyle(
-                    color: Colors.white24,
+                    color: AppTheme.textMuted,
                     fontSize: 10,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 1.8,
@@ -601,14 +601,14 @@ class _DesktopSidebar extends StatelessWidget {
                             children: [
                               Icon(
                                 isSelected ? d.selectedIcon : d.icon,
-                                color: isSelected ? AppTheme.primaryColor : Colors.white38,
+                                color: isSelected ? AppTheme.primaryColor : AppTheme.textMuted,
                                 size: 20,
                               ),
                               const SizedBox(width: 12),
                               Text(
                                 d.label,
                                 style: TextStyle(
-                                  color: isSelected ? Colors.white : Colors.white54,
+                                  color: isSelected ? Colors.white : AppTheme.textTertiary,
                                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
                                   fontSize: 14,
                                 ),
@@ -646,9 +646,9 @@ class _DesktopSidebar extends StatelessWidget {
                 padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
                 child: Row(
                   children: [
-                    const Icon(Icons.info_outline_rounded, size: 13, color: Colors.white24),
+                    const Icon(Icons.info_outline_rounded, size: 13, color: AppTheme.textMuted),
                     const SizedBox(width: 8),
-                    Text('FinanceApp v1.0.0', style: TextStyle(color: Colors.white24, fontSize: 11)),
+                    Text('FinanceApp v1.0.0', style: TextStyle(color: AppTheme.textMuted, fontSize: 11)),
                   ],
                 ),
               ),
@@ -686,7 +686,7 @@ class _SidebarActionButton extends StatelessWidget {
             end: Alignment.centerRight,
             colors: gradient,
           ),
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(4),
           boxShadow: [
             BoxShadow(
               color: gradient.first.withValues(alpha: 0.3),
@@ -697,12 +697,12 @@ class _SidebarActionButton extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Icon(icon, color: Colors.white, size: 20),
+            Icon(icon, color: AppTheme.textPrimary, size: 20),
             const SizedBox(width: 12),
             Text(
               label,
               style: const TextStyle(
-                color: Colors.white,
+                color: AppTheme.textPrimary,
                 fontWeight: FontWeight.w600,
                 fontSize: 14,
               ),

@@ -244,7 +244,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(color: AppTheme.borderDark),
                   ),
-                  child: const Icon(Icons.arrow_back_rounded, size: 20, color: Colors.white70),
+                  child: const Icon(Icons.arrow_back_rounded, size: 20, color: AppTheme.textSecondary),
                 ),
               ),
               const SizedBox(width: 14),
@@ -256,9 +256,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
                   gradient: const LinearGradient(
                     colors: [Color(0xFF00D2D3), Color(0xFF00B894)],
                   ),
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(4),
                 ),
-                child: const Icon(Icons.auto_awesome_rounded, color: Colors.white, size: 20),
+                child: const Icon(Icons.auto_awesome_rounded, color: AppTheme.textPrimary, size: 20),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -268,7 +268,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
                     const Text(
                       'FinBot',
                       style: TextStyle(
-                        color: Colors.white,
+                        color: AppTheme.textPrimary,
                         fontSize: 17,
                         fontWeight: FontWeight.w700,
                       ),
@@ -320,12 +320,12 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
               constraints: const BoxConstraints(maxHeight: 120),
               decoration: BoxDecoration(
                 color: AppTheme.cardDark,
-                borderRadius: BorderRadius.circular(24),
+                borderRadius: BorderRadius.circular(8),
                 border: Border.all(color: AppTheme.borderDark),
               ),
               child: TextField(
                 controller: _messageController,
-                style: const TextStyle(color: Colors.white, fontSize: 15),
+                style: const TextStyle(color: AppTheme.textPrimary, fontSize: 15),
                 textCapitalization: TextCapitalization.sentences,
                 maxLines: null,
                 textInputAction: TextInputAction.send,
@@ -350,7 +350,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
                 gradient: const LinearGradient(
                   colors: [Color(0xFF00D2D3), Color(0xFF00B894)],
                 ),
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(4),
                 boxShadow: [
                   BoxShadow(
                     color: const Color(0xFF00D2D3).withValues(alpha: 0.3),
@@ -359,7 +359,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
                   ),
                 ],
               ),
-              child: const Icon(Icons.send_rounded, color: Colors.white, size: 20),
+              child: const Icon(Icons.send_rounded, color: AppTheme.textPrimary, size: 20),
             ),
           ),
         ],
@@ -420,7 +420,7 @@ class _MessageBubble extends StatelessWidget {
                       gradient: const LinearGradient(
                         colors: [Color(0xFF00D2D3), Color(0xFF00B894)],
                       ),
-                      borderRadius: BorderRadius.circular(14),
+                      borderRadius: BorderRadius.circular(4),
                       boxShadow: [
                         BoxShadow(
                           color: const Color(0xFF00D2D3).withValues(alpha: 0.3),
@@ -432,12 +432,12 @@ class _MessageBubble extends StatelessWidget {
                     child: const Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.add_circle_outline_rounded, color: Colors.white, size: 18),
+                        Icon(Icons.add_circle_outline_rounded, color: AppTheme.textPrimary, size: 18),
                         SizedBox(width: 8),
                         Text(
                           'Crea Obiettivo',
                           style: TextStyle(
-                            color: Colors.white,
+                            color: AppTheme.textPrimary,
                             fontWeight: FontWeight.w600,
                             fontSize: 14,
                           ),
@@ -451,7 +451,7 @@ class _MessageBubble extends StatelessWidget {
               padding: const EdgeInsets.only(top: 4),
               child: Text(
                 _formatTime(message.timestamp),
-                style: const TextStyle(color: Colors.white24, fontSize: 10),
+                style: const TextStyle(color: AppTheme.textMuted, fontSize: 10),
               ),
             ),
           ],
@@ -546,7 +546,7 @@ class _TypingIndicatorState extends State<_TypingIndicator>
                   height: 8,
                   decoration: BoxDecoration(
                     color: Color.lerp(
-                      Colors.white24,
+                      AppTheme.textMuted,
                       const Color(0xFF00D2D3),
                       _dotAnimations[index].value,
                     ),
@@ -591,14 +591,14 @@ class _QuickActions extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 14),
               decoration: BoxDecoration(
                 color: AppTheme.cardDark,
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(6),
                 border: Border.all(color: AppTheme.borderDark),
               ),
               alignment: Alignment.center,
               child: Text(
                 actions[index].$1,
                 style: const TextStyle(
-                  color: Colors.white60,
+                  color: AppTheme.textTertiary,
                   fontSize: 12,
                   fontWeight: FontWeight.w500,
                 ),

@@ -91,7 +91,7 @@ class _TransactionListScreenState extends ConsumerState<TransactionListScreen> {
                           Container(
                             decoration: BoxDecoration(
                               color: AppTheme.cardDark,
-                              borderRadius: BorderRadius.circular(14),
+                              borderRadius: BorderRadius.circular(4),
                               border: Border.all(color: AppTheme.borderDark),
                             ),
                             child: IconButton(
@@ -120,7 +120,7 @@ class _TransactionListScreenState extends ConsumerState<TransactionListScreen> {
                           Container(
                             decoration: BoxDecoration(
                               color: AppTheme.cardDark,
-                              borderRadius: BorderRadius.circular(14),
+                              borderRadius: BorderRadius.circular(4),
                               border: Border.all(color: AppTheme.borderDark),
                             ),
                             child: IconButton(
@@ -152,7 +152,7 @@ class _TransactionListScreenState extends ConsumerState<TransactionListScreen> {
                     style: Theme.of(context)
                         .textTheme
                         .bodyMedium
-                        ?.copyWith(color: Colors.white54),
+                        ?.copyWith(color: AppTheme.textTertiary),
                   ),
 
                   // Barra di ricerca
@@ -165,7 +165,7 @@ class _TransactionListScreenState extends ConsumerState<TransactionListScreen> {
                       decoration: InputDecoration(
                         hintText: 'Cerca per nome, prodotto, importo...',
                         prefixIcon: const Icon(Icons.search_rounded,
-                            color: Colors.white38),
+                            color: AppTheme.textMuted),
                         suffixIcon: _searchController.text.isNotEmpty
                             ? IconButton(
                                 onPressed: () {
@@ -173,23 +173,23 @@ class _TransactionListScreenState extends ConsumerState<TransactionListScreen> {
                                   setState(() {});
                                 },
                                 icon: const Icon(Icons.clear_rounded,
-                                    color: Colors.white38, size: 20),
+                                    color: AppTheme.textMuted, size: 20),
                               )
                             : null,
                         filled: true,
                         fillColor: AppTheme.cardDark,
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: BorderRadius.circular(4),
                           borderSide:
                               const BorderSide(color: AppTheme.borderDark),
                         ),
                         enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: BorderRadius.circular(4),
                           borderSide:
                               const BorderSide(color: AppTheme.borderDark),
                         ),
                         focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: BorderRadius.circular(4),
                           borderSide: const BorderSide(
                               color: AppTheme.primaryColor, width: 2),
                         ),

@@ -111,7 +111,7 @@ class _TmEmptyStateState extends State<TmEmptyState>
               style: Theme.of(context)
                   .textTheme
                   .bodyMedium
-                  ?.copyWith(color: Colors.white38),
+                  ?.copyWith(color: const Color(0xFF6C7086)),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
@@ -120,7 +120,7 @@ class _TmEmptyStateState extends State<TmEmptyState>
               style: Theme.of(context)
                   .textTheme
                   .bodySmall
-                  ?.copyWith(color: Colors.white24),
+                  ?.copyWith(color: const Color(0xFF454A5C)),
               textAlign: TextAlign.center,
             ),
           ],

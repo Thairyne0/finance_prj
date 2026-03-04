@@ -97,7 +97,7 @@ class CryptoScreen extends ConsumerWidget {
                           Icon(
                             price.isFromCache ? Icons.cached_rounded : Icons.check_circle_outline_rounded,
                             size: 12,
-                            color: price.isFromCache ? Colors.orange.withValues(alpha: 0.6) : Colors.white24,
+                            color: price.isFromCache ? Colors.orange.withValues(alpha: 0.6) : AppTheme.textMuted,
                           ),
                           const SizedBox(width: 5),
                           Text(
@@ -105,7 +105,7 @@ class CryptoScreen extends ConsumerWidget {
                                 ? 'Dati in cache · ${_timeStr(price.fetchedAt)} · Auto-refresh 90s'
                                 : 'Aggiornato alle ${_timeStr(price.fetchedAt)} · Auto-refresh 90s',
                             style: TextStyle(
-                              color: price.isFromCache ? Colors.orange.withValues(alpha: 0.5) : Colors.white24,
+                              color: price.isFromCache ? Colors.orange.withValues(alpha: 0.5) : AppTheme.textMuted,
                               fontSize: 11,
                             ),
                           ),
@@ -148,7 +148,7 @@ class _PriceHeroCard extends StatelessWidget {
             AppTheme.cardDark,
           ],
         ),
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(8),
         border: Border.all(color: const Color(0xFFF7931A).withValues(alpha: 0.25)),
       ),
       child: Column(
@@ -159,13 +159,13 @@ class _PriceHeroCard extends StatelessWidget {
             children: [
               const Text(
                 'Bitcoin (BTC)',
-                style: TextStyle(color: Colors.white54, fontSize: 13, fontWeight: FontWeight.w500),
+                style: TextStyle(color: AppTheme.textTertiary, fontSize: 13, fontWeight: FontWeight.w500),
               ),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 decoration: BoxDecoration(
                   color: color.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(6),
                   border: Border.all(color: color.withValues(alpha: 0.3)),
                 ),
                 child: Row(
@@ -189,7 +189,7 @@ class _PriceHeroCard extends StatelessWidget {
             child: Text(
               Formatters.formatCurrency(price.priceEur),
               style: const TextStyle(
-                color: Colors.white,
+                color: AppTheme.textPrimary,
                 fontSize: 40,
                 fontWeight: FontWeight.w800,
                 letterSpacing: -1,
@@ -199,7 +199,7 @@ class _PriceHeroCard extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             'per 1 BTC',
-            style: TextStyle(color: Colors.white38, fontSize: 13),
+            style: TextStyle(color: AppTheme.textMuted, fontSize: 13),
           ),
         ],
       ),
@@ -230,7 +230,7 @@ class _SparklineCard extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: AppTheme.cardDark,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(6),
         border: Border.all(color: AppTheme.borderDark),
       ),
       child: Column(
@@ -244,7 +244,7 @@ class _SparklineCard extends StatelessWidget {
           SizedBox(
             height: 140,
             child: spots.isEmpty
-                ? const Center(child: Text('Dati non disponibili', style: TextStyle(color: Colors.white24)))
+                ? const Center(child: Text('Dati non disponibili', style: TextStyle(color: AppTheme.textMuted)))
                 : LineChart(
                     LineChartData(
                       gridData: FlGridData(
@@ -261,7 +261,7 @@ class _SparklineCard extends StatelessWidget {
                             reservedSize: 60,
                             getTitlesWidget: (v, _) => Text(
                               Formatters.formatCompact(v),
-                              style: const TextStyle(color: Colors.white24, fontSize: 10),
+                              style: const TextStyle(color: AppTheme.textMuted, fontSize: 10),
                             ),
                           ),
                         ),
@@ -280,7 +280,7 @@ class _SparklineCard extends StatelessWidget {
                                 padding: const EdgeInsets.only(top: 6),
                                 child: Text(
                                   hrsAgo == 0 ? 'Ora' : '-${hrsAgo}h',
-                                  style: const TextStyle(color: Colors.white24, fontSize: 10),
+                                  style: const TextStyle(color: AppTheme.textMuted, fontSize: 10),
                                 ),
                               );
                             },
@@ -379,7 +379,7 @@ class _StatCard extends StatelessWidget {
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: AppTheme.cardDark,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(4),
         border: Border.all(color: AppTheme.borderDark),
       ),
       child: Column(
@@ -388,7 +388,7 @@ class _StatCard extends StatelessWidget {
           Row(children: [
             Icon(icon, color: color, size: 13),
             const SizedBox(width: 4),
-            Text(label, style: const TextStyle(color: Colors.white38, fontSize: 11)),
+            Text(label, style: const TextStyle(color: AppTheme.textMuted, fontSize: 11)),
           ]),
           const SizedBox(height: 6),
           FittedBox(
@@ -448,7 +448,7 @@ class _PortfolioCardState extends ConsumerState<_PortfolioCard> {
             AppTheme.cardDark,
           ],
         ),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(6),
         border: Border.all(color: AppTheme.primaryColor.withValues(alpha: 0.2)),
       ),
       child: Column(
@@ -514,7 +514,7 @@ class _PortfolioCardState extends ConsumerState<_PortfolioCard> {
           if (!_editing && !hasAmount)
             const Text(
               'Inserisci la quantità di BTC che possiedi per vedere il valore in EUR.',
-              style: TextStyle(color: Colors.white38, fontSize: 13),
+              style: TextStyle(color: AppTheme.textMuted, fontSize: 13),
             ),
 
           if (!_editing && hasAmount) ...[
@@ -524,14 +524,14 @@ class _PortfolioCardState extends ConsumerState<_PortfolioCard> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Quantità', style: TextStyle(color: Colors.white38, fontSize: 12)),
+                    const Text('Quantità', style: TextStyle(color: AppTheme.textMuted, fontSize: 12)),
                     const SizedBox(height: 2),
                     Row(
                       children: [
                         const Text('₿ ', style: TextStyle(color: Color(0xFFF7931A), fontSize: 18, fontWeight: FontWeight.w700)),
                         Text(
                           btcAmount.toStringAsFixed(btcAmount < 1 ? 8 : 4),
-                          style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.w800),
+                          style: const TextStyle(color: AppTheme.textPrimary, fontSize: 22, fontWeight: FontWeight.w800),
                         ),
                       ],
                     ),
@@ -541,7 +541,7 @@ class _PortfolioCardState extends ConsumerState<_PortfolioCard> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    const Text('Valore in EUR', style: TextStyle(color: Colors.white38, fontSize: 12)),
+                    const Text('Valore in EUR', style: TextStyle(color: AppTheme.textMuted, fontSize: 12)),
                     const SizedBox(height: 2),
                     Text(
                       Formatters.formatCurrency(valueEur),
@@ -568,7 +568,7 @@ class _PortfolioCardState extends ConsumerState<_PortfolioCard> {
                 children: [
                   Text(
                     '1 BTC = ${Formatters.formatCurrency(widget.price.priceEur)}',
-                    style: const TextStyle(color: Colors.white38, fontSize: 12),
+                    style: const TextStyle(color: AppTheme.textMuted, fontSize: 12),
                   ),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
@@ -611,7 +611,7 @@ class _CryptoLoadingState extends StatelessWidget {
         const SizedBox(height: 16),
         const CircularProgressIndicator(color: Color(0xFFF7931A), strokeWidth: 2.5),
         const SizedBox(height: 12),
-        const Text('Recupero prezzo Bitcoin...', style: TextStyle(color: Colors.white38, fontSize: 13)),
+        const Text('Recupero prezzo Bitcoin...', style: TextStyle(color: AppTheme.textMuted, fontSize: 13)),
       ],
     );
   }
@@ -633,7 +633,7 @@ class _CryptoErrorState extends StatelessWidget {
       children: [
         Icon(
           isRateLimit ? Icons.hourglass_empty_rounded : Icons.wifi_off_rounded,
-          color: Colors.white24,
+          color: AppTheme.textMuted,
           size: 48,
         ),
         const SizedBox(height: 12),
@@ -643,7 +643,7 @@ class _CryptoErrorState extends StatelessWidget {
               : isTimeout
                   ? 'Connessione lenta'
                   : 'Impossibile recuperare i dati',
-          style: const TextStyle(color: Colors.white54, fontSize: 14, fontWeight: FontWeight.w600),
+          style: const TextStyle(color: AppTheme.textTertiary, fontSize: 14, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 4),
         Text(
@@ -653,7 +653,7 @@ class _CryptoErrorState extends StatelessWidget {
                   ? 'Il server ha impiegato troppo tempo a rispondere.'
                   : 'Controlla la connessione internet e riprova.',
           textAlign: TextAlign.center,
-          style: const TextStyle(color: Colors.white24, fontSize: 12),
+          style: const TextStyle(color: AppTheme.textMuted, fontSize: 12),
         ),
         const SizedBox(height: 20),
         ElevatedButton.icon(

@@ -26,7 +26,7 @@ class BudgetAlertBanner extends ConsumerWidget {
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           decoration: BoxDecoration(
             color: color.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(4),
             border: Border.all(color: color.withValues(alpha: 0.35)),
           ),
           child: Row(
@@ -67,7 +67,7 @@ class BudgetAlertBanner extends ConsumerWidget {
                           ? 'Hai superato il budget ($percentStr)'
                           : 'Hai usato $percentStr del budget',
                       style: const TextStyle(
-                        color: Colors.white54,
+                        color: AppTheme.textTertiary,
                         fontSize: 12,
                       ),
                     ),

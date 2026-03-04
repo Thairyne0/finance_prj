@@ -151,7 +151,7 @@ class SavingsScreen extends ConsumerWidget {
                             colorScheme: const ColorScheme.dark(
                               primary: AppTheme.primaryColor,
                               surface: AppTheme.cardDark,
-                              onSurface: Colors.white,
+                              onSurface: AppTheme.textPrimary,
                             ),
                           ),
                           child: child!,
@@ -202,7 +202,7 @@ class SavingsScreen extends ConsumerWidget {
                               size: 20,
                               color: isSelected
                                   ? AppTheme.primaryColor
-                                  : Colors.white54),
+                                  : AppTheme.textTertiary),
                         ),
                       );
                     }).toList(),
@@ -224,7 +224,7 @@ class SavingsScreen extends ConsumerWidget {
                             color: color,
                             borderRadius: BorderRadius.circular(10),
                             border: isSelected
-                                ? Border.all(color: Colors.white, width: 2.5)
+                                ? Border.all(color: AppTheme.textPrimary, width: 2.5)
                                 : null,
                           ),
                         ),
@@ -289,7 +289,7 @@ class _GoalCard extends ConsumerWidget {
         padding: const EdgeInsets.only(right: 24),
         decoration: BoxDecoration(
           color: AppTheme.expenseColor.withValues(alpha: 0.2),
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(6),
         ),
         child: const Icon(Icons.delete_outline, color: AppTheme.expenseColor),
       ),
@@ -298,7 +298,7 @@ class _GoalCard extends ConsumerWidget {
         padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
           color: AppTheme.cardDark,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(6),
           border: Border.all(
             color: goal.isCompleted
                 ? AppTheme.incomeColor.withValues(alpha: 0.4)
@@ -355,7 +355,7 @@ class _GoalCard extends ConsumerWidget {
                         style: Theme.of(context)
                             .textTheme
                             .bodySmall
-                            ?.copyWith(color: Colors.white38),
+                            ?.copyWith(color: AppTheme.textMuted),
                       ),
                     ],
                   ),
@@ -375,7 +375,7 @@ class _GoalCard extends ConsumerWidget {
                 Text(
                   '${Formatters.formatCurrency(goal.currentAmount)} / ${Formatters.formatCurrency(goal.targetAmount)}',
                   style:
-                      const TextStyle(color: Colors.white54, fontSize: 13),
+                      const TextStyle(color: AppTheme.textTertiary, fontSize: 13),
                 ),
                 Text(
                   '${(goal.progress * 100).toStringAsFixed(0)}%',
@@ -416,7 +416,7 @@ class _GoalCard extends ConsumerWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: AppTheme.cardDark,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
         title: const Text('Aggiungi al risparmio'),
         content: TextFormField(
           controller: controller,
@@ -432,7 +432,7 @@ class _GoalCard extends ConsumerWidget {
           TextButton(
             onPressed: () => Navigator.pop(ctx),
             child: const Text('Annulla',
-                style: TextStyle(color: Colors.white54)),
+                style: TextStyle(color: AppTheme.textTertiary)),
           ),
           TextButton(
             onPressed: () {

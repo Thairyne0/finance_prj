@@ -32,7 +32,7 @@ class BalanceCard extends StatelessWidget {
             AppTheme.cardDarkAlt,
           ],
         ),
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(8),
         border: Border.all(
           color: AppTheme.primaryColor.withValues(alpha: 0.3),
           width: 1,
@@ -44,7 +44,7 @@ class BalanceCard extends StatelessWidget {
           Text(
             period,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Colors.white60,
+                  color: AppTheme.textTertiary,
                   letterSpacing: 1.2,
                 ),
           ),
@@ -52,14 +52,14 @@ class BalanceCard extends StatelessWidget {
           Text(
             'Bilancio',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Colors.white70,
+                  color: AppTheme.textSecondary,
                 ),
           ),
           const SizedBox(height: 4),
           Text(
             Formatters.formatCurrency(balance),
             style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                  color: Colors.white,
+                  color: AppTheme.textPrimary,
                   fontWeight: FontWeight.w800,
                   fontSize: 32,
                 ),
@@ -111,7 +111,7 @@ class _BalanceDetail extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(4),
       ),
       child: Row(
         children: [
@@ -131,7 +131,7 @@ class _BalanceDetail extends StatelessWidget {
                 Text(
                   label,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Colors.white54,
+                        color: AppTheme.textTertiary,
                         fontSize: 11,
                       ),
                 ),
@@ -142,7 +142,7 @@ class _BalanceDetail extends StatelessWidget {
                   child: Text(
                     Formatters.formatCurrency(amount),
                     style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                          color: Colors.white,
+                          color: AppTheme.textPrimary,
                           fontSize: 14,
                         ),
                   ),

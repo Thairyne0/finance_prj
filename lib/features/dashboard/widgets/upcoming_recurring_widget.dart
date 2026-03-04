@@ -45,7 +45,7 @@ class UpcomingRecurringWidget extends ConsumerWidget {
             urgencyColor = AppTheme.warningColor;
             urgencyLabel = 'Tra $days gg';
           } else {
-            urgencyColor = Colors.white38;
+            urgencyColor = AppTheme.textMuted;
             urgencyLabel = 'Tra $days gg';
           }
 
@@ -54,7 +54,7 @@ class UpcomingRecurringWidget extends ConsumerWidget {
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
             decoration: BoxDecoration(
               color: AppTheme.cardDark,
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(4),
               border: Border.all(color: AppTheme.borderDark),
             ),
             child: Row(
@@ -105,7 +105,7 @@ class UpcomingRecurringWidget extends ConsumerWidget {
                           Text(
                             'il ${r.dayOfMonth} del mese',
                             style: const TextStyle(
-                              color: Colors.white24,
+                              color: AppTheme.textMuted,
                               fontSize: 11,
                             ),
                           ),

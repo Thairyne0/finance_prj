@@ -62,7 +62,7 @@ class RecurringScreen extends ConsumerWidget {
                       padding: const EdgeInsets.only(right: 24),
                       decoration: BoxDecoration(
                         color: AppTheme.expenseColor.withValues(alpha: 0.2),
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(4),
                       ),
                       child: const Icon(Icons.delete_outline,
                           color: AppTheme.expenseColor),
@@ -72,7 +72,7 @@ class RecurringScreen extends ConsumerWidget {
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
                         color: AppTheme.cardDark,
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(4),
                         border: Border.all(
                           color: item.isActive
                               ? AppTheme.borderDark
@@ -113,14 +113,14 @@ class RecurringScreen extends ConsumerWidget {
                                         fontWeight: FontWeight.w600,
                                         color: item.isActive
                                             ? Colors.white
-                                            : Colors.white38,
+                                            : AppTheme.textMuted,
                                       ),
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
                                   'Ogni ${item.dayOfMonth} del mese',
                                   style: TextStyle(
-                                    color: Colors.white38,
+                                    color: AppTheme.textMuted,
                                     fontSize: 12,
                                   ),
                                 ),
