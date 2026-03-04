@@ -11,12 +11,60 @@ class AppTheme {
   static const Color expenseColor = Color(0xFFFF6B6B);
   static const Color warningColor = Color(0xFFFDCB6E);
 
-  // Dark Surface Colors
-  static const Color scaffoldDark = Color(0xFF0A0A0F);
-  static const Color surfaceDark = Color(0xFF12121A);
-  static const Color cardDark = Color(0xFF1A1A2E);
+  // Dark Surface Colors — leggermente più profondi e saturi
+  static const Color scaffoldDark = Color(0xFF08080D);
+  static const Color surfaceDark = Color(0xFF101018);
+  static const Color cardDark = Color(0xFF151524);
   static const Color cardDarkAlt = Color(0xFF16213E);
-  static const Color borderDark = Color(0xFF2A2A3E);
+  static const Color borderDark = Color(0xFF232338);
+
+  // ── Glassmorphism helpers ──────────────────────────────────────
+  static const Color surfaceGlass = Color(0x0AFFFFFF);   // bianco alpha ~4%
+  static const Color borderGlass = Color(0x18FFFFFF);     // bianco alpha ~9%
+
+  /// BoxDecoration glassmorphism standard (va usata dentro un ClipRRect + BackdropFilter)
+  static BoxDecoration glassDecoration({
+    Color? tint,
+    double borderRadius = 20,
+    double borderOpacity = 0.10,
+  }) {
+    final base = tint ?? Colors.white;
+    return BoxDecoration(
+      color: base.withValues(alpha: 0.04),
+      borderRadius: BorderRadius.circular(borderRadius),
+      border: Border.all(
+        color: base.withValues(alpha: borderOpacity),
+        width: 0.8,
+      ),
+    );
+  }
+
+  /// Sottile glow colorato per card/badge
+  static List<BoxShadow> glowShadow(Color color, {double blur = 20, double opacity = 0.15}) {
+    return [
+      BoxShadow(
+        color: color.withValues(alpha: opacity),
+        blurRadius: blur,
+        spreadRadius: -4,
+      ),
+    ];
+  }
+
+  /// Glow graduale dual-layer per effetti premium
+  static List<BoxShadow> premiumGlow(Color color) {
+    return [
+      BoxShadow(
+        color: color.withValues(alpha: 0.18),
+        blurRadius: 16,
+        spreadRadius: -4,
+      ),
+      BoxShadow(
+        color: color.withValues(alpha: 0.08),
+        blurRadius: 40,
+        spreadRadius: -8,
+      ),
+    ];
+  }
 
   /// Helper sicuro: prova GoogleFonts.inter, se fallisce usa font di sistema
   static TextStyle _safeInter({

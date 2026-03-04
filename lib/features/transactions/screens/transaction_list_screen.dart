@@ -306,6 +306,7 @@ class _TransactionListScreenState extends ConsumerState<TransactionListScreen> {
                     final transaction = filtered[index];
                     return TransactionTile(
                       transaction: transaction,
+                      animationIndex: index,
                       onTap: () => context.push('/edit-transaction', extra: transaction),
                       onDismissed: () {
                         ref

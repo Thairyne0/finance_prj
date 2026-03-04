@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// Handle modulare per la parte superiore dei BottomSheet.
+/// Handle modulare premium per la parte superiore dei BottomSheet.
 class TmBottomSheetHandle extends StatelessWidget {
   const TmBottomSheetHandle({super.key});
 
@@ -8,10 +8,17 @@ class TmBottomSheetHandle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Container(
-        width: 40,
+        width: 36,
         height: 4,
+        margin: const EdgeInsets.only(top: 8, bottom: 4),
         decoration: BoxDecoration(
-          color: Colors.white24,
+          gradient: LinearGradient(
+            colors: [
+              Colors.white.withValues(alpha: 0.12),
+              Colors.white.withValues(alpha: 0.25),
+              Colors.white.withValues(alpha: 0.12),
+            ],
+          ),
           borderRadius: BorderRadius.circular(2),
         ),
       ),

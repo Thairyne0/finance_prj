@@ -131,13 +131,16 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               if (isMobile) ...[
                 // Mese + Balance unificato
                 SliverToBoxAdapter(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: hPad),
-                    child: _MonthBalanceCard(
-                      selectedDate: selectedDate,
-                      report: report,
-                      onPrev: prevMonth,
-                      onNext: nextMonth,
+                  child: _StaggeredFadeIn(
+                    index: 0,
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: hPad),
+                      child: _MonthBalanceCard(
+                        selectedDate: selectedDate,
+                        report: report,
+                        onPrev: prevMonth,
+                        onNext: nextMonth,
+                      ),
                     ),
                   ),
                 ),
@@ -145,41 +148,56 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
 
                 // Mini chart con padding corretto
                 SliverToBoxAdapter(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: hPad),
-                    child: const MiniChartWidget(),
+                  child: _StaggeredFadeIn(
+                    index: 1,
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: hPad),
+                      child: const MiniChartWidget(),
+                    ),
                   ),
                 ),
                 SliverToBoxAdapter(child: SizedBox(height: vSpace * 0.7)),
 
                 // Budget
                 SliverToBoxAdapter(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: hPad),
-                    child: _BudgetAlerts(),
+                  child: _StaggeredFadeIn(
+                    index: 2,
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: hPad),
+                      child: _BudgetAlerts(),
+                    ),
                   ),
                 ),
                 // Obiettivi
                 SliverToBoxAdapter(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: hPad),
-                    child: _SavingsGoalsMini(),
+                  child: _StaggeredFadeIn(
+                    index: 3,
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: hPad),
+                      child: _SavingsGoalsMini(),
+                    ),
                   ),
                 ),
 
                 // Bitcoin mini card
                 SliverToBoxAdapter(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: hPad),
-                    child: _BitcoinMiniCard(),
+                  child: _StaggeredFadeIn(
+                    index: 4,
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: hPad),
+                      child: _BitcoinMiniCard(),
+                    ),
                   ),
                 ),
 
                 // Prossime scadenze ricorrenti
                 SliverToBoxAdapter(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: hPad),
-                    child: const UpcomingRecurringWidget(),
+                  child: _StaggeredFadeIn(
+                    index: 5,
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: hPad),
+                      child: const UpcomingRecurringWidget(),
+                    ),
                   ),
                 ),
 
@@ -307,7 +325,7 @@ class _FadingTransactionListState extends State<_FadingTransactionList> {
         ),
         itemCount: widget.transactions.length,
         itemBuilder: (ctx, i) =>
-            TransactionTile(transaction: widget.transactions[i]),
+            TransactionTile(transaction: widget.transactions[i], animationIndex: i),
       );
     } else {
       // Griglia per tablet/desktop
@@ -325,7 +343,7 @@ class _FadingTransactionListState extends State<_FadingTransactionList> {
         ),
         itemCount: widget.transactions.length,
         itemBuilder: (ctx, i) =>
-            TransactionTile(transaction: widget.transactions[i]),
+            TransactionTile(transaction: widget.transactions[i], animationIndex: i),
       );
     }
 
@@ -1690,3 +1708,35 @@ class _BitcoinMiniCard extends ConsumerWidget {
     );
   }
 }
+
+// ═══════════════════════════════════════════════════════════════
+// STAGGERED FADE-IN HELPER
+// ═══════════════════════════════════════════════════════════════
+
+/// Animazione fade-in + slide-up con ritardo staggerato basato su [index].
+class _StaggeredFadeIn extends StatelessWidget {
+  final int index;
+  final Widget child;
+
+  const _StaggeredFadeIn({required this.index, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0.0, end: 1.0),
+      duration: Duration(milliseconds: 400 + (index * 60).clamp(0, 360)),
+      curve: Curves.easeOutCubic,
+      builder: (context, val, child) {
+        return Opacity(
+          opacity: val,
+          child: Transform.translate(
+            offset: Offset(0, 16 * (1 - val)),
+            child: child,
+          ),
+        );
+      },
+      child: child,
+    );
+  }
+}
+

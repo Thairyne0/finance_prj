@@ -335,7 +335,14 @@ class _SettingsGroup extends StatelessWidget {
           decoration: BoxDecoration(
             color: AppTheme.cardDark,
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: AppTheme.borderDark),
+            border: Border.all(color: AppTheme.borderDark, width: 0.8),
+            boxShadow: [
+              BoxShadow(
+                color: AppTheme.primaryColor.withValues(alpha: 0.03),
+                blurRadius: 20,
+                spreadRadius: -8,
+              ),
+            ],
           ),
           child: Column(
             children: List.generate(items.length, (i) {
@@ -383,6 +390,7 @@ class _SettingsItem extends StatelessWidget {
         iconSize: 20,
         borderRadius: 12,
         opacity: 0.12,
+        enableGlow: true,
       ),
       title: Text(
         title,
