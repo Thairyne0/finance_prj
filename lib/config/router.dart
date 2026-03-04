@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import '../features/dashboard/screens/dashboard_screen.dart';
 import '../features/transactions/screens/transaction_list_screen.dart';
 import '../features/transactions/screens/add_transaction_screen.dart';
+import '../data/models/transaction_model.dart';
 import '../features/charts/screens/charts_screen.dart';
 import '../features/budget/screens/budget_screen.dart';
 import '../features/recurring/screens/recurring_screen.dart';
@@ -59,6 +60,14 @@ final GoRouter appRouter = GoRouter(
       name: 'addTransaction',
       parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) => const AddTransactionScreen(),
+    ),
+    GoRoute(
+      path: '/edit-transaction',
+      name: 'editTransaction',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) => AddTransactionScreen(
+        existingTransaction: state.extra as TransactionModel?,
+      ),
     ),
     GoRoute(
       path: '/budget',

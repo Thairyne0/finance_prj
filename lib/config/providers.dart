@@ -1,6 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../core/services/crypto_service.dart';
+import '../core/services/notification_service.dart';
+import '../data/local/hive_service.dart';
 import '../data/repositories/transaction_repository.dart';
 import '../data/repositories/budget_repository.dart';
 import '../data/repositories/recurring_repository.dart';
@@ -37,13 +39,14 @@ final allTransactionsProvider =
     StateNotifierProvider<TransactionListNotifier, List<TransactionModel>>(
         (ref) {
   final repo = ref.read(transactionRepositoryProvider);
-  return TransactionListNotifier(repo);
+  return TransactionListNotifier(repo, ref);
 });
 
 class TransactionListNotifier extends StateNotifier<List<TransactionModel>> {
   final TransactionRepository _repo;
+  final Ref _ref;
 
-  TransactionListNotifier(this._repo) : super([]) {
+  TransactionListNotifier(this._repo, this._ref) : super([]) {
     refresh();
   }
 
@@ -54,6 +57,10 @@ class TransactionListNotifier extends StateNotifier<List<TransactionModel>> {
   Future<void> add(TransactionModel transaction) async {
     await _repo.add(transaction);
     refresh();
+    // Controlla budget e invia notifiche push se necessario
+    if (transaction.type == TransactionType.expense) {
+      _checkBudgetNotifications(transaction.categoryId);
+    }
   }
 
   Future<void> delete(String id) async {
@@ -64,11 +71,37 @@ class TransactionListNotifier extends StateNotifier<List<TransactionModel>> {
   Future<void> update(TransactionModel transaction) async {
     await _repo.update(transaction);
     refresh();
+    if (transaction.type == TransactionType.expense) {
+      _checkBudgetNotifications(transaction.categoryId);
+    }
   }
 
   Future<void> deleteAll() async {
     await _repo.deleteAll();
     refresh();
+  }
+
+  void _checkBudgetNotifications(String categoryId) {
+    try {
+      final budgetStatus = _ref.read(budgetStatusProvider);
+      final entry = budgetStatus[categoryId];
+      if (entry == null) return;
+
+      final percent = entry.budget.limit > 0
+          ? entry.spent / entry.budget.limit
+          : 0.0;
+
+      if (percent >= 0.8) {
+        final cat = HiveService.getCategoryById(categoryId);
+        NotificationService.showBudgetAlert(
+          categoryName: cat.name,
+          percent: percent,
+          isOver: percent >= 1.0,
+        );
+      }
+    } catch (e) {
+      // Non critico: ignora se i provider non sono pronti
+    }
   }
 }
 
@@ -329,6 +362,79 @@ final budgetAlertsProvider = Provider<List<({String categoryId, double percent, 
   }
   alerts.sort((a, b) => b.percent.compareTo(a.percent));
   return alerts;
+});
+
+// ──────────────────────────────────────────
+// UPCOMING RECURRING TRANSACTIONS
+// ──────────────────────────────────────────
+
+/// Prossime transazioni ricorrenti con giorni mancanti
+final upcomingRecurringProvider =
+    Provider<List<({RecurringTransactionModel recurring, int daysUntil})>>((ref) {
+  final allRecurring = ref.watch(allRecurringProvider);
+  final active = allRecurring.where((r) => r.isActive).toList();
+  if (active.isEmpty) return [];
+
+  final now = DateTime.now();
+  final today = now.day;
+
+  final result = <({RecurringTransactionModel recurring, int daysUntil})>[];
+
+  for (final r in active) {
+    int daysUntil;
+    if (r.dayOfMonth >= today) {
+      // Ancora questo mese
+      daysUntil = r.dayOfMonth - today;
+    } else {
+      // Prossimo mese
+      final daysInMonth = DateTime(now.year, now.month + 1, 0).day;
+      daysUntil = (daysInMonth - today) + r.dayOfMonth;
+    }
+    result.add((recurring: r, daysUntil: daysUntil));
+  }
+
+  result.sort((a, b) => a.daysUntil.compareTo(b.daysUntil));
+  return result.take(5).toList();
+});
+
+// ──────────────────────────────────────────
+// PATRIMONIO OVER TIME
+// ──────────────────────────────────────────
+
+/// Saldo cumulativo mese per mese per il grafico patrimonio nel tempo
+final patrimonioOverTimeProvider =
+    Provider<List<({DateTime month, double balance})>>((ref) {
+  final all = ref.watch(allTransactionsProvider);
+  if (all.isEmpty) return [];
+
+  // Raggruppa per anno/mese
+  final monthMap = <String, double>{};
+  DateTime? earliest;
+  for (final t in all) {
+    final key = '${t.date.year}-${t.date.month.toString().padLeft(2, '0')}';
+    final amount = t.type == TransactionType.income ? t.amount : -t.amount;
+    monthMap[key] = (monthMap[key] ?? 0) + amount;
+    if (earliest == null || t.date.isBefore(earliest)) {
+      earliest = t.date;
+    }
+  }
+
+  if (earliest == null) return [];
+
+  // Costruisce la lista cumulativa dal mese più vecchio ad oggi
+  final now = DateTime.now();
+  final result = <({DateTime month, double balance})>[];
+  double cumulative = 0;
+
+  var cursor = DateTime(earliest.year, earliest.month, 1);
+  while (cursor.isBefore(DateTime(now.year, now.month + 1, 1))) {
+    final key = '${cursor.year}-${cursor.month.toString().padLeft(2, '0')}';
+    cumulative += (monthMap[key] ?? 0);
+    result.add((month: cursor, balance: cumulative));
+    cursor = DateTime(cursor.year, cursor.month + 1, 1);
+  }
+
+  return result;
 });
 
 // ──────────────────────────────────────────

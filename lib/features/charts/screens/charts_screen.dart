@@ -8,6 +8,7 @@ import '../../../widget/tm_widgets.dart';
 import '../widgets/line_chart_widget.dart';
 import '../widgets/pie_chart_widget.dart';
 import '../widgets/bar_chart_widget.dart';
+import '../widgets/patrimonio_chart_widget.dart';
 
 class ChartsScreen extends ConsumerWidget {
   const ChartsScreen({super.key});
@@ -66,6 +67,8 @@ class ChartsScreen extends ConsumerWidget {
                   ),
                   SizedBox(height: vSpacing),
                   const CategoryPieChartWidget(),
+                  SizedBox(height: vSpacing),
+                  const PatrimonioChartWidget(),
                 ] else ...[
                   // ── Mobile: layout verticale ──
                   const TrendLineChartWidget(),
@@ -73,6 +76,8 @@ class ChartsScreen extends ConsumerWidget {
                   const IncomeExpenseBarChart(),
                   SizedBox(height: vSpacing),
                   const CategoryPieChartWidget(),
+                  SizedBox(height: vSpacing),
+                  const PatrimonioChartWidget(),
                 ],
               ],
             ),

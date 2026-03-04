@@ -10,6 +10,7 @@ import '../../../core/widgets/transaction_tile.dart';
 import '../../../data/local/hive_service.dart';
 import '../../../widget/tm_widgets.dart';
 import '../widgets/mini_chart_widget.dart';
+import '../widgets/upcoming_recurring_widget.dart';
 
 class DashboardScreen extends ConsumerStatefulWidget {
   const DashboardScreen({super.key});
@@ -42,8 +43,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         DateTime(selectedDate.year, selectedDate.month + 1);
 
     // Altezze hero: expanded = altezza piena, collapsed = altezza compatta sticky
-    final double heroExpanded  = isMobile ? (topPad + 220) : (topPad + 200);
-    final double heroCollapsed = isMobile ? 72.0 : 64.0;
+    final double heroExpanded  = isMobile ? (topPad + 244) : (topPad + 224);
+    final double heroCollapsed = isMobile ? 72.0 : 68.0;
 
     return SafeArea(
       bottom: false,
@@ -104,6 +105,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                             children: [
                               _BudgetAlerts(),
                               _SavingsGoalsMini(),
+                              const UpcomingRecurringWidget(),
                             ],
                           ),
                         ),
@@ -170,6 +172,14 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   child: Padding(
                     padding: EdgeInsets.symmetric(horizontal: hPad),
                     child: _BitcoinMiniCard(),
+                  ),
+                ),
+
+                // Prossime scadenze ricorrenti
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: hPad),
+                    child: const UpcomingRecurringWidget(),
                   ),
                 ),
 
@@ -484,16 +494,15 @@ class _PatrimonioAnimatedHeaderState extends State<_PatrimonioAnimatedHeader>
 
   @override
   Widget build(BuildContext context) {
-    final t       = widget.t;
-    final accent  = widget.accent;
-    final hPad    = widget.hPad;
+    final t      = widget.t;
+    final accent = widget.accent;
+    final hPad   = widget.hPad;
 
     return AnimatedBuilder(
       animation: _shimmer,
       builder: (context, _) {
         final sv = _shimmer.value;
 
-        // Sfondo: gradiente pieno quando espanso, più scuro e solido quando collassato
         final bgGradient = LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -506,291 +515,287 @@ class _PatrimonioAnimatedHeaderState extends State<_PatrimonioAnimatedHeader>
           stops: [0.0, 0.2 + sv * 0.15, 0.55 + sv * 0.15, 1.0],
         );
 
-        // Font size: 38 → 22, accelerato
-        final fontSize = lerpDouble(widget.isDesktop ? 44 : 38, 22, t)!;
-        // Opacità label "Patrimonio totale": sparisce nel primo 30% dello scroll
-        final labelOpacity = (1.0 - t * 3.5).clamp(0.0, 1.0);
-        // Badge scale
-        final badgeScale = lerpDouble(1.0, 0.75, t)!;
-        // Opacità intero layout espanso: sparisce entro t=0.45
+        final fontSize       = lerpDouble(widget.isDesktop ? 44 : 38, 22, t)!;
+        final labelOpacity   = (1.0 - t * 3.5).clamp(0.0, 1.0);
+        final badgeScale     = lerpDouble(1.0, 0.75, t)!;
         final expandedOpacity = (1.0 - t * 2.2).clamp(0.0, 1.0);
 
-        return Container(
-          width: double.infinity,
-          decoration: BoxDecoration(
-            gradient: bgGradient,
-            border: Border(
-              bottom: BorderSide(
-                color: accent.withValues(alpha: 0.12 + sv * 0.08),
-                width: 1,
+        return Stack(
+          children: [
+            Positioned.fill(
+              child: Container(
+                width: double.infinity,
+                color: AppTheme.scaffoldDark,
               ),
             ),
-          ),
-          child: Stack(
-            children: [
-              // ── LAYOUT ESPANSO (clippato, fades out proporzionalmente) ──
-              if (expandedOpacity > 0)
-                Positioned.fill(
-                  child: ClipRect(
-                    child: IgnorePointer(
-                      ignoring: expandedOpacity < 0.05,
-                      child: Opacity(
-                        opacity: expandedOpacity,
-                        child: Padding(
-                          padding: EdgeInsets.fromLTRB(
-                            hPad,
-                            lerpDouble(12, 6, t)!,
-                            hPad,
-                          lerpDouble(16, 8, t)!,
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            // Header row
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Opacity(
-                                  opacity: labelOpacity,
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Patrimonio totale',
-                                        style: TextStyle(
-                                          color: Colors.white38,
-                                          fontSize: widget.isDesktop ? 14 : 12,
-                                          fontWeight: FontWeight.w500,
-                                          letterSpacing: 0.3,
-                                        ),
-                                      ),
-                                      Text(
-                                        Formatters.formatMonthYear(DateTime.now()),
-                                        style: const TextStyle(color: Colors.white24, fontSize: 11),
-                                      ),
-                                    ],
-                                  ),
+            // ── Barra principale a tutto schermo ──────────────────────
+            Positioned.fill(
+              child: Container(
+                width: double.infinity,
+                decoration: BoxDecoration(gradient: bgGradient),
+                child: Stack(
+                  children: [
+                    // ── LAYOUT ESPANSO ────────────────────────────────
+                    if (expandedOpacity > 0)
+                      Positioned.fill(
+                        child: ClipRect(
+                          child: IgnorePointer(
+                            ignoring: expandedOpacity < 0.05,
+                            child: Opacity(
+                              opacity: expandedOpacity,
+                              child: Padding(
+                                padding: EdgeInsets.fromLTRB(
+                                  hPad,
+                                  lerpDouble(12, 6, t)!,
+                                  hPad,
+                                  lerpDouble(16, 8, t)!,
                                 ),
-                                Row(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    Transform.scale(
-                                      scale: badgeScale,
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                                        decoration: BoxDecoration(
-                                          color: accent.withValues(alpha: 0.15),
-                                          borderRadius: BorderRadius.circular(20),
-                                          border: Border.all(color: accent.withValues(alpha: 0.3)),
+                                    // Header row
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Opacity(
+                                          opacity: labelOpacity,
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                'Patrimonio totale',
+                                                style: TextStyle(
+                                                  color: Colors.white38,
+                                                  fontSize: widget.isDesktop ? 14 : 12,
+                                                  fontWeight: FontWeight.w500,
+                                                  letterSpacing: 0.3,
+                                                ),
+                                              ),
+                                              Text(
+                                                Formatters.formatMonthYear(DateTime.now()),
+                                                style: const TextStyle(color: Colors.white24, fontSize: 11),
+                                              ),
+                                            ],
+                                          ),
                                         ),
-                                        child: Row(
-                                          mainAxisSize: MainAxisSize.min,
+                                        Row(
                                           children: [
-                                            Icon(
-                                              widget.isPositive
-                                                  ? Icons.trending_up_rounded
-                                                  : Icons.trending_down_rounded,
-                                              color: accent,
-                                              size: 14,
+                                            Transform.scale(
+                                              scale: badgeScale,
+                                              child: Container(
+                                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                                                decoration: BoxDecoration(
+                                                  color: accent.withValues(alpha: 0.15),
+                                                  borderRadius: BorderRadius.circular(20),
+                                                  border: Border.all(color: accent.withValues(alpha: 0.3)),
+                                                ),
+                                                child: Row(
+                                                  mainAxisSize: MainAxisSize.min,
+                                                  children: [
+                                                    Icon(
+                                                      widget.isPositive
+                                                          ? Icons.trending_up_rounded
+                                                          : Icons.trending_down_rounded,
+                                                      color: accent,
+                                                      size: 14,
+                                                    ),
+                                                    const SizedBox(width: 4),
+                                                    Text(
+                                                      widget.isPositive ? 'Positivo' : 'Negativo',
+                                                      style: TextStyle(color: accent, fontSize: 12, fontWeight: FontWeight.w600),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
                                             ),
-                                            const SizedBox(width: 4),
-                                            Text(
-                                              widget.isPositive ? 'Positivo' : 'Negativo',
-                                              style: TextStyle(color: accent, fontSize: 12, fontWeight: FontWeight.w600),
-                                            ),
+                                            if (widget.onAdd != null) ...[
+                                              const SizedBox(width: 10),
+                                              GestureDetector(
+                                                onTap: widget.onAdd,
+                                                child: Container(
+                                                  width: 38, height: 38,
+                                                  decoration: BoxDecoration(
+                                                    color: AppTheme.cardDark,
+                                                    borderRadius: BorderRadius.circular(12),
+                                                    border: Border.all(color: AppTheme.borderDark),
+                                                  ),
+                                                  child: const Icon(Icons.add_rounded, color: AppTheme.primaryColor, size: 20),
+                                                ),
+                                              ),
+                                            ],
                                           ],
+                                        ),
+                                      ],
+                                    ),
+
+                                    SizedBox(height: lerpDouble(12, 6, t)!),
+
+                                    // Importo grande
+                                    FittedBox(
+                                      fit: BoxFit.scaleDown,
+                                      alignment: Alignment.centerLeft,
+                                      child: Text(
+                                        Formatters.formatCurrency(widget.patrimonio),
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: fontSize,
+                                          fontWeight: FontWeight.w800,
+                                          letterSpacing: -1,
+                                          height: 1.1,
                                         ),
                                       ),
                                     ),
-                                    if (widget.onAdd != null) ...[
-                                      const SizedBox(width: 10),
-                                      GestureDetector(
-                                        onTap: widget.onAdd,
-                                        child: Container(
-                                          width: 38, height: 38,
-                                          decoration: BoxDecoration(
-                                            color: AppTheme.cardDark,
-                                            borderRadius: BorderRadius.circular(12),
-                                            border: Border.all(color: AppTheme.borderDark),
-                                          ),
-                                          child: const Icon(Icons.add_rounded, color: AppTheme.primaryColor, size: 20),
-                                        ),
-                                      ),
-                                    ],
-                                  ],
-                                ),
-                              ],
-                            ),
 
-                            SizedBox(height: lerpDouble(12, 6, t)!),
-
-                            // Importo grande
-                            FittedBox(
-                              fit: BoxFit.scaleDown,
-                              alignment: Alignment.centerLeft,
-                              child: Text(
-                                Formatters.formatCurrency(widget.patrimonio),
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: fontSize,
-                                  fontWeight: FontWeight.w800,
-                                  letterSpacing: -1,
-                                  height: 1.1,
-                                ),
-                              ),
-                            ),
-
-                            // Quick stats: scalano in altezza proporzionalmente a t
-                            ClipRect(
-                              child: Align(
-                                alignment: Alignment.topCenter,
-                                heightFactor: (1.0 - t * 3.0).clamp(0.0, 1.0),
-                                child: Opacity(
-                                  opacity: (1.0 - t * 4.0).clamp(0.0, 1.0),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      SizedBox(height: lerpDouble(16, 0, t)!),
-                                      Row(
-                                        children: [
-                                          _QuickStat(
-                                            label: 'Entrate totali',
-                                            amount: widget.totalIncome,
-                                            icon: Icons.south_west_rounded,
-                                            color: AppTheme.incomeColor,
-                                          ),
-                                          const SizedBox(width: 10),
-                                          _QuickStat(
-                                            label: 'Uscite totali',
-                                            amount: widget.totalExpense,
-                                            icon: Icons.north_east_rounded,
-                                            color: AppTheme.expenseColor,
-                                          ),
-                                          const SizedBox(width: 10),
-                                          Expanded(
-                                            child: Container(
-                                              padding: const EdgeInsets.all(12),
-                                              decoration: BoxDecoration(
-                                                color: Colors.white.withValues(alpha: 0.05),
-                                                borderRadius: BorderRadius.circular(14),
-                                                border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
-                                              ),
-                                              child: Column(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                    // Quick stats con compressione verticale
+                                    ClipRect(
+                                      child: Align(
+                                        alignment: Alignment.topCenter,
+                                        heightFactor: (1.0 - t * 3.0).clamp(0.0, 1.0),
+                                        child: Opacity(
+                                          opacity: (1.0 - t * 4.0).clamp(0.0, 1.0),
+                                          child: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              SizedBox(height: lerpDouble(16, 0, t)!),
+                                              Row(
                                                 children: [
-                                                  Row(
-                                                    children: [
-                                                      Icon(Icons.savings_rounded, color: AppTheme.warningColor, size: 14),
-                                                      const SizedBox(width: 5),
-                                                      const Text('Risparmio',
-                                                          style: TextStyle(color: Colors.white38, fontSize: 11, fontWeight: FontWeight.w500)),
-                                                    ],
+                                                  _QuickStat(
+                                                    label: 'Entrate totali',
+                                                    amount: widget.totalIncome,
+                                                    icon: Icons.south_west_rounded,
+                                                    color: AppTheme.incomeColor,
                                                   ),
-                                                  const SizedBox(height: 6),
-                                                  Text(
-                                                    widget.totalIncome > 0
-                                                        ? '${((1 - widget.totalExpense / widget.totalIncome).clamp(0, 1) * 100).toStringAsFixed(0)}%'
-                                                        : '—',
-                                                    style: const TextStyle(color: AppTheme.warningColor, fontSize: 16, fontWeight: FontWeight.w700),
+                                                  const SizedBox(width: 10),
+                                                  _QuickStat(
+                                                    label: 'Uscite totali',
+                                                    amount: widget.totalExpense,
+                                                    icon: Icons.north_east_rounded,
+                                                    color: AppTheme.expenseColor,
+                                                  ),
+                                                  const SizedBox(width: 10),
+                                                  Expanded(
+                                                    child: Container(
+                                                      padding: const EdgeInsets.all(12),
+                                                      decoration: BoxDecoration(
+                                                        color: Colors.white.withValues(alpha: 0.05),
+                                                        borderRadius: BorderRadius.circular(14),
+                                                        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+                                                      ),
+                                                      child: Column(
+                                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                                        children: [
+                                                          Row(
+                                                            children: [
+                                                              Icon(Icons.savings_rounded, color: AppTheme.warningColor, size: 14),
+                                                              const SizedBox(width: 5),
+                                                              const Text('Risparmio',
+                                                                  style: TextStyle(color: Colors.white38, fontSize: 11, fontWeight: FontWeight.w500)),
+                                                            ],
+                                                          ),
+                                                          const SizedBox(height: 6),
+                                                          Text(
+                                                            widget.totalIncome > 0
+                                                                ? '${((1 - widget.totalExpense / widget.totalIncome).clamp(0, 1) * 100).toStringAsFixed(0)}%'
+                                                                : '—',
+                                                            style: const TextStyle(color: AppTheme.warningColor, fontSize: 16, fontWeight: FontWeight.w700),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
                                                   ),
                                                 ],
                                               ),
-                                            ),
+                                            ],
                                           ),
-                                        ],
+                                        ),
                                       ),
-                                    ],
-                                  ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ),
-                          ],
+                          ),
                         ),
                       ),
-                    ),
-                  ),
-                ),
-              ),
 
-              // ── LAYOUT COMPATTO (visibile quando t > 0.5) ──
-              Positioned.fill(
-                child: Opacity(
-                  opacity: (t * 2.0 - 1.0).clamp(0.0, 1.0),
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: hPad),
-                    child: Row(
-                      children: [
-                        // Icona
-                        Container(
-                          width: 34, height: 34,
-                          decoration: BoxDecoration(
-                            color: accent.withValues(alpha: 0.15),
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(color: accent.withValues(alpha: 0.3)),
-                          ),
-                          child: Icon(
-                            widget.isPositive ? Icons.account_balance_wallet_rounded : Icons.warning_rounded,
-                            color: accent, size: 16,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        // Label + importo
-                        Expanded(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                    // ── LAYOUT COMPATTO ───────────────────────────────
+                    Positioned.fill(
+                      child: Opacity(
+                        opacity: (t * 2.0 - 1.0).clamp(0.0, 1.0),
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: hPad),
+                          child: Row(
                             children: [
-                              Text(
-                                'Patrimonio totale',
-                                style: TextStyle(color: Colors.white38, fontSize: 11, fontWeight: FontWeight.w500),
-                              ),
-                              Text(
-                                Formatters.formatCurrency(widget.patrimonio),
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w800,
-                                  letterSpacing: -0.5,
+                              Container(
+                                width: 34, height: 34,
+                                decoration: BoxDecoration(
+                                  color: accent.withValues(alpha: 0.15),
+                                  borderRadius: BorderRadius.circular(10),
+                                  border: Border.all(color: accent.withValues(alpha: 0.3)),
+                                ),
+                                child: Icon(
+                                  widget.isPositive ? Icons.account_balance_wallet_rounded : Icons.warning_rounded,
+                                  color: accent, size: 16,
                                 ),
                               ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text('Patrimonio totale',
+                                        style: TextStyle(color: Colors.white38, fontSize: 11, fontWeight: FontWeight.w500)),
+                                    Text(
+                                      Formatters.formatCurrency(widget.patrimonio),
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w800,
+                                        letterSpacing: -0.5,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              _MiniStatChip(
+                                label: 'Entrate',
+                                value: Formatters.formatCompact(widget.totalIncome),
+                                color: AppTheme.incomeColor,
+                              ),
+                              const SizedBox(width: 8),
+                              _MiniStatChip(
+                                label: 'Uscite',
+                                value: Formatters.formatCompact(widget.totalExpense),
+                                color: AppTheme.expenseColor,
+                              ),
+                              if (widget.onAdd != null) ...[
+                                const SizedBox(width: 8),
+                                GestureDetector(
+                                  onTap: widget.onAdd,
+                                  child: Container(
+                                    width: 34, height: 34,
+                                    decoration: BoxDecoration(
+                                      color: AppTheme.cardDark,
+                                      borderRadius: BorderRadius.circular(10),
+                                      border: Border.all(color: AppTheme.borderDark),
+                                    ),
+                                    child: const Icon(Icons.add_rounded, color: AppTheme.primaryColor, size: 18),
+                                  ),
+                                ),
+                              ],
                             ],
                           ),
                         ),
-                        // Mini stats in row
-                        _MiniStatChip(
-                          label: 'Entrate',
-                          value: Formatters.formatCompact(widget.totalIncome),
-                          color: AppTheme.incomeColor,
-                        ),
-                        const SizedBox(width: 8),
-                        _MiniStatChip(
-                          label: 'Uscite',
-                          value: Formatters.formatCompact(widget.totalExpense),
-                          color: AppTheme.expenseColor,
-                        ),
-                        if (widget.onAdd != null) ...[
-                          const SizedBox(width: 8),
-                          GestureDetector(
-                            onTap: widget.onAdd,
-                            child: Container(
-                              width: 34, height: 34,
-                              decoration: BoxDecoration(
-                                color: AppTheme.cardDark,
-                                borderRadius: BorderRadius.circular(10),
-                                border: Border.all(color: AppTheme.borderDark),
-                              ),
-                              child: const Icon(Icons.add_rounded, color: AppTheme.primaryColor, size: 18),
-                            ),
-                          ),
-                        ],
-                      ],
+                      ),
                     ),
-                  ),
+                  ],
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         );
       },
     );

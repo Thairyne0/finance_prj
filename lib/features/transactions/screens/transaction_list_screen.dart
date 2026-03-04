@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../../config/providers.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/formatters.dart';
@@ -305,6 +306,7 @@ class _TransactionListScreenState extends ConsumerState<TransactionListScreen> {
                     final transaction = filtered[index];
                     return TransactionTile(
                       transaction: transaction,
+                      onTap: () => context.push('/edit-transaction', extra: transaction),
                       onDismissed: () {
                         ref
                             .read(allTransactionsProvider.notifier)

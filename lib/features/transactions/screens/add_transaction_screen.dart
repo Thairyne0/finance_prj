@@ -10,7 +10,9 @@ import '../../../data/models/category_model.dart';
 import '../../../widget/tm_widgets.dart';
 
 class AddTransactionScreen extends ConsumerStatefulWidget {
-  const AddTransactionScreen({super.key});
+  final TransactionModel? existingTransaction;
+
+  const AddTransactionScreen({super.key, this.existingTransaction});
 
   @override
   ConsumerState<AddTransactionScreen> createState() =>
@@ -36,7 +38,19 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
   @override
   void initState() {
     super.initState();
-    _selectedCategoryId = _categories.first.id;
+    final existing = widget.existingTransaction;
+    if (existing != null) {
+      _amountController.text = existing.amount.toString();
+      _descriptionController.text = existing.description;
+      _productController.text = existing.productName ?? '';
+      _accountNameController.text = existing.accountName ?? '';
+      _type = existing.type;
+      _selectedDate = existing.date;
+      _paymentMethod = existing.paymentMethod;
+      _selectedCategoryId = existing.categoryId;
+    } else {
+      _selectedCategoryId = _categories.first.id;
+    }
   }
 
   @override
@@ -73,11 +87,13 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
     }
   }
 
+  bool get _isEditing => widget.existingTransaction != null;
+
   void _submit() {
     if (!_formKey.currentState!.validate()) return;
 
     final transaction = TransactionModel(
-      id: const Uuid().v4(),
+      id: _isEditing ? widget.existingTransaction!.id : const Uuid().v4(),
       amount: double.parse(_amountController.text.replaceAll(',', '.')),
       type: _type,
       categoryId: _selectedCategoryId!,
@@ -86,14 +102,18 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
           ? _productController.text.trim()
           : null,
       date: _selectedDate,
-      createdAt: DateTime.now(),
+      createdAt: _isEditing ? widget.existingTransaction!.createdAt : DateTime.now(),
       paymentMethod: _paymentMethod,
       accountName: _accountNameController.text.trim().isNotEmpty
           ? _accountNameController.text.trim()
           : null,
     );
 
-    ref.read(allTransactionsProvider.notifier).add(transaction);
+    if (_isEditing) {
+      ref.read(allTransactionsProvider.notifier).update(transaction);
+    } else {
+      ref.read(allTransactionsProvider.notifier).add(transaction);
+    }
     context.pop();
   }
 
@@ -102,7 +122,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
     return Scaffold(
       backgroundColor: AppTheme.scaffoldDark,
       appBar: AppBar(
-        title: const Text('Nuovo Movimento'),
+        title: Text(_isEditing ? 'Modifica Movimento' : 'Nuovo Movimento'),
         leading: IconButton(
           icon: const Icon(Icons.close_rounded),
           onPressed: () => context.pop(),
@@ -486,9 +506,11 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
                           : AppTheme.incomeColor,
                     ),
                     child: Text(
-                      _type == TransactionType.expense
-                          ? 'Aggiungi Spesa'
-                          : 'Aggiungi Entrata',
+                      _isEditing
+                          ? 'Salva Modifiche'
+                          : _type == TransactionType.expense
+                              ? 'Aggiungi Spesa'
+                              : 'Aggiungi Entrata',
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,

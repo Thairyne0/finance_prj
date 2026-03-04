@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'data/local/hive_service.dart';
+import 'core/services/notification_service.dart';
 import 'app.dart';
 
 void main() {
@@ -63,6 +64,9 @@ void main() {
       }
     }
 
+    // Inizializzazione notifiche locali
+    await NotificationService.init();
+    await NotificationService.requestPermission();
 
     runApp(
       const ProviderScope(

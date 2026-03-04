@@ -27,17 +27,19 @@ class TransactionTile extends StatelessWidget {
     final bool hasProduct = transaction.productName != null &&
         transaction.productName!.isNotEmpty;
 
-    Widget tile = Container(
-      margin: const EdgeInsets.symmetric(vertical: 4),
-      decoration: BoxDecoration(
-        color: AppTheme.cardDark,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppTheme.borderDark, width: 1),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
+    Widget tile = GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 4),
+        decoration: BoxDecoration(
+          color: AppTheme.cardDark,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppTheme.borderDark, width: 1),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             // ── Icona categoria ──────────────────────────────────────
             TmIconBadge.fromCodePoint(
@@ -146,6 +148,7 @@ class TransactionTile extends StatelessWidget {
             ),
           ],
         ),
+      ),
       ),
     );
 
