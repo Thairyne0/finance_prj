@@ -35,9 +35,9 @@ class TransactionTile extends StatelessWidget {
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 4),
         decoration: BoxDecoration(
-          color: AppTheme.cardDark,
+          color: AppTheme.card(context),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppTheme.borderDark, width: 0.8),
+          border: Border.all(color: AppTheme.border(context), width: 0.8),
         ),
         child: Row(
           children: [
@@ -95,7 +95,7 @@ class TransactionTile extends StatelessWidget {
                                       ? '${category.name} · ${transaction.productName!}'
                                       : category.name,
                                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                        color: Colors.white38,
+                                        color: AppTheme.textMutedC(context),
                                         fontSize: 11,
                                         height: 1.2,
                                       ),

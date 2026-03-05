@@ -47,7 +47,7 @@ class ChartsScreen extends ConsumerWidget {
                   style: Theme.of(context)
                       .textTheme
                       .bodyMedium
-                      ?.copyWith(color: Colors.white54),
+                      ?.copyWith(color: AppTheme.textTertiary(context)),
                 ),
                 SizedBox(height: vSpacing),
 
@@ -110,11 +110,11 @@ class _SavingsIndicator extends StatelessWidget {
           colors: isPositive
               ? [
                   AppTheme.incomeColor.withValues(alpha: 0.15),
-                  AppTheme.cardDark,
+                  AppTheme.card(context),
                 ]
               : [
                   AppTheme.expenseColor.withValues(alpha: 0.15),
-                  AppTheme.cardDark,
+                  AppTheme.card(context),
                 ],
         ),
         borderRadius: BorderRadius.circular(20),
@@ -152,7 +152,7 @@ class _SavingsIndicator extends StatelessWidget {
                       ? 'Risparmio del ${savingsRate.toStringAsFixed(1)}% questo mese'
                       : 'Le spese superano le entrate',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Colors.white54,
+                        color: AppTheme.textTertiary(context),
                       ),
                 ),
               ],

@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../core/services/crypto_service.dart';
@@ -13,6 +14,37 @@ import '../data/models/recurring_transaction_model.dart';
 import '../data/models/savings_goal_model.dart';
 import '../data/models/monthly_report.dart';
 
+// ──────────────────────────────────────────
+// THEME MODE
+// ──────────────────────────────────────────
+final themeModeProvider = StateNotifierProvider<ThemeModeNotifier, ThemeMode>((ref) {
+  return ThemeModeNotifier();
+});
+
+class ThemeModeNotifier extends StateNotifier<ThemeMode> {
+  ThemeModeNotifier() : super(ThemeMode.dark) {
+    _loadFromPrefs();
+  }
+
+  Future<void> _loadFromPrefs() async {
+    final prefs = await SharedPreferences.getInstance();
+    final isDark = prefs.getBool('isDarkMode') ?? true;
+    state = isDark ? ThemeMode.dark : ThemeMode.light;
+  }
+
+  Future<void> toggle() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (state == ThemeMode.dark) {
+      state = ThemeMode.light;
+      await prefs.setBool('isDarkMode', false);
+    } else {
+      state = ThemeMode.dark;
+      await prefs.setBool('isDarkMode', true);
+    }
+  }
+
+  bool get isDark => state == ThemeMode.dark;
+}
 // ──────────────────────────────────────────
 // REPOSITORIES
 // ──────────────────────────────────────────

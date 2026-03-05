@@ -17,9 +17,9 @@ class CategoryPieChartWidget extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppTheme.cardDark,
+        color: AppTheme.card(context),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppTheme.borderDark),
+        border: Border.all(color: AppTheme.border(context)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -41,7 +41,7 @@ class CategoryPieChartWidget extends ConsumerWidget {
                   style: Theme.of(context)
                       .textTheme
                       .bodySmall
-                      ?.copyWith(color: Colors.white24),
+                      ?.copyWith(color: AppTheme.textMutedC(context)),
                 ),
               ),
             )
@@ -85,7 +85,7 @@ class CategoryPieChartWidget extends ConsumerWidget {
                         style: Theme.of(context)
                             .textTheme
                             .bodyMedium
-                            ?.copyWith(color: Colors.white70),
+                            ?.copyWith(color: AppTheme.textSecondary(context)),
                       ),
                     ),
                     Text(
@@ -93,7 +93,7 @@ class CategoryPieChartWidget extends ConsumerWidget {
                       style: Theme.of(context)
                           .textTheme
                           .bodySmall
-                          ?.copyWith(color: Colors.white38),
+                          ?.copyWith(color: AppTheme.textMutedC(context)),
                     ),
                     const SizedBox(width: 12),
                     Text(

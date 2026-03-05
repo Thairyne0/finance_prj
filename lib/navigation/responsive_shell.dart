@@ -251,7 +251,7 @@ class _TabletShell extends StatelessWidget {
           // Navigation Rail
           Container(
             width: 80,
-            color: AppTheme.surfaceDark,
+            color: AppTheme.surface(context),
             child: Column(
               children: [
                 const SizedBox(height: 20),
@@ -286,10 +286,10 @@ class _TabletShell extends StatelessWidget {
                   size: 38,
                 ),
                 const SizedBox(height: 20),
-                const Divider(
+                Divider(
                   indent: 16,
                   endIndent: 16,
-                  color: AppTheme.borderDark,
+                  color: AppTheme.border(context),
                 ),
                 const SizedBox(height: 8),
                 // Nav Items
@@ -314,7 +314,7 @@ class _TabletShell extends StatelessWidget {
           // Divider
           Container(
             width: 1,
-            color: AppTheme.borderDark,
+            color: AppTheme.border(context),
           ),
           // Content
           Expanded(child: child),
@@ -404,7 +404,7 @@ class _RailNavItem extends StatelessWidget {
                 Icon(
                   icon,
                   size: 22,
-                  color: isSelected ? AppTheme.primaryColor : Colors.white38,
+                  color: isSelected ? AppTheme.primaryColor : AppTheme.textMutedC(context),
                 ),
                 const SizedBox(height: 4),
                 Text(
@@ -413,7 +413,7 @@ class _RailNavItem extends StatelessWidget {
                     fontSize: 9,
                     fontWeight:
                         isSelected ? FontWeight.w600 : FontWeight.w400,
-                    color: isSelected ? AppTheme.primaryColor : Colors.white38,
+                    color: isSelected ? AppTheme.primaryColor : AppTheme.textMutedC(context),
                   ),
                 ),
               ],
@@ -455,7 +455,7 @@ class _DesktopShell extends StatelessWidget {
             onAddTapped: onAddTapped,
             onChatTapped: onChatTapped,
           ),
-          Container(width: 1, color: AppTheme.borderDark),
+          Container(width: 1, color: AppTheme.border(context)),
           Expanded(child: child),
         ],
       ),
@@ -480,7 +480,7 @@ class _DesktopSidebar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: 260,
-      color: AppTheme.surfaceDark,
+      color: AppTheme.surface(context),
       child: SafeArea(
         right: false,
         bottom: false,
@@ -542,9 +542,9 @@ class _DesktopSidebar extends StatelessWidget {
             ),
 
             const SizedBox(height: 20),
-            const Padding(
+            Padding(
               padding: EdgeInsets.symmetric(horizontal: 16),
-              child: Divider(color: AppTheme.borderDark, height: 1),
+              child: Divider(color: AppTheme.border(context), height: 1),
             ),
             const SizedBox(height: 8),
 
@@ -556,7 +556,7 @@ class _DesktopSidebar extends StatelessWidget {
                 child: Text(
                   'MENU',
                   style: TextStyle(
-                    color: Colors.white24,
+                    color: AppTheme.textMutedC(context),
                     fontSize: 10,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 1.8,
@@ -601,14 +601,14 @@ class _DesktopSidebar extends StatelessWidget {
                             children: [
                               Icon(
                                 isSelected ? d.selectedIcon : d.icon,
-                                color: isSelected ? AppTheme.primaryColor : Colors.white38,
+                                color: isSelected ? AppTheme.primaryColor : AppTheme.textMutedC(context),
                                 size: 20,
                               ),
                               const SizedBox(width: 12),
                               Text(
                                 d.label,
                                 style: TextStyle(
-                                  color: isSelected ? Colors.white : Colors.white54,
+                                  color: isSelected ? Colors.white : AppTheme.textTertiary(context),
                                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
                                   fontSize: 14,
                                 ),
@@ -635,9 +635,9 @@ class _DesktopSidebar extends StatelessWidget {
             ),
 
             // Footer
-            const Padding(
+            Padding(
               padding: EdgeInsets.symmetric(horizontal: 16),
-              child: Divider(color: AppTheme.borderDark, height: 1),
+              child: Divider(color: AppTheme.border(context), height: 1),
             ),
             SafeArea(
               top: false,
@@ -646,9 +646,9 @@ class _DesktopSidebar extends StatelessWidget {
                 padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
                 child: Row(
                   children: [
-                    const Icon(Icons.info_outline_rounded, size: 13, color: Colors.white24),
+                    Icon(Icons.info_outline_rounded, size: 13, color: AppTheme.textMutedC(context)),
                     const SizedBox(width: 8),
-                    Text('FinanceApp v1.0.0', style: TextStyle(color: Colors.white24, fontSize: 11)),
+                    Text('FinanceApp v1.0.0', style: TextStyle(color: AppTheme.textMutedC(context), fontSize: 11)),
                   ],
                 ),
               ),

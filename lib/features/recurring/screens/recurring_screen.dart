@@ -19,7 +19,7 @@ class RecurringScreen extends ConsumerWidget {
     final recurring = ref.watch(allRecurringProvider);
 
     return Scaffold(
-      backgroundColor: AppTheme.scaffoldDark,
+      backgroundColor: AppTheme.scaffold(context),
       appBar: AppBar(
         title: const Text('Transazioni Ricorrenti'),
         leading: IconButton(
@@ -71,12 +71,12 @@ class RecurringScreen extends ConsumerWidget {
                       margin: const EdgeInsets.only(bottom: 10),
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: AppTheme.cardDark,
+                        color: AppTheme.card(context),
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
                           color: item.isActive
-                              ? AppTheme.borderDark
-                              : AppTheme.borderDark.withValues(alpha: 0.3),
+                              ? AppTheme.border(context)
+                              : AppTheme.border(context).withValues(alpha: 0.3),
                         ),
                       ),
                       child: Row(
@@ -113,14 +113,14 @@ class RecurringScreen extends ConsumerWidget {
                                         fontWeight: FontWeight.w600,
                                         color: item.isActive
                                             ? Colors.white
-                                            : Colors.white38,
+                                            : AppTheme.textMutedC(context),
                                       ),
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
                                   'Ogni ${item.dayOfMonth} del mese',
                                   style: TextStyle(
-                                    color: Colors.white38,
+                                    color: AppTheme.textMutedC(context),
                                     fontSize: 12,
                                   ),
                                 ),
@@ -197,7 +197,7 @@ class RecurringScreen extends ConsumerWidget {
       context: context,
       isScrollControlled: true,
       useSafeArea: true,
-      backgroundColor: AppTheme.cardDark,
+      backgroundColor: AppTheme.card(context),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -257,7 +257,7 @@ class RecurringScreen extends ConsumerWidget {
                   const SizedBox(height: 16),
                   DropdownButtonFormField<String>(
                     initialValue: catId,
-                    dropdownColor: AppTheme.cardDarkAlt,
+                    dropdownColor: AppTheme.cardAlt(context),
                     decoration: const InputDecoration(labelText: 'Categoria'),
                     items: categories.map((c) {
                       return DropdownMenuItem(
@@ -270,7 +270,7 @@ class RecurringScreen extends ConsumerWidget {
                   const SizedBox(height: 16),
                   DropdownButtonFormField<int>(
                     initialValue: day,
-                    dropdownColor: AppTheme.cardDarkAlt,
+                    dropdownColor: AppTheme.cardAlt(context),
                     decoration:
                         const InputDecoration(labelText: 'Giorno del mese'),
                     items: List.generate(28, (i) => i + 1)

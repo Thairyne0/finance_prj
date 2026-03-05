@@ -29,7 +29,7 @@ class BalanceCard extends StatelessWidget {
           colors: [
             AppTheme.primaryColor.withValues(alpha: 0.8),
             AppTheme.primaryColor.withValues(alpha: 0.4),
-            AppTheme.cardDarkAlt,
+            AppTheme.cardAlt(context),
           ],
         ),
         borderRadius: BorderRadius.circular(24),
@@ -44,7 +44,7 @@ class BalanceCard extends StatelessWidget {
           Text(
             period,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Colors.white60,
+                  color: AppTheme.textTertiary(context),
                   letterSpacing: 1.2,
                 ),
           ),
@@ -52,7 +52,7 @@ class BalanceCard extends StatelessWidget {
           Text(
             'Bilancio',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Colors.white70,
+                  color: AppTheme.textSecondary(context),
                 ),
           ),
           const SizedBox(height: 4),
@@ -131,7 +131,7 @@ class _BalanceDetail extends StatelessWidget {
                 Text(
                   label,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Colors.white54,
+                        color: AppTheme.textTertiary(context),
                         fontSize: 11,
                       ),
                 ),

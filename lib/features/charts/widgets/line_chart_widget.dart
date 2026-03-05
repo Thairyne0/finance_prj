@@ -16,9 +16,9 @@ class TrendLineChartWidget extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppTheme.cardDark,
+        color: AppTheme.card(context),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppTheme.borderDark),
+        border: Border.all(color: AppTheme.border(context)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -53,7 +53,7 @@ class TrendLineChartWidget extends ConsumerWidget {
                         drawVerticalLine: false,
                         horizontalInterval: _interval(reports),
                         getDrawingHorizontalLine: (_) => FlLine(
-                          color: AppTheme.borderDark,
+                          color: AppTheme.border(context),
                           strokeWidth: 1,
                         ),
                       ),
@@ -65,8 +65,8 @@ class TrendLineChartWidget extends ConsumerWidget {
                             getTitlesWidget: (value, meta) {
                               return Text(
                                 Formatters.formatCompact(value),
-                                style: const TextStyle(
-                                  color: Colors.white30,
+                                style: TextStyle(
+                                  color: AppTheme.textTertiary(context),
                                   fontSize: 10,
                                 ),
                               );
@@ -92,8 +92,8 @@ class TrendLineChartWidget extends ConsumerWidget {
                                   Formatters.formatShortMonth(
                                     DateTime(reports[i].year, reports[i].month),
                                   ),
-                                  style: const TextStyle(
-                                    color: Colors.white38,
+                                  style: TextStyle(
+                                    color: AppTheme.textMutedC(context),
                                     fontSize: 11,
                                   ),
                                 ),
@@ -105,13 +105,13 @@ class TrendLineChartWidget extends ConsumerWidget {
                       borderData: FlBorderData(show: false),
                       lineBarsData: [
                         _line(reports.map((r) => r.totalIncome).toList(),
-                            AppTheme.incomeColor),
+                            AppTheme.incomeColor, context),
                         _line(reports.map((r) => r.totalExpense).toList(),
-                            AppTheme.expenseColor),
+                            AppTheme.expenseColor, context),
                       ],
                       lineTouchData: LineTouchData(
                         touchTooltipData: LineTouchTooltipData(
-                          getTooltipColor: (_) => AppTheme.cardDarkAlt,
+                          getTooltipColor: (_) => AppTheme.cardAlt(context),
                           getTooltipItems: (spots) => spots.map((s) {
                             final c = s.barIndex == 0
                                 ? AppTheme.incomeColor
@@ -135,7 +135,7 @@ class TrendLineChartWidget extends ConsumerWidget {
     );
   }
 
-  LineChartBarData _line(List<double> values, Color color) {
+  LineChartBarData _line(List<double> values, Color color, BuildContext context) {
     return LineChartBarData(
       spots: List.generate(
           values.length, (i) => FlSpot(i.toDouble(), values[i])),
@@ -145,11 +145,11 @@ class TrendLineChartWidget extends ConsumerWidget {
       isStrokeCapRound: true,
       dotData: FlDotData(
         show: true,
-        getDotPainter: (spot, _, _a, _b) => FlDotCirclePainter(
+        getDotPainter: (spot, xPercentage, bar, index) => FlDotCirclePainter(
           radius: 4,
           color: color,
           strokeWidth: 2,
-          strokeColor: AppTheme.cardDark,
+          strokeColor: AppTheme.card(context),
         ),
       ),
       belowBarData: BarAreaData(
@@ -175,7 +175,7 @@ class TrendLineChartWidget extends ConsumerWidget {
         style: Theme.of(context)
             .textTheme
             .bodySmall
-            ?.copyWith(color: Colors.white24),
+            ?.copyWith(color: AppTheme.textMutedC(context)),
       ),
     );
   }
@@ -198,9 +198,8 @@ class _Dot extends StatelessWidget {
         ),
         const SizedBox(width: 4),
         Text(label,
-            style: const TextStyle(color: Colors.white54, fontSize: 11)),
+            style: TextStyle(color: AppTheme.textTertiary(context), fontSize: 11)),
       ],
     );
   }
 }
-

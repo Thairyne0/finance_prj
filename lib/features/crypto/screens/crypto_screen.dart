@@ -20,7 +20,7 @@ class CryptoScreen extends ConsumerWidget {
     final vSpace      = ResponsiveLayout.sectionSpacing(context);
 
     return Scaffold(
-      backgroundColor: AppTheme.scaffoldDark,
+      backgroundColor: AppTheme.scaffold(context),
       appBar: AppBar(
         title: Row(
           children: [
@@ -45,7 +45,7 @@ class CryptoScreen extends ConsumerWidget {
         actions: [
           // Refresh manuale
           IconButton(
-            icon: const Icon(Icons.refresh_rounded, color: AppTheme.primaryColor),
+            icon: Icon(Icons.refresh_rounded, color: AppTheme.primaryColor),
             onPressed: () {
               CryptoService.clearCache();
               ref.invalidate(bitcoinPriceProvider);
@@ -97,7 +97,7 @@ class CryptoScreen extends ConsumerWidget {
                           Icon(
                             price.isFromCache ? Icons.cached_rounded : Icons.check_circle_outline_rounded,
                             size: 12,
-                            color: price.isFromCache ? Colors.orange.withValues(alpha: 0.6) : Colors.white24,
+                            color: price.isFromCache ? Colors.orange.withValues(alpha: 0.6) : AppTheme.textMutedC(context),
                           ),
                           const SizedBox(width: 5),
                           Text(
@@ -105,7 +105,7 @@ class CryptoScreen extends ConsumerWidget {
                                 ? 'Dati in cache · ${_timeStr(price.fetchedAt)} · Auto-refresh 90s'
                                 : 'Aggiornato alle ${_timeStr(price.fetchedAt)} · Auto-refresh 90s',
                             style: TextStyle(
-                              color: price.isFromCache ? Colors.orange.withValues(alpha: 0.5) : Colors.white24,
+                              color: price.isFromCache ? Colors.orange.withValues(alpha: 0.5) : AppTheme.textMutedC(context),
                               fontSize: 11,
                             ),
                           ),
@@ -145,7 +145,7 @@ class _PriceHeroCard extends StatelessWidget {
           end: Alignment.bottomRight,
           colors: [
             const Color(0xFFF7931A).withValues(alpha: 0.12),
-            AppTheme.cardDark,
+            AppTheme.card(context),
           ],
         ),
         borderRadius: BorderRadius.circular(24),
@@ -157,9 +157,9 @@ class _PriceHeroCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 'Bitcoin (BTC)',
-                style: TextStyle(color: Colors.white54, fontSize: 13, fontWeight: FontWeight.w500),
+                style: TextStyle(color: AppTheme.textTertiary(context), fontSize: 13, fontWeight: FontWeight.w500),
               ),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
@@ -199,7 +199,7 @@ class _PriceHeroCard extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             'per 1 BTC',
-            style: TextStyle(color: Colors.white38, fontSize: 13),
+            style: TextStyle(color: AppTheme.textMutedC(context), fontSize: 13),
           ),
         ],
       ),
@@ -229,9 +229,9 @@ class _SparklineCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppTheme.cardDark,
+        color: AppTheme.card(context),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppTheme.borderDark),
+        border: Border.all(color: AppTheme.border(context)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -244,7 +244,7 @@ class _SparklineCard extends StatelessWidget {
           SizedBox(
             height: 140,
             child: spots.isEmpty
-                ? const Center(child: Text('Dati non disponibili', style: TextStyle(color: Colors.white24)))
+                ? Center(child: Text('Dati non disponibili', style: TextStyle(color: AppTheme.textMutedC(context))))
                 : LineChart(
                     LineChartData(
                       gridData: FlGridData(
@@ -252,7 +252,7 @@ class _SparklineCard extends StatelessWidget {
                         drawVerticalLine: false,
                         horizontalInterval: _interval(price.sparkline7d),
                         getDrawingHorizontalLine: (_) =>
-                            FlLine(color: AppTheme.borderDark, strokeWidth: 1),
+                            FlLine(color: AppTheme.border(context), strokeWidth: 1),
                       ),
                       titlesData: FlTitlesData(
                         leftTitles: AxisTitles(
@@ -261,7 +261,7 @@ class _SparklineCard extends StatelessWidget {
                             reservedSize: 60,
                             getTitlesWidget: (v, _) => Text(
                               Formatters.formatCompact(v),
-                              style: const TextStyle(color: Colors.white24, fontSize: 10),
+                              style: TextStyle(color: AppTheme.textMutedC(context), fontSize: 10),
                             ),
                           ),
                         ),
@@ -280,7 +280,7 @@ class _SparklineCard extends StatelessWidget {
                                 padding: const EdgeInsets.only(top: 6),
                                 child: Text(
                                   hrsAgo == 0 ? 'Ora' : '-${hrsAgo}h',
-                                  style: const TextStyle(color: Colors.white24, fontSize: 10),
+                                  style: TextStyle(color: AppTheme.textMutedC(context), fontSize: 10),
                                 ),
                               );
                             },
@@ -311,7 +311,7 @@ class _SparklineCard extends StatelessWidget {
                       ],
                       lineTouchData: LineTouchData(
                         touchTooltipData: LineTouchTooltipData(
-                          getTooltipColor: (_) => AppTheme.cardDarkAlt,
+                          getTooltipColor: (_) => AppTheme.cardAlt(context),
                           getTooltipItems: (spots) => spots.map((s) => LineTooltipItem(
                             Formatters.formatCurrency(s.y),
                             TextStyle(color: lineColor, fontWeight: FontWeight.w600, fontSize: 12),
@@ -378,9 +378,9 @@ class _StatCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: AppTheme.cardDark,
+        color: AppTheme.card(context),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppTheme.borderDark),
+        border: Border.all(color: AppTheme.border(context)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -388,7 +388,7 @@ class _StatCard extends StatelessWidget {
           Row(children: [
             Icon(icon, color: color, size: 13),
             const SizedBox(width: 4),
-            Text(label, style: const TextStyle(color: Colors.white38, fontSize: 11)),
+            Text(label, style: TextStyle(color: AppTheme.textMutedC(context), fontSize: 11)),
           ]),
           const SizedBox(height: 6),
           FittedBox(
@@ -445,7 +445,7 @@ class _PortfolioCardState extends ConsumerState<_PortfolioCard> {
           end: Alignment.bottomRight,
           colors: [
             AppTheme.primaryColor.withValues(alpha: 0.08),
-            AppTheme.cardDark,
+            AppTheme.card(context),
           ],
         ),
         borderRadius: BorderRadius.circular(20),
@@ -480,7 +480,7 @@ class _PortfolioCardState extends ConsumerState<_PortfolioCard> {
                   ),
                   child: Text(
                     _editing ? 'Salva' : 'Modifica',
-                    style: const TextStyle(color: AppTheme.primaryColor, fontSize: 12, fontWeight: FontWeight.w600),
+                    style: TextStyle(color: AppTheme.primaryColor, fontSize: 12, fontWeight: FontWeight.w600),
                   ),
                 ),
               ),
@@ -512,9 +512,9 @@ class _PortfolioCardState extends ConsumerState<_PortfolioCard> {
           ],
 
           if (!_editing && !hasAmount)
-            const Text(
+            Text(
               'Inserisci la quantità di BTC che possiedi per vedere il valore in EUR.',
-              style: TextStyle(color: Colors.white38, fontSize: 13),
+              style: TextStyle(color: AppTheme.textMutedC(context), fontSize: 13),
             ),
 
           if (!_editing && hasAmount) ...[
@@ -524,7 +524,7 @@ class _PortfolioCardState extends ConsumerState<_PortfolioCard> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Quantità', style: TextStyle(color: Colors.white38, fontSize: 12)),
+                    Text('Quantità', style: TextStyle(color: AppTheme.textMutedC(context), fontSize: 12)),
                     const SizedBox(height: 2),
                     Row(
                       children: [
@@ -541,7 +541,7 @@ class _PortfolioCardState extends ConsumerState<_PortfolioCard> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    const Text('Valore in EUR', style: TextStyle(color: Colors.white38, fontSize: 12)),
+                    Text('Valore in EUR', style: TextStyle(color: AppTheme.textMutedC(context), fontSize: 12)),
                     const SizedBox(height: 2),
                     Text(
                       Formatters.formatCurrency(valueEur),
@@ -561,14 +561,14 @@ class _PortfolioCardState extends ConsumerState<_PortfolioCard> {
               decoration: BoxDecoration(
                 color: Colors.white.withValues(alpha: 0.04),
                 borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: AppTheme.borderDark),
+                border: Border.all(color: AppTheme.border(context)),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
                     '1 BTC = ${Formatters.formatCurrency(widget.price.priceEur)}',
-                    style: const TextStyle(color: Colors.white38, fontSize: 12),
+                    style: TextStyle(color: AppTheme.textMutedC(context), fontSize: 12),
                   ),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
@@ -576,7 +576,7 @@ class _PortfolioCardState extends ConsumerState<_PortfolioCard> {
                       color: AppTheme.primaryColor.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(6),
                     ),
-                    child: const Text('LIVE', style: TextStyle(color: AppTheme.primaryColor, fontSize: 10, fontWeight: FontWeight.w700, letterSpacing: 1)),
+                    child: Text('LIVE', style: TextStyle(color: AppTheme.primaryColor, fontSize: 10, fontWeight: FontWeight.w700, letterSpacing: 1)),
                   ),
                 ],
               ),
@@ -611,7 +611,7 @@ class _CryptoLoadingState extends StatelessWidget {
         const SizedBox(height: 16),
         const CircularProgressIndicator(color: Color(0xFFF7931A), strokeWidth: 2.5),
         const SizedBox(height: 12),
-        const Text('Recupero prezzo Bitcoin...', style: TextStyle(color: Colors.white38, fontSize: 13)),
+        Text('Recupero prezzo Bitcoin...', style: TextStyle(color: AppTheme.textMutedC(context), fontSize: 13)),
       ],
     );
   }
@@ -633,7 +633,7 @@ class _CryptoErrorState extends StatelessWidget {
       children: [
         Icon(
           isRateLimit ? Icons.hourglass_empty_rounded : Icons.wifi_off_rounded,
-          color: Colors.white24,
+          color: AppTheme.textMutedC(context),
           size: 48,
         ),
         const SizedBox(height: 12),
@@ -643,7 +643,7 @@ class _CryptoErrorState extends StatelessWidget {
               : isTimeout
                   ? 'Connessione lenta'
                   : 'Impossibile recuperare i dati',
-          style: const TextStyle(color: Colors.white54, fontSize: 14, fontWeight: FontWeight.w600),
+          style: TextStyle(color: AppTheme.textTertiary(context), fontSize: 14, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 4),
         Text(
@@ -653,7 +653,7 @@ class _CryptoErrorState extends StatelessWidget {
                   ? 'Il server ha impiegato troppo tempo a rispondere.'
                   : 'Controlla la connessione internet e riprova.',
           textAlign: TextAlign.center,
-          style: const TextStyle(color: Colors.white24, fontSize: 12),
+          style: TextStyle(color: AppTheme.textMutedC(context), fontSize: 12),
         ),
         const SizedBox(height: 20),
         ElevatedButton.icon(

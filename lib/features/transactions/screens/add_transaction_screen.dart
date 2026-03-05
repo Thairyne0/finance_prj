@@ -71,10 +71,10 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.dark(
+            colorScheme: ColorScheme.dark(
               primary: AppTheme.primaryColor,
               onPrimary: Colors.white,
-              surface: AppTheme.cardDark,
+              surface: AppTheme.card(context),
               onSurface: Colors.white,
             ),
           ),
@@ -120,7 +120,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.scaffoldDark,
+      backgroundColor: AppTheme.scaffold(context),
       appBar: AppBar(
         title: Text(_isEditing ? 'Modifica Movimento' : 'Nuovo Movimento'),
         leading: IconButton(
@@ -164,8 +164,8 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
                       });
                     },
                     style: SegmentedButton.styleFrom(
-                      backgroundColor: AppTheme.cardDark,
-                      foregroundColor: Colors.white70,
+                      backgroundColor: AppTheme.card(context),
+                      foregroundColor: AppTheme.textSecondary(context),
                       selectedForegroundColor: Colors.white,
                       selectedBackgroundColor: _type == TransactionType.expense
                           ? AppTheme.expenseColor.withValues(alpha: 0.3)
@@ -221,12 +221,12 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
                           color: isSelected
                               ? Color(category.colorValue)
                                   .withValues(alpha: 0.2)
-                              : AppTheme.cardDark,
+                              : AppTheme.card(context),
                           borderRadius: BorderRadius.circular(14),
                           border: Border.all(
                             color: isSelected
                                 ? Color(category.colorValue)
-                                : AppTheme.borderDark,
+                                : AppTheme.border(context),
                             width: isSelected ? 2 : 1,
                           ),
                         ),
@@ -239,7 +239,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
                               size: 18,
                               color: isSelected
                                   ? Color(category.colorValue)
-                                  : Colors.white54,
+                                  : AppTheme.textTertiary(context),
                             ),
                             const SizedBox(width: 8),
                             Text(
@@ -247,7 +247,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
                               style: TextStyle(
                                 color: isSelected
                                     ? Color(category.colorValue)
-                                    : Colors.white54,
+                                    : AppTheme.textTertiary(context),
                                 fontWeight: isSelected
                                     ? FontWeight.w600
                                     : FontWeight.w400,
@@ -334,12 +334,12 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
                           decoration: BoxDecoration(
                             color: _paymentMethod == PaymentMethod.cash
                                 ? AppTheme.warningColor.withValues(alpha: 0.15)
-                                : AppTheme.cardDark,
+                                : AppTheme.card(context),
                             borderRadius: BorderRadius.circular(14),
                             border: Border.all(
                               color: _paymentMethod == PaymentMethod.cash
                                   ? AppTheme.warningColor
-                                  : AppTheme.borderDark,
+                                  : AppTheme.border(context),
                               width: _paymentMethod == PaymentMethod.cash ? 2 : 1,
                             ),
                           ),
@@ -349,7 +349,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
                                 Icons.payments_rounded,
                                 color: _paymentMethod == PaymentMethod.cash
                                     ? AppTheme.warningColor
-                                    : Colors.white38,
+                                    : AppTheme.textMutedC(context),
                                 size: 24,
                               ),
                               const SizedBox(height: 6),
@@ -358,7 +358,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
                                 style: TextStyle(
                                   color: _paymentMethod == PaymentMethod.cash
                                       ? AppTheme.warningColor
-                                      : Colors.white38,
+                                      : AppTheme.textMutedC(context),
                                   fontWeight: _paymentMethod == PaymentMethod.cash
                                       ? FontWeight.w600
                                       : FontWeight.w400,
@@ -380,12 +380,12 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
                           decoration: BoxDecoration(
                             color: _paymentMethod == PaymentMethod.bankAccount
                                 ? AppTheme.primaryColor.withValues(alpha: 0.15)
-                                : AppTheme.cardDark,
+                                : AppTheme.card(context),
                             borderRadius: BorderRadius.circular(14),
                             border: Border.all(
                               color: _paymentMethod == PaymentMethod.bankAccount
                                   ? AppTheme.primaryColor
-                                  : AppTheme.borderDark,
+                                  : AppTheme.border(context),
                               width: _paymentMethod == PaymentMethod.bankAccount ? 2 : 1,
                             ),
                           ),
@@ -395,7 +395,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
                                 Icons.account_balance_rounded,
                                 color: _paymentMethod == PaymentMethod.bankAccount
                                     ? AppTheme.primaryColor
-                                    : Colors.white38,
+                                    : AppTheme.textMutedC(context),
                                 size: 24,
                               ),
                               const SizedBox(height: 6),
@@ -404,7 +404,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
                                 style: TextStyle(
                                   color: _paymentMethod == PaymentMethod.bankAccount
                                       ? AppTheme.primaryColor
-                                      : Colors.white38,
+                                      : AppTheme.textMutedC(context),
                                   fontWeight: _paymentMethod == PaymentMethod.bankAccount
                                       ? FontWeight.w600
                                       : FontWeight.w400,
@@ -470,9 +470,9 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
                     padding: const EdgeInsets.symmetric(
                         horizontal: 20, vertical: 16),
                     decoration: BoxDecoration(
-                      color: AppTheme.cardDark,
+                      color: AppTheme.card(context),
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: AppTheme.borderDark),
+                      border: Border.all(color: AppTheme.border(context)),
                     ),
                     child: Row(
                       children: [
@@ -485,8 +485,8 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
                               Theme.of(context).textTheme.titleMedium,
                         ),
                         const Spacer(),
-                        const Icon(Icons.chevron_right_rounded,
-                            color: Colors.white38),
+                        Icon(Icons.chevron_right_rounded,
+                            color: AppTheme.textMutedC(context)),
                       ],
                     ),
                   ),

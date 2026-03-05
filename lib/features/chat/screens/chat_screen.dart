@@ -125,7 +125,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
     final bottomSafe = MediaQuery.of(context).padding.bottom;
 
     return Scaffold(
-      backgroundColor: AppTheme.scaffoldDark,
+      backgroundColor: AppTheme.scaffold(context),
       resizeToAvoidBottomInset: true,
       body: Center(
         child: ConstrainedBox(
@@ -227,9 +227,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
             bottom: 12,
           ),
           decoration: BoxDecoration(
-            color: AppTheme.scaffoldDark.withValues(alpha: 0.85),
-            border: const Border(
-              bottom: BorderSide(color: AppTheme.borderDark, width: 0.5),
+            color: AppTheme.scaffold(context).withValues(alpha: 0.85),
+            border: Border(
+              bottom: BorderSide(color: AppTheme.border(context), width: 0.5),
             ),
           ),
           child: Row(
@@ -240,11 +240,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
                   width: 38,
                   height: 38,
                   decoration: BoxDecoration(
-                    color: AppTheme.cardDark,
+                    color: AppTheme.card(context),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppTheme.borderDark),
+                    border: Border.all(color: AppTheme.border(context)),
                   ),
-                  child: const Icon(Icons.arrow_back_rounded, size: 20, color: Colors.white70),
+                  child: Icon(Icons.arrow_back_rounded, size: 20, color: AppTheme.textSecondary(context)),
                 ),
               ),
               const SizedBox(width: 14),
@@ -308,9 +308,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
     return Container(
       padding: EdgeInsets.fromLTRB(16, 10, 16, bottomPadding + 10),
       decoration: BoxDecoration(
-        color: AppTheme.surfaceDark.withValues(alpha: 0.95),
-        border: const Border(
-          top: BorderSide(color: AppTheme.borderDark, width: 0.5),
+        color: AppTheme.surface(context).withValues(alpha: 0.95),
+        border: Border(
+          top: BorderSide(color: AppTheme.border(context), width: 0.5),
         ),
       ),
       child: Row(
@@ -319,9 +319,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
             child: Container(
               constraints: const BoxConstraints(maxHeight: 120),
               decoration: BoxDecoration(
-                color: AppTheme.cardDark,
+                color: AppTheme.card(context),
                 borderRadius: BorderRadius.circular(24),
-                border: Border.all(color: AppTheme.borderDark),
+                border: Border.all(color: AppTheme.border(context)),
               ),
               child: TextField(
                 controller: _messageController,
@@ -393,7 +393,7 @@ class _MessageBubble extends StatelessWidget {
               decoration: BoxDecoration(
                 color: message.isUser
                     ? AppTheme.primaryColor.withValues(alpha: 0.2)
-                    : AppTheme.cardDark,
+                    : AppTheme.card(context),
                 borderRadius: BorderRadius.only(
                   topLeft: const Radius.circular(20),
                   topRight: const Radius.circular(20),
@@ -403,7 +403,7 @@ class _MessageBubble extends StatelessWidget {
                 border: Border.all(
                   color: message.isUser
                       ? AppTheme.primaryColor.withValues(alpha: 0.3)
-                      : AppTheme.borderDark,
+                      : AppTheme.border(context),
                   width: 0.5,
                 ),
               ),
@@ -451,7 +451,7 @@ class _MessageBubble extends StatelessWidget {
               padding: const EdgeInsets.only(top: 4),
               child: Text(
                 _formatTime(message.timestamp),
-                style: const TextStyle(color: Colors.white24, fontSize: 10),
+                style: TextStyle(color: AppTheme.textMutedC(context), fontSize: 10),
               ),
             ),
           ],
@@ -525,14 +525,14 @@ class _TypingIndicatorState extends State<_TypingIndicator>
         margin: const EdgeInsets.only(bottom: 10, right: 50),
         padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
         decoration: BoxDecoration(
-          color: AppTheme.cardDark,
+          color: AppTheme.card(context),
           borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(20),
             topRight: Radius.circular(20),
             bottomLeft: Radius.circular(4),
             bottomRight: Radius.circular(20),
           ),
-          border: Border.all(color: AppTheme.borderDark, width: 0.5),
+          border: Border.all(color: AppTheme.border(context), width: 0.5),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -546,7 +546,7 @@ class _TypingIndicatorState extends State<_TypingIndicator>
                   height: 8,
                   decoration: BoxDecoration(
                     color: Color.lerp(
-                      Colors.white24,
+                      AppTheme.textMutedC(context),
                       const Color(0xFF00D2D3),
                       _dotAnimations[index].value,
                     ),
@@ -590,15 +590,15 @@ class _QuickActions extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 14),
               decoration: BoxDecoration(
-                color: AppTheme.cardDark,
+                color: AppTheme.card(context),
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: AppTheme.borderDark),
+                border: Border.all(color: AppTheme.border(context)),
               ),
               alignment: Alignment.center,
               child: Text(
                 actions[index].$1,
-                style: const TextStyle(
-                  color: Colors.white60,
+                style: TextStyle(
+                  color: AppTheme.textTertiary(context),
                   fontSize: 12,
                   fontWeight: FontWeight.w500,
                 ),

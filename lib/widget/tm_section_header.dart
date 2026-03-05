@@ -67,7 +67,7 @@ class TmSectionHeader extends StatelessWidget {
                           ?.copyWith(color: AppTheme.primaryColor, fontWeight: FontWeight.w500),
                     ),
                     const SizedBox(width: 2),
-                    const Icon(Icons.chevron_right_rounded, size: 18, color: AppTheme.primaryColor),
+                    Icon(Icons.chevron_right_rounded, size: 18, color: AppTheme.primaryColor),
                   ],
                 ),
               ),

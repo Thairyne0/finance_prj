@@ -16,9 +16,9 @@ class IncomeExpenseBarChart extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppTheme.cardDark,
+        color: AppTheme.card(context),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppTheme.borderDark),
+        border: Border.all(color: AppTheme.border(context)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -53,7 +53,7 @@ class IncomeExpenseBarChart extends ConsumerWidget {
                         drawVerticalLine: false,
                         horizontalInterval: _interval(reports),
                         getDrawingHorizontalLine: (_) => FlLine(
-                          color: AppTheme.borderDark,
+                          color: AppTheme.border(context),
                           strokeWidth: 1,
                         ),
                       ),
@@ -92,8 +92,8 @@ class IncomeExpenseBarChart extends ConsumerWidget {
                                   Formatters.formatShortMonth(
                                     DateTime(reports[i].year, reports[i].month),
                                   ),
-                                  style: const TextStyle(
-                                    color: Colors.white38,
+                                  style: TextStyle(
+                                    color: AppTheme.textMutedC(context),
                                     fontSize: 11,
                                   ),
                                 ),
@@ -128,7 +128,7 @@ class IncomeExpenseBarChart extends ConsumerWidget {
                       ),
                       barTouchData: BarTouchData(
                         touchTooltipData: BarTouchTooltipData(
-                          getTooltipColor: (_) => AppTheme.cardDarkAlt,
+                          getTooltipColor: (_) => AppTheme.cardAlt(context),
                           getTooltipItem: (group, groupIndex, rod, rodIndex) {
                             final label =
                                 rodIndex == 0 ? 'Entrate' : 'Uscite';
@@ -154,7 +154,7 @@ class IncomeExpenseBarChart extends ConsumerWidget {
                       style: Theme.of(context)
                           .textTheme
                           .bodySmall
-                          ?.copyWith(color: Colors.white24),
+                          ?.copyWith(color: AppTheme.textMutedC(context)),
                     ),
                   ),
           ),
@@ -190,7 +190,7 @@ class _Dot extends StatelessWidget {
         ),
         const SizedBox(width: 4),
         Text(label,
-            style: const TextStyle(color: Colors.white54, fontSize: 11)),
+            style: TextStyle(color: AppTheme.textTertiary(context), fontSize: 11)),
       ],
     );
   }

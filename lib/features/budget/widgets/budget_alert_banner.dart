@@ -66,8 +66,8 @@ class BudgetAlertBanner extends ConsumerWidget {
                       isOver
                           ? 'Hai superato il budget ($percentStr)'
                           : 'Hai usato $percentStr del budget',
-                      style: const TextStyle(
-                        color: Colors.white54,
+                      style: TextStyle(
+                        color: AppTheme.textTertiary(context),
                         fontSize: 12,
                       ),
                     ),

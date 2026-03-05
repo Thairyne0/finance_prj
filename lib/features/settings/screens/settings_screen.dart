@@ -101,8 +101,12 @@ class SettingsScreen extends ConsumerWidget {
                   icon: Icons.palette_rounded,
                   iconColor: AppTheme.primaryColor,
                   title: 'Tema',
-                  subtitle: 'Dark',
-                  onTap: () {},
+                  subtitle: ref.watch(themeModeProvider) == ThemeMode.dark
+                      ? 'Dark'
+                      : 'Light',
+                  onTap: () {
+                    ref.read(themeModeProvider.notifier).toggle();
+                  },
                 ),
               ],
             ),
@@ -168,7 +172,7 @@ class SettingsScreen extends ConsumerWidget {
               items: [
                 _SettingsItem(
                   icon: Icons.info_outline_rounded,
-                  iconColor: Colors.white54,
+                  iconColor: Colors.grey,
                   title: 'Versione',
                   subtitle: '1.0.0',
                   onTap: () {},
@@ -184,7 +188,7 @@ class SettingsScreen extends ConsumerWidget {
                 style: Theme.of(context)
                     .textTheme
                     .bodySmall
-                    ?.copyWith(color: Colors.white24),
+                    ?.copyWith(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.2)),
               ),
             ),
           ],
@@ -209,7 +213,7 @@ class SettingsScreen extends ConsumerWidget {
 
     showModalBottomSheet(
       context: context,
-      backgroundColor: AppTheme.cardDark,
+      backgroundColor: Theme.of(context).cardTheme.color,
       isScrollControlled: true,
       useSafeArea: true,
       shape: const RoundedRectangleBorder(
@@ -242,12 +246,12 @@ class SettingsScreen extends ConsumerWidget {
                   decoration: BoxDecoration(
                     color: isSelected
                         ? AppTheme.primaryColor.withValues(alpha: 0.2)
-                        : AppTheme.surfaceDark,
+                        : Theme.of(ctx).colorScheme.surface,
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
                       color: isSelected
                           ? AppTheme.primaryColor
-                          : AppTheme.borderDark,
+                          : Theme.of(ctx).colorScheme.outline,
                     ),
                   ),
                   child: Center(
@@ -256,7 +260,7 @@ class SettingsScreen extends ConsumerWidget {
                       style: TextStyle(
                         color: isSelected
                             ? AppTheme.primaryColor
-                            : Colors.white54,
+                            : Theme.of(ctx).colorScheme.onSurface.withValues(alpha: 0.5),
                         fontWeight: FontWeight.w700,
                         fontSize: 16,
                       ),
@@ -281,18 +285,17 @@ class SettingsScreen extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: AppTheme.cardDark,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: const Text('Cancella tutti i dati?'),
-        content: const Text(
+        content: Text(
           'Questa azione è irreversibile. Tutti i movimenti, budget e obiettivi verranno eliminati.',
-          style: TextStyle(color: Colors.white70),
+          style: TextStyle(color: Theme.of(ctx).colorScheme.onSurface.withValues(alpha: 0.7)),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
             child:
-                const Text('Annulla', style: TextStyle(color: Colors.white54)),
+                Text('Annulla', style: TextStyle(color: Theme.of(ctx).colorScheme.onSurface.withValues(alpha: 0.5))),
           ),
           TextButton(
             onPressed: () {
@@ -325,7 +328,7 @@ class _SettingsGroup extends StatelessWidget {
           child: Text(
             title.toUpperCase(),
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Colors.white38,
+                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
                   letterSpacing: 1.5,
                   fontWeight: FontWeight.w600,
                 ),
@@ -333,9 +336,9 @@ class _SettingsGroup extends StatelessWidget {
         ),
         Container(
           decoration: BoxDecoration(
-            color: AppTheme.cardDark,
+            color: Theme.of(context).cardTheme.color,
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: AppTheme.borderDark, width: 0.8),
+            border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.8),
             boxShadow: [
               BoxShadow(
                 color: AppTheme.primaryColor.withValues(alpha: 0.03),
@@ -351,7 +354,7 @@ class _SettingsGroup extends StatelessWidget {
                 children: [
                   if (i > 0)
                     const Divider(
-                        height: 1, indent: 60, color: AppTheme.borderDark),
+                        height: 1, indent: 60),
                   item,
                 ],
               );
@@ -404,10 +407,10 @@ class _SettingsItem extends StatelessWidget {
         style: Theme.of(context)
             .textTheme
             .bodySmall
-            ?.copyWith(color: Colors.white38),
+            ?.copyWith(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4)),
       ),
       trailing:
-          const Icon(Icons.chevron_right_rounded, color: Colors.white24),
+          Icon(Icons.chevron_right_rounded, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.25)),
     );
   }
 }

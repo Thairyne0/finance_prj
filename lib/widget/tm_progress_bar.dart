@@ -65,7 +65,7 @@ class _TmProgressBarState extends State<TmProgressBar>
   @override
   Widget build(BuildContext context) {
     final baseColor = widget.color ?? AppTheme.primaryColor;
-    final bg = widget.backgroundColor ?? AppTheme.borderDark;
+    final bg = widget.backgroundColor ?? AppTheme.border(context);
     final br = widget.borderRadius;
 
     return AnimatedBuilder(

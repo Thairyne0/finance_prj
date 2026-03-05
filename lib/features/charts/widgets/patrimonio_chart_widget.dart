@@ -31,9 +31,9 @@ class PatrimonioChartWidget extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppTheme.cardDark,
+        color: AppTheme.card(context),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppTheme.borderDark),
+        border: Border.all(color: AppTheme.border(context)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -78,7 +78,7 @@ class PatrimonioChartWidget extends ConsumerWidget {
                   drawVerticalLine: false,
                   horizontalInterval: range > 0 ? (range / 4).ceilToDouble().clamp(50, double.infinity) : 100,
                   getDrawingHorizontalLine: (_) =>
-                      FlLine(color: AppTheme.borderDark, strokeWidth: 1),
+                      FlLine(color: AppTheme.border(context), strokeWidth: 1),
                 ),
                 titlesData: FlTitlesData(
                   leftTitles: AxisTitles(
@@ -88,8 +88,8 @@ class PatrimonioChartWidget extends ConsumerWidget {
                       getTitlesWidget: (value, meta) {
                         return Text(
                           Formatters.formatCompact(value),
-                          style: const TextStyle(
-                              color: Colors.white24, fontSize: 10),
+                          style: TextStyle(
+                              color: AppTheme.textMutedC(context), fontSize: 10),
                         );
                       },
                     ),
@@ -114,8 +114,8 @@ class PatrimonioChartWidget extends ConsumerWidget {
                           padding: const EdgeInsets.only(top: 6),
                           child: Text(
                             Formatters.formatShortMonth(data[idx].month),
-                            style: const TextStyle(
-                                color: Colors.white38, fontSize: 10),
+                            style: TextStyle(
+                                color: AppTheme.textMutedC(context), fontSize: 10),
                           ),
                         );
                       },
@@ -137,7 +137,7 @@ class PatrimonioChartWidget extends ConsumerWidget {
                         radius: spot.x == spots.last.x ? 4 : 0,
                         color: lineColor,
                         strokeWidth: 2,
-                        strokeColor: AppTheme.cardDark,
+                        strokeColor: AppTheme.card(context),
                       ),
                     ),
                     belowBarData: BarAreaData(
@@ -168,7 +168,7 @@ class PatrimonioChartWidget extends ConsumerWidget {
                 ],
                 lineTouchData: LineTouchData(
                   touchTooltipData: LineTouchTooltipData(
-                    getTooltipColor: (_) => AppTheme.cardDarkAlt,
+                    getTooltipColor: (_) => AppTheme.cardAlt(context),
                     getTooltipItems: (touchedSpots) {
                       return touchedSpots.map((s) {
                         final idx = s.x.toInt();

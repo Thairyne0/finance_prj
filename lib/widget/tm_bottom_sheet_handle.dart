@@ -6,23 +6,19 @@ class TmBottomSheetHandle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Center(
       child: Container(
         width: 36,
         height: 4,
         margin: const EdgeInsets.only(top: 8, bottom: 4),
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Colors.white.withValues(alpha: 0.12),
-              Colors.white.withValues(alpha: 0.25),
-              Colors.white.withValues(alpha: 0.12),
-            ],
-          ),
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.2)
+              : Colors.black.withValues(alpha: 0.15),
           borderRadius: BorderRadius.circular(2),
         ),
       ),
     );
   }
 }
-

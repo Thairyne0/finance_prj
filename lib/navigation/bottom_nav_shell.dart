@@ -121,10 +121,10 @@ class _PremiumBottomNavState extends State<_PremiumBottomNav>
               child: Container(
                 height: navHeight,
                 decoration: BoxDecoration(
-                  color: AppTheme.surfaceDark.withValues(alpha: 0.92),
-                  border: const Border(
+                  color: AppTheme.surface(context).withValues(alpha: 0.92),
+                  border: Border(
                     top: BorderSide(
-                      color: Color(0xFF2A2A3E),
+                      color: AppTheme.border(context),
                       width: 0.5,
                     ),
                   ),
@@ -372,7 +372,7 @@ class _NavItem extends StatelessWidget {
               child: Icon(
                 isSelected ? icon : outlinedIcon,
                 size: 22,
-                color: isSelected ? AppTheme.primaryColor : Colors.white38,
+                color: isSelected ? AppTheme.primaryColor : AppTheme.textMutedC(context),
               ),
             ),
             const SizedBox(height: 2),
@@ -381,7 +381,7 @@ class _NavItem extends StatelessWidget {
               style: TextStyle(
                 fontSize: 10,
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                color: isSelected ? AppTheme.primaryColor : Colors.white38,
+                color: isSelected ? AppTheme.primaryColor : AppTheme.textMutedC(context),
               ),
               child: Text(label),
             ),

@@ -19,6 +19,10 @@ class TmFilterChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final chipColor = color ?? AppTheme.primaryColor;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgDefault = isDark ? AppTheme.card(context) : AppTheme.cardLightAlt;
+    final borderDefault = isDark ? AppTheme.border(context) : AppTheme.borderLight;
+    final textDefault = isDark ? Colors.white54 : AppTheme.textLightTertiary;
 
     return GestureDetector(
       onTap: onTap,
@@ -29,10 +33,10 @@ class TmFilterChip extends StatelessWidget {
         decoration: BoxDecoration(
           color: isSelected
               ? chipColor.withValues(alpha: 0.15)
-              : AppTheme.cardDark,
+              : bgDefault,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isSelected ? chipColor.withValues(alpha: 0.5) : AppTheme.borderDark,
+            color: isSelected ? chipColor.withValues(alpha: 0.5) : borderDefault,
             width: isSelected ? 1.2 : 1,
           ),
           boxShadow: isSelected
@@ -48,7 +52,7 @@ class TmFilterChip extends StatelessWidget {
         child: AnimatedDefaultTextStyle(
           duration: const Duration(milliseconds: 250),
           style: TextStyle(
-            color: isSelected ? chipColor : Colors.white54,
+            color: isSelected ? chipColor : textDefault,
             fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
             fontSize: 13,
           ),

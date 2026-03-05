@@ -264,5 +264,218 @@ class AppTheme {
       ),
     );
   }
-}
 
+  // ═══════════════════════════════════════════════════════════════
+  // LIGHT THEME
+  // ═══════════════════════════════════════════════════════════════
+
+  // Light Surface Colors
+  static const Color scaffoldLight = Color(0xFFF5F5F8);
+  static const Color surfaceLight = Color(0xFFFFFFFF);
+  static const Color cardLight = Color(0xFFFFFFFF);
+  static const Color cardLightAlt = Color(0xFFF0F0F5);
+  static const Color borderLight = Color(0xFFE2E2EA);
+
+  // Light Text Colors
+  static const Color textLightPrimary = Color(0xFF1A1A2E);
+  static const Color textLightSecondary = Color(0xFF5A5A72);
+  static const Color textLightTertiary = Color(0xFF9090A5);
+  static const Color textLightMuted = Color(0xFFBBBBCC);
+
+  static TextTheme _safeLightTextTheme() {
+    try {
+      return GoogleFonts.interTextTheme(ThemeData.light().textTheme);
+    } catch (_) {
+      return ThemeData.light().textTheme;
+    }
+  }
+
+  static ThemeData get lightTheme {
+    GoogleFonts.config.allowRuntimeFetching = true;
+
+    return ThemeData(
+      useMaterial3: true,
+      brightness: Brightness.light,
+      scaffoldBackgroundColor: scaffoldLight,
+      colorScheme: const ColorScheme.light(
+        primary: primaryColor,
+        secondary: secondaryColor,
+        surface: surfaceLight,
+        error: expenseColor,
+        onPrimary: Colors.white,
+        onSecondary: Colors.white,
+        onSurface: textLightPrimary,
+        outline: borderLight,
+      ),
+      textTheme: _safeLightTextTheme().copyWith(
+        headlineLarge: _safeInter(
+          fontSize: 28,
+          fontWeight: FontWeight.w700,
+          color: textLightPrimary,
+        ),
+        headlineMedium: _safeInter(
+          fontSize: 24,
+          fontWeight: FontWeight.w600,
+          color: textLightPrimary,
+        ),
+        headlineSmall: _safeInter(
+          fontSize: 20,
+          fontWeight: FontWeight.w600,
+          color: textLightPrimary,
+        ),
+        titleLarge: _safeInter(
+          fontSize: 18,
+          fontWeight: FontWeight.w600,
+          color: textLightPrimary,
+        ),
+        titleMedium: _safeInter(
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
+          color: textLightPrimary,
+        ),
+        bodyLarge: _safeInter(
+          fontSize: 16,
+          fontWeight: FontWeight.w400,
+          color: textLightSecondary,
+        ),
+        bodyMedium: _safeInter(
+          fontSize: 14,
+          fontWeight: FontWeight.w400,
+          color: textLightSecondary,
+        ),
+        bodySmall: _safeInter(
+          fontSize: 12,
+          fontWeight: FontWeight.w400,
+          color: textLightTertiary,
+        ),
+        labelLarge: _safeInter(
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+          color: textLightPrimary,
+        ),
+      ),
+      cardTheme: CardThemeData(
+        color: cardLight,
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: const BorderSide(color: borderLight, width: 1),
+        ),
+        margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 6),
+      ),
+      appBarTheme: AppBarTheme(
+        backgroundColor: scaffoldLight,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        centerTitle: false,
+        titleTextStyle: _safeInter(
+          fontSize: 24,
+          fontWeight: FontWeight.w700,
+          color: textLightPrimary,
+        ),
+        iconTheme: const IconThemeData(color: textLightPrimary),
+      ),
+      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+        backgroundColor: surfaceLight,
+        selectedItemColor: primaryColor,
+        unselectedItemColor: textLightTertiary,
+        type: BottomNavigationBarType.fixed,
+        elevation: 0,
+        showUnselectedLabels: true,
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: cardLightAlt,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: borderLight),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: borderLight),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: primaryColor, width: 2),
+        ),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        hintStyle: _safeInter(color: textLightMuted),
+        labelStyle: _safeInter(color: textLightTertiary),
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: primaryColor,
+          foregroundColor: Colors.white,
+          elevation: 0,
+          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          textStyle: _safeInter(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+      floatingActionButtonTheme: const FloatingActionButtonThemeData(
+        backgroundColor: primaryColor,
+        foregroundColor: Colors.white,
+        elevation: 4,
+        shape: CircleBorder(),
+      ),
+      dividerTheme: const DividerThemeData(
+        color: borderLight,
+        thickness: 1,
+      ),
+      chipTheme: ChipThemeData(
+        backgroundColor: cardLightAlt,
+        selectedColor: primaryColor.withValues(alpha: 0.15),
+        side: const BorderSide(color: borderLight),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        labelStyle: _safeInter(
+          fontSize: 13,
+          fontWeight: FontWeight.w500,
+          color: textLightSecondary,
+        ),
+      ),
+      segmentedButtonTheme: SegmentedButtonThemeData(
+        style: SegmentedButton.styleFrom(
+          backgroundColor: cardLightAlt,
+          foregroundColor: textLightSecondary,
+          selectedForegroundColor: Colors.white,
+          selectedBackgroundColor: primaryColor,
+          side: const BorderSide(color: borderLight),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // HELPER: Colori adattivi basati sul tema corrente
+  // ═══════════════════════════════════════════════════════════════
+
+  static Color scaffold(BuildContext context) =>
+      Theme.of(context).brightness == Brightness.dark ? scaffoldDark : scaffoldLight;
+  static Color surface(BuildContext context) =>
+      Theme.of(context).brightness == Brightness.dark ? surfaceDark : surfaceLight;
+  static Color card(BuildContext context) =>
+      Theme.of(context).brightness == Brightness.dark ? cardDark : cardLight;
+  static Color cardAlt(BuildContext context) =>
+      Theme.of(context).brightness == Brightness.dark ? cardDarkAlt : cardLightAlt;
+  static Color border(BuildContext context) =>
+      Theme.of(context).brightness == Brightness.dark ? borderDark : borderLight;
+  static Color textPrimary(BuildContext context) =>
+      Theme.of(context).brightness == Brightness.dark ? Colors.white : textLightPrimary;
+  static Color textSecondary(BuildContext context) =>
+      Theme.of(context).brightness == Brightness.dark ? Colors.white70 : textLightSecondary;
+  static Color textTertiary(BuildContext context) =>
+      Theme.of(context).brightness == Brightness.dark ? Colors.white54 : textLightTertiary;
+  static Color textMutedC(BuildContext context) =>
+      Theme.of(context).brightness == Brightness.dark ? Colors.white38 : textLightMuted;
+}

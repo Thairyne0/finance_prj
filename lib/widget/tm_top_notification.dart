@@ -22,7 +22,10 @@ class TmTopNotification {
         message: message,
         icon: icon,
         iconColor: iconColor ?? AppTheme.incomeColor,
-        backgroundColor: backgroundColor ?? AppTheme.cardDark,
+        backgroundColor: backgroundColor ??
+            (Theme.of(context).brightness == Brightness.dark
+                ? AppTheme.card(context)
+                : AppTheme.cardLight),
         duration: duration,
         onDone: () => entry.remove(),
       ),

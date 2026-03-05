@@ -33,7 +33,7 @@ class BudgetScreen extends ConsumerWidget {
         .toList();
 
     return Scaffold(
-      backgroundColor: AppTheme.scaffoldDark,
+      backgroundColor: AppTheme.scaffold(context),
       appBar: AppBar(
         title: const Text('Budget'),
         leading: IconButton(
@@ -91,7 +91,7 @@ class BudgetScreen extends ConsumerWidget {
         style: Theme.of(context)
             .textTheme
             .bodyMedium
-            ?.copyWith(color: Colors.white54),
+            ?.copyWith(color: AppTheme.textTertiary(context)),
       ),
     );
 
@@ -149,7 +149,7 @@ class BudgetScreen extends ConsumerWidget {
         Text(
           'SPESE SENZA BUDGET',
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Colors.white38,
+                color: AppTheme.textMutedC(context),
                 letterSpacing: 1.5,
                 fontWeight: FontWeight.w600,
               ),
@@ -165,9 +165,9 @@ class BudgetScreen extends ConsumerWidget {
             padding:
                 const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
-              color: AppTheme.cardDark,
+              color: AppTheme.card(context),
               borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: AppTheme.borderDark),
+              border: Border.all(color: AppTheme.border(context)),
             ),
             child: Row(
               children: [
@@ -221,12 +221,12 @@ class _TotalBudgetSummary extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppTheme.cardDark,
+        color: AppTheme.card(context),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: isOver
               ? AppTheme.expenseColor.withValues(alpha: 0.4)
-              : AppTheme.borderDark,
+              : AppTheme.border(context),
         ),
       ),
       child: Column(
@@ -298,15 +298,15 @@ class _AddBudgetButton extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Container(
       decoration: BoxDecoration(
-        color: AppTheme.cardDark,
+        color: AppTheme.card(context),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppTheme.borderDark),
+        border: Border.all(color: AppTheme.border(context)),
       ),
       child: IconButton(
         onPressed: availableCategories.isEmpty
             ? null
             : () => _showAddBudgetDialog(context, ref),
-        icon: const Icon(Icons.add_rounded, color: AppTheme.primaryColor),
+        icon: Icon(Icons.add_rounded, color: AppTheme.primaryColor),
       ),
     );
   }
@@ -320,7 +320,7 @@ class _AddBudgetButton extends ConsumerWidget {
       context: context,
       isScrollControlled: true,
       useSafeArea: true,
-      backgroundColor: AppTheme.cardDark,
+      backgroundColor: AppTheme.card(context),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -342,7 +342,7 @@ class _AddBudgetButton extends ConsumerWidget {
                   // Categoria
                   DropdownButtonFormField<String>(
                     initialValue: selectedCatId,
-                    dropdownColor: AppTheme.cardDarkAlt,
+                    dropdownColor: AppTheme.cardAlt(context),
                     decoration: const InputDecoration(labelText: 'Categoria'),
                     items: availableCategories.map<DropdownMenuItem<String>>((c) {
                       return DropdownMenuItem(

@@ -32,19 +32,22 @@ class TmCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final br = BorderRadius.circular(borderRadius);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final defaultBg = isDark ? AppTheme.card(context) : AppTheme.cardLight;
+    final defaultBorder = isDark ? AppTheme.border(context) : AppTheme.borderLight;
 
     final decoration = BoxDecoration(
       color: gradient == null
           ? (enableGlass
               ? AppTheme.surfaceGlass
-              : (backgroundColor ?? AppTheme.cardDark))
+              : (backgroundColor ?? defaultBg))
           : null,
       gradient: gradient,
       borderRadius: br,
       border: Border.all(
         color: enableGlass
             ? AppTheme.borderGlass
-            : (borderColor ?? AppTheme.borderDark),
+            : (borderColor ?? defaultBorder),
         width: enableGlass ? 0.8 : 1,
       ),
       boxShadow: glowColor != null ? AppTheme.glowShadow(glowColor!) : null,

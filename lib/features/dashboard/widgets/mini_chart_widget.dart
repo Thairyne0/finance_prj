@@ -17,9 +17,9 @@ class MiniChartWidget extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppTheme.cardDark,
+        color: AppTheme.card(context),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppTheme.borderDark),
+        border: Border.all(color: AppTheme.border(context)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -53,7 +53,7 @@ class MiniChartWidget extends ConsumerWidget {
                         drawVerticalLine: false,
                         horizontalInterval: _calcInterval(reports),
                         getDrawingHorizontalLine: (value) => FlLine(
-                          color: AppTheme.borderDark,
+                          color: AppTheme.border(context),
                           strokeWidth: 1,
                         ),
                       ),
@@ -82,8 +82,8 @@ class MiniChartWidget extends ConsumerWidget {
                                 child: Text(
                                   Formatters.formatShortMonth(
                                       DateTime(r.year, r.month)),
-                                  style: const TextStyle(
-                                    color: Colors.white38,
+                                  style: TextStyle(
+                                    color: AppTheme.textMutedC(context),
                                     fontSize: 11,
                                   ),
                                 ),
@@ -131,7 +131,7 @@ class MiniChartWidget extends ConsumerWidget {
                       ],
                       lineTouchData: LineTouchData(
                         touchTooltipData: LineTouchTooltipData(
-                          getTooltipColor: (_) => AppTheme.cardDarkAlt,
+                          getTooltipColor: (_) => AppTheme.cardAlt(context),
                           getTooltipItems: (spots) => spots.map((spot) {
                             final color = spot.barIndex == 0
                                 ? AppTheme.incomeColor
@@ -152,7 +152,7 @@ class MiniChartWidget extends ConsumerWidget {
                     child: Text(
                       'Aggiungi transazioni per vedere il grafico',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Colors.white24,
+                            color: AppTheme.textMutedC(context),
                           ),
                     ),
                   ),
@@ -195,7 +195,7 @@ class _LegendDot extends StatelessWidget {
         Text(
           label,
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Colors.white54,
+                color: AppTheme.textTertiary(context),
                 fontSize: 11,
               ),
         ),

@@ -90,9 +90,9 @@ class _TransactionListScreenState extends ConsumerState<TransactionListScreen> {
                           // Bottone export CSV mensile
                           Container(
                             decoration: BoxDecoration(
-                              color: AppTheme.cardDark,
+                              color: AppTheme.card(context),
                               borderRadius: BorderRadius.circular(14),
-                              border: Border.all(color: AppTheme.borderDark),
+                              border: Border.all(color: AppTheme.border(context)),
                             ),
                             child: IconButton(
                               tooltip: 'Esporta mese in CSV',
@@ -119,9 +119,9 @@ class _TransactionListScreenState extends ConsumerState<TransactionListScreen> {
                           // Bottone ricerca
                           Container(
                             decoration: BoxDecoration(
-                              color: AppTheme.cardDark,
+                              color: AppTheme.card(context),
                               borderRadius: BorderRadius.circular(14),
-                              border: Border.all(color: AppTheme.borderDark),
+                              border: Border.all(color: AppTheme.border(context)),
                             ),
                             child: IconButton(
                               onPressed: () {
@@ -152,7 +152,7 @@ class _TransactionListScreenState extends ConsumerState<TransactionListScreen> {
                     style: Theme.of(context)
                         .textTheme
                         .bodyMedium
-                        ?.copyWith(color: Colors.white54),
+                        ?.copyWith(color: AppTheme.textTertiary(context)),
                   ),
 
                   // Barra di ricerca
@@ -164,29 +164,29 @@ class _TransactionListScreenState extends ConsumerState<TransactionListScreen> {
                       style: const TextStyle(color: Colors.white),
                       decoration: InputDecoration(
                         hintText: 'Cerca per nome, prodotto, importo...',
-                        prefixIcon: const Icon(Icons.search_rounded,
-                            color: Colors.white38),
+                        prefixIcon: Icon(Icons.search_rounded,
+                            color: AppTheme.textMutedC(context)),
                         suffixIcon: _searchController.text.isNotEmpty
                             ? IconButton(
                                 onPressed: () {
                                   _searchController.clear();
                                   setState(() {});
                                 },
-                                icon: const Icon(Icons.clear_rounded,
-                                    color: Colors.white38, size: 20),
+                                icon: Icon(Icons.clear_rounded,
+                                    color: AppTheme.textMutedC(context), size: 20),
                               )
                             : null,
                         filled: true,
-                        fillColor: AppTheme.cardDark,
+                        fillColor: AppTheme.card(context),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
                           borderSide:
-                              const BorderSide(color: AppTheme.borderDark),
+                          BorderSide(color: AppTheme.border(context)),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
                           borderSide:
-                              const BorderSide(color: AppTheme.borderDark),
+                          BorderSide(color: AppTheme.border(context)),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
